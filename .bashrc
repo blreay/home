@@ -27,9 +27,8 @@ EOF
 
 OS=$(uname -s)
 
-
 export NFSPATH=/nfs/users/zhaozhan
-[[ ! -d $NFSPATH ]] &&  export NFSPATH=/home/zhaozhan/nfs_users_zhaozhan
+[[ ! -d $NFSPATH ]] && export NFSPATH=/home/zhaozhan/nfs_users_zhaozhan
 export NFS=$NFSPATH
 export PATH=$PATH:$ORACLE_HOME/bin:$NFSPATH/common/$OS/bin/bcmds:$NFSPATH/common/bin:$NFSPATH/common/$OS/bin:$NFSPATH/common/sh:$NFSPATH/common/sh/ART:$NFSPATH/common/sh/ART/appdir_create:/usr/vac/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/openwin/bin:/usr/X11/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/lib:/usr/local/lib:$NFSPATH/common/`uname -s`/lib
