@@ -1,10 +1,18 @@
-set rtp=~/.vim
+"set rtp=~/.vim
 set t_Co=256
 set t_AB=[48;5;%dm
 set t_AF=[38;5;%dm
 colorscheme desert
 set number
 set tabstop=4
+"make gf can work normally: If you wish to delete other characters from isfname, 
+"be sure to delete them one character at a time. That is, execute :set isfname-=- and :set isfname-=:,
+"not :set isfname-=-:. The last command will work only if -: are present in isfname together and in that order
+set isfname-={
+set isfname-=}
+set isfname-=,
+set isfname+=@-@
+
 "set cindent
 "set cindent shiftwidth=4  
 "set smartindent
@@ -14,6 +22,7 @@ set cinoptions={0,1s,t0,n-2,p2s,(03s,=.5s,>1s,=1s,:1s
 "set autochdir 
 set cinoptions={0,1s,t0,n-2,p2s,(03s,=.5s,>1s,=1s,:1s 
 set expandtab 
+set enc=utf8
 set fileencodings=ucs-bom,utf8,GB18030,Big5,latin1 
 set fileformat=unix 
 "set cursorline 
@@ -75,7 +84,7 @@ if has("cscope")
         let cscope_file=findfile("cscope.out", ".;")
         "echo cscope_file
         if !empty(cscope_file) && filereadable(cscope_file)
-            exe "cs add" cscope_file
+            exe "silent cs add" cscope_file
         endif      
      endif
 endif
@@ -123,6 +132,10 @@ let NERDTreeWinSize=30
 let NERDTreeChDirMode=1 
 "let g:SuperTabRetainCompletionType="context"
 
+
+"ctrlp
+let g:ctrlp_working_path_mode = ''
+
 map <F4> :TlistToggle<CR>
 
 set <S-F6>=[29~
@@ -145,11 +158,13 @@ map j 
 
 map <A-M> :echo "Meta z"<CR>
 map <M-K> <C-Y>
-noremap <F8> <C-x><C-o>
+"noremap <F8> <C-x><C-o>
 map <F2> <C-R>=strftime("%c")<CR><Esc> 
 map <silent> <F3> :nohlsearch<CR>
 map <F5> :NERDTreeMirror<CR>
 map <F5> :NERDTreeToggle<CR>
+
+noremap ;vv <Esc>bi{<Esc>ea}<Esc>
 
 " Commenting blocks of code.
 autocmd FileType c                let b:comment_leader = 'aa'
@@ -158,6 +173,8 @@ autocmd FileType c                let b:comment_begin  = '/*'
 autocmd FileType c                let b:comment_end    = '*/'
 autocmd FileType h                let b:comment_begin  = '/*'
 autocmd FileType h                let b:comment_end    = '*/'
+autocmd FileType rexx             let b:comment_begin  = '/*'
+autocmd FileType rexx             let b:comment_end    = '*/'
 autocmd FileType sh,ruby,python   let b:comment_leader = '# '
 autocmd FileType conf,fstab       let b:comment_leader = '# '
 autocmd FileType tex              let b:comment_leader = '% '
@@ -216,7 +233,7 @@ function! UpdateCtags()
 	endif
 endfunction
 
-autocmd BufWritePost *.c,*.h,*.cpp call UpdateCtags() 
+autocmd BufWritePost *.c,*.h,*.cpp,*.sh call UpdateCtags() 
 "nnoremap <leader>mc :call ToggleComment()<cr>
 
 "set cindent 
@@ -242,6 +259,7 @@ filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
+" set rtp+=~/nfs/users/zhaozhan/tmp/.vim/bundle/vundle
 call vundle#begin()
 " alternatively, pass a path where Vundle should install plugins
 "call vundle#begin('~/some/path/here')
@@ -264,6 +282,9 @@ Plugin 'scrooloose/nerdcommenter'
 "Plugin 'OmniCppComplete'
 Plugin 'vim-scripts/AutoComplPop'
 Plugin 'ervandew/supertab'
+Plugin 'majutsushi/tagbar'
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'fatih/vim-go'
 "map f7 :tabnew<CR>
 "map f5 :tabp<CR>
 "map f6 :tabn<CR>
@@ -381,3 +402,21 @@ nnoremap ` :ShowMarksOnce<cr>`
 set autoindent
 "silent execute ':redraw!'
 autocmd FileType c              DoShowMarks
+
+"设置tagbar使用的ctags的插件,必须要设置对  
+"let g:tagbar_ctags_bin='/usr/bin/ctags'  
+"设置tagbar的窗口宽度  
+let g:tagbar_width=30  
+"设置tagbar的窗口显示的位置,为左边  
+let g:tagbar_left=1 
+"打开文件自动 打开tagbar  
+"autocmd BufReadPost *.cpp,*.c,*.h,*.hpp,*.cc,*.cxx,*.go call tagbar#autoopen()  
+autocmd BufReadPost *.cxx,*.go call tagbar#autoopen()  
+"disable auto format for go source code
+let g:go_fmt_autosave = 0
+"映射tagbar的快捷键  
+map <F8> :TagbarToggle<CR>  
+
+"don't auto format go source code
+let g:go_fmt_autosave = 0
+let g:go_version_warning = 0
