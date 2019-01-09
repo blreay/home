@@ -1,0 +1,11 @@
+echo "=================== PLUGIN BEGIN =================="
+echo "swich DEBUG"
+[[ "$MYDBG" = "yes" ]] && MYDBG=no || MYDBG=yes
+echo "MYDBG=$MYDBG"
+traceback
+echo "filename=${BASH_SOURCE[$((${#BASH_SOURCE[*]} - 1))]}"
+echo "CURFN=$CURFN"
+#lastday_has_sent="2017-06-08"
+#bash
+#sleep 99999
+echo "=================== PLUGIN END =================="
