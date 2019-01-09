@@ -86,7 +86,8 @@ export SHR=$NFS/share
 
 ## Can't set VIMRUNTIME,otherwise :help will not work 
 #export VIMRUNTIME=$NFS/.vim 
-export VIMRUNTIME=$HOME/.vim
+## in order to support vim80 and don't copy whole vim80 to ~/.vim
+#export VIMRUNTIME=$HOME/.vim
 
 export LANG=C
 export EDITOR=vim
