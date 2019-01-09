@@ -6,7 +6,7 @@
 
 export EDITOR=vim
 MYSELFID=zhaoyong.zzy
-[[ -d /home/${MYID} ]] && MYHOME=/home/${MYID} || MYHOME=$HOME
+[[ -d /home/${MYSELFID} ]] && MYHOME=/home/${MYSELFID} || MYHOME=$HOME
 
 title() {
     echo -ne "\033]0;$1@${HOSTNAME}\007"
@@ -98,7 +98,8 @@ alias ll='ls -l'
 alias rm="$NFS/common/sh/myrm.sh"
 vimexe="$NFSPATH/common/$OS/bin/vim" && [[ -f $vimexe ]] || vimexe="vim"
 #alias vim="TERM=xterm-256color $vimexe -X"
-alias vim="TERM=xterm-256color VIMRUNTIME=$MYHOME/.vim $vimexe -X --cmd \"set runtimepath^=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
+#alias vim="TERM=xterm-256color VIMRUNTIME=$MYHOME/.vim $vimexe -X --cmd \"set runtimepath^=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
+alias vim="TERM=xterm-256color $vimexe -X --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
 alias cit="source $NFS/cobset.sh cit"
 alias cit2="source $NFS/cobset.sh cit"
 alias cmf="source $NFS/cobset.sh mf"
@@ -197,7 +198,7 @@ case $(uname -n) in
 	export MAVEN_HOME=$NFS/application/Linux/apache-maven-3.5.0
 	export DERBY_HOME=$NFS/application/Linux/db-derby-10.13.1.1-bin
 	 #[[ $USER != "${MYSELFID}" ]] && { alias vim="TERM=xterm-256color VIMRUNTIME=/home/${MYSELFID}/.vim $vimexe -X --cmd \"set runtimepath^=/home/${MYSELFID}/.vim\" --cmd \"set runtimepath+=/home/${MYSELFID}/.vim/bundle/Vundle.vim\" -u /home/${MYSELFID}/.vimrc"; }
-	 [[ "$USER" != "${MYID}" ]] && { alias vim="TERM=xterm-256color VIMRUNTIME=$MYHOME/.vim $vimexe -X --cmd \"set runtimepath^=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"; }
+	 [[ "$USER" != "${MYSELFID}" ]] && { alias vim="TERM=xterm-256color VIMRUNTIME=$MYHOME/.vim $vimexe -X --cmd \"set runtimepath^=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"; }
  	;;
 (bej301459*) 
 	 ## for wine process
