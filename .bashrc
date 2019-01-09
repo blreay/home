@@ -66,7 +66,7 @@ export NFSPATH=/nfs/users/${MYSELFID}
 [[ ! -d $NFSPATH ]] && export NFSPATH=/home/${MYSELFID}
 [[ ! -d $NFSPATH ]] && export NFSPATH=$HOME
 export NFS=$NFSPATH
-export PATH=$PATH:$ORACLE_HOME/bin:$NFSPATH/common/$OS/bin/bcmds:$NFSPATH/common/bin:$NFSPATH/common/$OS/bin:$NFSPATH/common/sh:$NFSPATH/common/sh/ART:$NFSPATH/common/sh/ART/appdir_create:/usr/vac/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/openwin/bin:/usr/X11/bin
+export PATH=$PATH:$NFSPATH/common/$OS/bin:$NFSPATH/common/sh:/usr/vac/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/openwin/bin:/usr/X11/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/lib:/usr/local/lib:$NFSPATH/common/`uname -s`/lib
 
 ## COMMON ###
@@ -98,6 +98,7 @@ ulimit -c unlimited
 alias ll='ls -l'
 alias rm="$NFS/common/sh/myrm.sh"
 vimexe="$NFSPATH/common/$OS/bin/vim" && [[ -f $vimexe ]] || vimexe="vim"
+[[ -f "/usr/bin/vim" ]] && vimexe=/usr/bin/vim
 #alias vim="TERM=xterm-256color $vimexe -X"
 #alias vim="TERM=xterm-256color VIMRUNTIME=$MYHOME/.vim $vimexe -X --cmd \"set runtimepath^=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
 alias vim="TERM=xterm-256color $vimexe -X --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
@@ -238,7 +239,7 @@ case $(uname -n) in
 	exe="/usr/bin/vim" && [[ -f $exe ]] || exe="vim"
 	alias vim="TERM=xterm-256color $exe -X"
 	;;
-(${MYSELFID}-CN) 
+(R90MURWD) 
 	export PATH=/bin:/usr/bin:/sbin:$PATH
 	exe="/usr/bin/vim" && [[ -f $exe ]] || exe="vim"
 	alias vim="TERM=xterm-256color $exe -X"
