@@ -113,9 +113,17 @@ function main {
 			${cmd} splitw -h -p 35 -t ${session}:${main_win_name} "${loopbash}"
 			${cmd} splitw -v -p 50 -t ${session}:${main_win_name}.1 "${loopbash}"
 			${cmd} neww -d -n $second_win_name -t ${session} "${loopbash}"
+			${cmd} neww -d -t ${session} "${loopbash}"
+			${cmd} neww -d -t ${session} "${loopbash}"
+			${cmd} neww -d -t ${session} "${loopbash}"
+			${cmd} neww -d -t ${session} "${loopbash}"
 			${cmd} neww -d -n $cmd_win_name -t ${session} "${loopcmd}"
+			#select the first window
 			#${cmd} selectw -t ${session}:0
-			${cmd} select-pane -t ${session}.0
+			#select the first pane of first window
+			#${cmd} select-pane -t ${session}.0
+			#select the second window
+			${cmd} select-window -t ${session}:1
 			#:<<EOF
 			#${cmd} send-keys -t ${session}:${main_win_name}.0 'cd ~; locale; s; ipconfig; cmd2remote.sh -h bej301712 -f /nfs/users/zhaozhan/mypc.txt -c "ipconfig;echo record ip"' C-m C-m
 			${cmd} send-keys -t ${session}:${main_win_name}.0 'cd ~; locale; s; ipconfig;' C-m C-m
