@@ -82,6 +82,7 @@ export CVSLOG=$NFSPATH/_cvslog_important_do_NOT_delete
 #[[ $HOME = "/nfs/users/${MYSELFID}" ]] && export DIR_TRASH=$NFS/gomihako || export DIR_TRASH=$HOME/gomihako
 export DIR_TRASH=$HOME/gomihako && mkdir -p $DIR_TRASH >/dev/null 2>&1
 export SH=$NFS/common/sh
+export WINSH=$NFS/common/winsh
 export SHR=$NFS/share
 
 ## Can't set VIMRUNTIME,otherwise :help will not work 
