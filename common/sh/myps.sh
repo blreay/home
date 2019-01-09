@@ -1,5 +1,6 @@
-#!/bin/ksh
+#!/bin/bash
 
+#set -vx
 typeset pid=$1
 
 if [[ -z $USER ]]; then
@@ -18,7 +19,8 @@ if [[ -z "$pid" ]]; then
 	esac
 
 	if [[ -n $USER ]]; then
-		$PSCMD |egrep  "^[ \t]*$USER"
+		## long user name will be trimed to zhaoyon+
+		$PSCMD |egrep  "^[ \t]*${USER:0:7}"
 	else
 		echo "USER is null"
 	fi
