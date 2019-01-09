@@ -5,7 +5,7 @@
 [ -f /etc/bashrc ] && . /etc/bashrc
 
 export EDITOR=vim
-MYID=zhaozhan
+MYSELFID=zhaoyong.zzy
 [[ -d /home/${MYID} ]] && MYHOME=/home/${MYID} || MYHOME=$HOME
 
 title() {
@@ -53,33 +53,33 @@ OS=$(uname -s)
 [[ -z $USER ]] && export USER=$(id -un 2>/dev/null)
 [[ -z $USER ]] && export USER=$(/usr/xpg4/bin/id -un)
 
-export NFSPATH=/nfs/users/zhaozhan
-[[ ! -d $NFSPATH ]] && export NFSPATH=/home/zhaozhan/nfs_users_zhaozhan
-[[ ! -d $NFSPATH ]] && export NFSPATH=/nfs/homes/zhaozhan
-[[ ! -d $NFSPATH ]] && export NFSPATH=/nfs/ucfhomes/zhaozhan
-[[ ! -d $NFSPATH ]] && export NFSPATH=/home/zhaozhan/nfs_local
-[[ ! -d $NFSPATH ]] && export NFSPATH=/u01/common/patches/zhaozhan
+export NFSPATH=/nfs/users/${MYSELFID}
+[[ ! -d $NFSPATH ]] && export NFSPATH=/home/${MYSELFID}/nfs_users_${MYSELFID}
+[[ ! -d $NFSPATH ]] && export NFSPATH=/nfs/homes/${MYSELFID}
+[[ ! -d $NFSPATH ]] && export NFSPATH=/nfs/ucfhomes/${MYSELFID}
+[[ ! -d $NFSPATH ]] && export NFSPATH=/home/${MYSELFID}/nfs_local
+[[ ! -d $NFSPATH ]] && export NFSPATH=/u01/common/patches/${MYSELFID}
 [[ ! -d $NFSPATH ]] && export NFSPATH=$HOME/nfs_local/home
 [[ ! -d $NFSPATH ]] && export NFSPATH=$HOME/home
 [[ ! -d $NFSPATH ]] && [[ -d $PWD/common/sh ]] && export NFSPATH=$PWD
-[[ ! -d $NFSPATH ]] && export NFSPATH=/home/zhaozhan/home
-[[ ! -d $NFSPATH ]] && export NFSPATH=/home/zhaozhan
+[[ ! -d $NFSPATH ]] && export NFSPATH=/home/${MYSELFID}/home
+[[ ! -d $NFSPATH ]] && export NFSPATH=/home/${MYSELFID}
 [[ ! -d $NFSPATH ]] && export NFSPATH=$HOME
 export NFS=$NFSPATH
 export PATH=$PATH:$ORACLE_HOME/bin:$NFSPATH/common/$OS/bin/bcmds:$NFSPATH/common/bin:$NFSPATH/common/$OS/bin:$NFSPATH/common/sh:$NFSPATH/common/sh/ART:$NFSPATH/common/sh/ART/appdir_create:/usr/vac/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/openwin/bin:/usr/X11/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/lib:/usr/local/lib:$NFSPATH/common/`uname -s`/lib
 
 ## COMMON ###
-#export CVSROOT=:pserver:zhaozhan@bjsrc.cn.oracle.com:/repos
-#export CVSROOT=":ext;privatekey=$(echo ~zhaozhan)/.ssh/id_rsa:zhaozhan@bjsrc.cn.oracle.com:/repos"
-export CVSROOT=":ext:zhaozhan@bjsrc.cn.oracle.com:/repos"
+#export CVSROOT=:pserver:${MYSELFID}@bjsrc.cn.oracle.com:/repos
+#export CVSROOT=":ext;privatekey=$(echo ~${MYSELFID})/.ssh/id_rsa:${MYSELFID}@bjsrc.cn.oracle.com:/repos"
+export CVSROOT=":ext:${MYSELFID}@bjsrc.cn.oracle.com:/repos"
 export CVS_RSH=ssh
-#if [[ $USER = @(zhaozhan|opc) ]]; then
-export MYCVSROOT=":pserver:zhaozhan@bej301738.cn.oracle.com:/home/zhaozhan/repos"
+#if [[ $USER = @(${MYSELFID}|opc) ]]; then
+export MYCVSROOT=":pserver:${MYSELFID}@bej301738.cn.oracle.com:/home/${MYSELFID}/repos"
 alias s=set_vimrc
 #fi
 export CVSLOG=$NFSPATH/_cvslog_important_do_NOT_delete
-#[[ $HOME = "/nfs/users/zhaozhan" ]] && export DIR_TRASH=$NFS/gomihako || export DIR_TRASH=$HOME/gomihako
+#[[ $HOME = "/nfs/users/${MYSELFID}" ]] && export DIR_TRASH=$NFS/gomihako || export DIR_TRASH=$HOME/gomihako
 export DIR_TRASH=$HOME/gomihako && mkdir -p $DIR_TRASH >/dev/null 2>&1
 export SH=$NFS/common/sh
 export SHR=$NFS/share
@@ -90,7 +90,7 @@ export VIMRUNTIME=$HOME/.vim
 
 export LANG=C
 export EDITOR=vim
-export MYM=zhaozhan@slc09wou.us.oracle.com
+export MYM=${MYSELFID}@slc09wou.us.oracle.com
 export MYPC=$(who |grep $USER | grep "${SSH_TTY/\/dev\/}" | awk '{print $NF}' | uniq | sed 's/(//g;s/)//g')
 
 ulimit -c unlimited
@@ -180,40 +180,40 @@ case $(uname -n) in
 	export SANITYPATH=$HOME/sanity/cron/cvs_batch_sanity
 	#export DEVPATH=~/dev/art/jes/art_MainBranch/jes.jclexecutor/
 	export DEVPATH=~/dev/tsam/agent
-	export DEVJES=/home/zhaozhan/dev/art/jes/art_MainBranch/jes.12cR3
+	export DEVJES=/home/${MYSELFID}/dev/art/jes/art_MainBranch/jes.12cR3
 	export JAVA_HOME=$NFS/application/Linux/jdk1.8.0_74
 	export MAVEN_HOME=$NFS/application/Linux/apache-maven-3.5.0
 	export DERBY_HOME=$NFS/application/Linux/db-derby-10.13.1.1-bin
 	#export LD_LIBRARY_PATH=/usr/local/gcc-4.1.2/lib64:$LD_LIBRARY_PATH:/lib64:/usr/lib64:/usr/local/lib
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/lib64:/usr/lib64:/usr/local/lib
 	## for wine process
-	[[ $USER == "zhaozhan" ]] && { export MYDBG_SHOWALL=yes && export MYDBG_SHOWDBG=DEBUG0; }
-	[[ $USER != "zhaozhan" ]] && { unset MYDBG_SHOWALL MYDBG_SHOWDBG; }
+	[[ $USER == "${MYSELFID}" ]] && { export MYDBG_SHOWALL=yes && export MYDBG_SHOWDBG=DEBUG0; }
+	[[ $USER != "${MYSELFID}" ]] && { unset MYDBG_SHOWALL MYDBG_SHOWDBG; }
  	;;
 (bej301738.cn.oracle.com) 
-	export DEVJES=/home/zhaozhan/dev/art/jes/art_MainBranch/jes.12cR3
-	export DEVTMA=/home/zhaozhan/dev/tma
+	export DEVJES=/home/${MYSELFID}/dev/art/jes/art_MainBranch/jes.12cR3
+	export DEVTMA=/home/${MYSELFID}/dev/tma
 	export JAVA_HOME=$NFS/application/Linux/jdk1.8.0_74
 	export MAVEN_HOME=$NFS/application/Linux/apache-maven-3.5.0
 	export DERBY_HOME=$NFS/application/Linux/db-derby-10.13.1.1-bin
-	 #[[ $USER != "zhaozhan" ]] && { alias vim="TERM=xterm-256color VIMRUNTIME=/home/zhaozhan/.vim $vimexe -X --cmd \"set runtimepath^=/home/zhaozhan/.vim\" --cmd \"set runtimepath+=/home/zhaozhan/.vim/bundle/Vundle.vim\" -u /home/zhaozhan/.vimrc"; }
+	 #[[ $USER != "${MYSELFID}" ]] && { alias vim="TERM=xterm-256color VIMRUNTIME=/home/${MYSELFID}/.vim $vimexe -X --cmd \"set runtimepath^=/home/${MYSELFID}/.vim\" --cmd \"set runtimepath+=/home/${MYSELFID}/.vim/bundle/Vundle.vim\" -u /home/${MYSELFID}/.vimrc"; }
 	 [[ "$USER" != "${MYID}" ]] && { alias vim="TERM=xterm-256color VIMRUNTIME=$MYHOME/.vim $vimexe -X --cmd \"set runtimepath^=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"; }
  	;;
 (bej301459*) 
 	 ## for wine process
-	 [[ $USER == "zhaozhan" ]] && { export MYDBG_SHOWALL=yes && export MYDBG_SHOWDBG=DEBUG0; }
-	 [[ $USER != "zhaozhan" ]] && { unset MYDBG_SHOWALL MYDBG_SHOWDBG; }
+	 [[ $USER == "${MYSELFID}" ]] && { export MYDBG_SHOWALL=yes && export MYDBG_SHOWDBG=DEBUG0; }
+	 [[ $USER != "${MYSELFID}" ]] && { unset MYDBG_SHOWALL MYDBG_SHOWDBG; }
  	;;
 (slc09wou*) 
 	 vimexe="/usr/bin/vim"
 	 alias vim="TERM=xterm-256color VIMRUNTIME=$MYHOME/.vim $vimexe -X --cmd \"set runtimepath^=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
 	 ## for wine process
-	 [[ $USER == "zhaozhan" ]] && { export MYDBG_SHOWALL=yes && export MYDBG_SHOWDBG=DEBUG0; }
-	 [[ $USER != "zhaozhan" ]] && { unset MYDBG_SHOWALL MYDBG_SHOWDBG; }
+	 [[ $USER == "${MYSELFID}" ]] && { export MYDBG_SHOWALL=yes && export MYDBG_SHOWDBG=DEBUG0; }
+	 [[ $USER != "${MYSELFID}" ]] && { unset MYDBG_SHOWALL MYDBG_SHOWDBG; }
  	;;
 (rno05038) 
-	 [[ $USER == "zhaozhan" ]] && export CVS_PASSFILE=$NFS/.cvspass
-	 [[ $USER != "zhaozhan" ]] && { alias vim="TERM=xterm-256color $vimexe -X -u /home/zhaozhan/.vimrc"; }
+	 [[ $USER == "${MYSELFID}" ]] && export CVS_PASSFILE=$NFS/.cvspass
+	 [[ $USER != "${MYSELFID}" ]] && { alias vim="TERM=xterm-256color $vimexe -X -u /home/${MYSELFID}/.vimrc"; }
 	alias cvs=/usr/bin/cvs
  	;;
 (burf07cn05) 
@@ -236,7 +236,7 @@ case $(uname -n) in
 	exe="/usr/bin/vim" && [[ -f $exe ]] || exe="vim"
 	alias vim="TERM=xterm-256color $exe -X"
 	;;
-(ZHAOZHAN-CN) 
+(${MYSELFID}-CN) 
 	export PATH=/bin:/usr/bin:/sbin:$PATH
 	exe="/usr/bin/vim" && [[ -f $exe ]] || exe="vim"
 	alias vim="TERM=xterm-256color $exe -X"
@@ -247,7 +247,7 @@ case $(uname -n) in
 	;;
 esac
 
-export DEVBP=/nfs/users/zhaozhan/dev/batchplus/src
+export DEVBP=/nfs/users/${MYSELFID}/dev/batchplus/src
 
 ##### SET prompt color #####
 c_1="\[\e[0m\]"
