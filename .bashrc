@@ -121,6 +121,8 @@ alias d="docker "
 alias ds="docker service "
 alias dstk="docker stack "
 alias g="git "
+alias gst="git status "
+alias gd="git diff "
 alias cdvm="cd $NFS/bcs/psmenv.cvs/vm/"
 alias setbcs="cd $NFS/bcs/psmenv.cvs && . ./setenv.sh && cd -"
 case ${OS} in
