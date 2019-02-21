@@ -285,6 +285,7 @@ Plugin 'ervandew/supertab'
 Plugin 'majutsushi/tagbar'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'fatih/vim-go'
+Bundle 'taglist.vim'
 "map f7 :tabnew<CR>
 "map f5 :tabp<CR>
 "map f6 :tabn<CR>

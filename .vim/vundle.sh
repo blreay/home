@@ -1,5 +1,19 @@
 #!/bin/bash
 
+###############################################
+# Set bash global option
+###############################################
+set -o posix
+set -o pipefail
+shopt -s expand_aliases
+shopt -s extglob
+shopt -s xpg_echo
+shopt -s extdebug
+
+###############################################
+# global variables
+typeset g_appname
+
 :<<EOF
 https://zhuanlan.zhihu.com/p/39516694
 安装GitHub for macOS；
@@ -13,4 +27,8 @@ call vundle#begin()
 EOF
 
 ###############################################################
-git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+#git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+. ~/.bashrc
+type vim
+vim +PluginInstall +qall
+
