@@ -32,3 +32,6 @@ EOF
 type vim
 vim +PluginInstall +qall
 
+#show c/c++ function list
+sudo yum install -y cscope ctags
+
