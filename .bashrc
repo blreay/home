@@ -85,6 +85,9 @@ export SH=$NFS/common/sh
 export WINSH=$NFS/common/winsh
 export SHR=$NFS/share
 
+## for git
+export GIT_SSH_COMMAND="ssh -x "
+
 ## Can't set VIMRUNTIME,otherwise :help will not work 
 #export VIMRUNTIME=$NFS/.vim 
 ## in order to support vim80 and don't copy whole vim80 to ~/.vim

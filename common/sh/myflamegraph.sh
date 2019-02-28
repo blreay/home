@@ -7,7 +7,18 @@ if [[ ! -d FlameGraph ]]; then
 	git clone https://github.com/brendangregg/FlameGraph.git
 fi
 
-perf record -F 99 -g $@ && \
-perf script -i perf.data &> perf.unfold && \
-stackcollapse-perf.pl perf.unfold &> perf.folded && \
-flamegraph.pl perf.folded > perf.svg
+typeset -A aryfile=(
+[svgfile]=perf.svg
+[datafile]=perf.data
+[unfoldfile]=perf.data.unfold
+[foldedfile]=perf.data.folded
+)
+
+echo ${aryfile[*]}
+set -vx
+/bin/rm -f ${aryfile[*]}
+perf record -F 299 -g $@
+perf script -i ${aryfile[datafile]} &> ${aryfile[unfoldfile]} && \
+stackcollapse-perf.pl ${aryfile[unfoldfile]} &> ${aryfile[foldedfile]} && \
+flamegraph.pl ${aryfile[foldedfile]} > ${aryfile[svgfile]} && \
+echo "OK"
