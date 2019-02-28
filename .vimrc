@@ -78,13 +78,13 @@ if has("cscope")
     set cspc=3
     "add any database in current dir
     if filereadable("cscope.out")
-        silent cs add cscope.out
+        silent! cs add cscope.out
     "else search cscope.out elsewhere
     else
         let cscope_file=findfile("cscope.out", ".;")
         "echo cscope_file
         if !empty(cscope_file) && filereadable(cscope_file)
-            exe "silent cs add" cscope_file
+            exe "silent! cs add" cscope_file
         endif      
      endif
 endif
@@ -203,6 +203,7 @@ endfunction
 
 " update tag 
 function! UpdateCtags()
+	"echo "aa"
     let curdir=getcwd()
     while !filereadable("./tags")
         cd ..
@@ -216,8 +217,8 @@ function! UpdateCtags()
 		"silent execute ':redraw!'
         TlistUpdate
 	endif
-	silent execute ":cd " . curdir
-    silent execute ":cs reset"
+	silent! execute ":cd " . curdir
+    silent! execute ":cs reset"
 	if has("cscope")
 		"set csto=1
 		"set cst
@@ -225,8 +226,8 @@ function! UpdateCtags()
 		" add any database in current directory
 		if filereadable("cscope.out")
 			"cs show
-			silent cs kill 0
-			silent cs add cscope.out
+			silent! cs kill 0
+			silent! cs add cscope.out
 		endif
 		"set csverb
 		"execute ":cs reset"
