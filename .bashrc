@@ -66,7 +66,7 @@ export NFSPATH=/nfs/users/${MYSELFID}
 [[ ! -d $NFSPATH ]] && export NFSPATH=/home/${MYSELFID}
 [[ ! -d $NFSPATH ]] && export NFSPATH=$HOME
 export NFS=$NFSPATH
-export PATH=$PATH:$NFSPATH/common/$OS/bin:$NFSPATH/common/sh:/usr/vac/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/openwin/bin:/usr/X11/bin
+export PATH=$NFSPATH/common/sh:$PATH:$NFSPATH/common/$OS/bin:/usr/vac/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/openwin/bin:/usr/X11/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/lib:/usr/local/lib:$NFSPATH/common/`uname -s`/lib
 
 ## COMMON ###
@@ -85,6 +85,9 @@ export SH=$NFS/common/sh
 export WINSH=$NFS/common/winsh
 export SHR=$NFS/share
 
+## for git
+export GIT_SSH_COMMAND="ssh -x "
+
 ## Can't set VIMRUNTIME,otherwise :help will not work 
 #export VIMRUNTIME=$NFS/.vim 
 ## in order to support vim80 and don't copy whole vim80 to ~/.vim
@@ -100,9 +103,11 @@ alias ll='ls -l'
 alias rm="$NFS/common/sh/myrm.sh"
 vimexe="$NFSPATH/common/$OS/bin/vim" && [[ -f $vimexe ]] || vimexe="vim"
 [[ -f "/usr/bin/vim" ]] && vimexe=/usr/bin/vim
+export vimexe MYHOME
+## vim is shell script: common/sh/vim, in order to show parameter clearly in fg command
 #alias vim="TERM=xterm-256color $vimexe -X"
 #alias vim="TERM=xterm-256color VIMRUNTIME=$MYHOME/.vim $vimexe -X --cmd \"set runtimepath^=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
-alias vim="TERM=xterm-256color $vimexe -X --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
+#alias vim="TERM=xterm-256color $vimexe -X --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
 alias cit="source $NFS/cobset.sh cit"
 alias cit2="source $NFS/cobset.sh cit"
 alias cmf="source $NFS/cobset.sh mf"
@@ -136,7 +141,7 @@ case ${OS} in
 	alias tmux="$exe -2u"
 	#[[ -f $NFSPATH/.dir_colors ]] && dircolors $NFSPATH/.dir_colors > /dev/null
 	#eval `dircolors $NFSPATH/.dir_colors`
-	export PATH=$NFSPATH/common/$OS/bin:$PATH 
+	#export PATH=$NFSPATH/common/$OS/bin:$PATH 
 	;;
 (SunOS)
 	#set TERM=sun-color
