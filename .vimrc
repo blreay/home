@@ -118,10 +118,18 @@ let Tlist_Auto_Open=1
 let Tlist_Process_File_Always=1
 endif
 
+"for minibuffer
+let g:miniBufExplCycleArround=1
+let g:miniBufExplAutoStart = 1
+let g:miniBufExplUseSingleClick = 1
 let g:miniBufExplMapWindowNavVim=1  
 let g:miniBufExplMapCTabSwitchBufs=1  
 let g:miniBufExplMapWindowNavArrows=1  
 let g:miniBufExplModSelTarget=1 
+noremap <silent><leader>;   :MBEbn<CR>:<BS>
+noremap <silent><leader>j   :MBEbp<CR>:<BS>
+"noremap <silent><leader>k   :call <SID>CycleBuffer(0)<CR>:<BS>
+noremap <silent><leader>l   :b#<CR>:<BS>
 
 let NERDTreeShowBookmarks = 1
 let NERDChristmasTree = 1
@@ -285,7 +293,12 @@ Plugin 'ervandew/supertab'
 Plugin 'majutsushi/tagbar'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'fatih/vim-go'
-Bundle 'taglist.vim'
+Plugin 'taglist.vim'
+Plugin 'jlanzarotta/bufexplorer'
+Plugin 'weynhamz/vim-plugin-minibufexpl'
+"Plugin 'minibufexpl.vim'
+"Plugin 'fholgado/minibufexpl.vim'
+
 "map f7 :tabnew<CR>
 "map f5 :tabp<CR>
 "map f6 :tabn<CR>
@@ -421,3 +434,4 @@ map <F8> :TagbarToggle<CR>
 "don't auto format go source code
 let g:go_fmt_autosave = 0
 let g:go_version_warning = 0
+
