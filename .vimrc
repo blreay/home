@@ -245,8 +245,10 @@ endfunction
 autocmd BufWritePost *.c,*.h,*.cpp,*.sh call UpdateCtags() 
 "nnoremap <leader>mc :call ToggleComment()<cr>
 
-"set cindent 
-set paste
+"showmarks style
+"highlight hlShowMarks ctermbg=white ctermfg=blue guibg=grey guifg=RoyalBlue3
+highlight hlShowMarks ctermfg=white ctermbg=blue guifg=white guibg=RoyalBlue3
+let g:showmarks_marks = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 " OmniCppcomplete {{{
 "let OmniCpp_NamespaceSearch = 1
@@ -297,6 +299,7 @@ Plugin 'fatih/vim-go'
 Plugin 'taglist.vim'
 Plugin 'jlanzarotta/bufexplorer'
 Plugin 'weynhamz/vim-plugin-minibufexpl'
+Plugin 'jacquesbh/vim-showmarks'
 "Plugin 'minibufexpl.vim'
 "Plugin 'fholgado/minibufexpl.vim'
 
@@ -354,11 +357,14 @@ filetype plugin indent on    " required
 "let g:SuperTabRetainCompletionType = 1
 "let g:SuperTabDefaultCompletionType = "<C-X><C-O>" 
 
-	" marks {{{
-	set viminfo='50,\"1000,:0,n~/.vim/viminfo
-	set foldmethod=marker
 	let g:showmarks_marks_notime = 1
-	"let g:unite_source_mark_marks = '01abcABCDEFGHIJKLNMOPQRSTUVWXYZ'
+
+"let g:unite_source_mark_marks = '01abcABCDEFGHIJKLNMOPQRSTUVWXYZ' 
+let g:unite_source_mark_marks =  
+\   "abcdefghijklmnopqrstuvwxyz" 
+"\ . "ABCDEFGHIJKLMNOPQRSTUVWXYZ" 
+"\ . "0123456789.'`^<>[]{}()\""   
+
 	let g:showmarks_enable       = 0
 	if !exists('g:markrement_char')
 		let g:markrement_char = [
@@ -394,7 +400,6 @@ filetype plugin indent on    " required
 	nn <silent> [Mark]f :UniteWithBufferDir -buffer-name=files file<CR>
 	nn <silent> [Mark]r :Unite -buffer-name=register register<CR>
 	"nn <silent> [Mark]l :Unite file_mru<CR>
-	"nn <silent> [Mark]m :unite mark<CR>
 	"nn <silent> [Mark]m :unite<CR>
 	nn [Mark]j :<C-u>call <SID>AutoMarkrement()<CR><CR>:ShowMarksOnce<CR>
 	com! -bar MarksDelete sil :delm! | :delm 0-9A-Z | :wv! | :ShowMarksOnce
@@ -405,7 +410,6 @@ filetype plugin indent on    " required
 hi User1 ctermbg=darkred ctermfg=white  guibg=green guifg=red                   
 hi User2 ctermbg=red   ctermfg=blue  guibg=red   guifg=blue                  
 hi User3 ctermbg=blue  ctermfg=green guibg=blue  guifg=green                 
-"set statusline= 
 set statusline=%1*%F%m%r,\ %Y,\ %{&fileformat}\ \ \ ASCII=\%b(\0x\%B)buf=%n\ \ \ %l,%c%V\ \ %p%%(%L\L)\ %M 
 set laststatus=2
 
@@ -426,7 +430,7 @@ let g:tagbar_width=30
 let g:tagbar_left=1 
 "打开文件自动 打开tagbar  
 "autocmd BufReadPost *.cpp,*.c,*.h,*.hpp,*.cc,*.cxx,*.go call tagbar#autoopen()  
-autocmd BufReadPost *.cxx,*.go call tagbar#autoopen()  
+autocmd BufReadPost *.cxx,*.go,*.sh call tagbar#autoopen()  
 "disable auto format for go source code
 let g:go_fmt_autosave = 0
 "映射tagbar的快捷键  
@@ -435,4 +439,5 @@ map <F8> :TagbarToggle<CR>
 "don't auto format go source code
 let g:go_fmt_autosave = 0
 let g:go_version_warning = 0
-
+set paste
+set autoindent 
