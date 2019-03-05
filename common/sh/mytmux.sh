@@ -1,35 +1,97 @@
-#!/bin/bash
+#!/bin/bash 
+###############################################
+# Set bash global option
+###############################################
+set -o posix
+set -o pipefail
+shopt -s expand_aliases
+shopt -s extglob
+shopt -s xpg_echo
+shopt -s extdebug
 
-#set -vx
+###############################################
+# global variables
+typeset g_appname
+##############################################
 function DBG {
-	[[ ! "${MYDBG}" =~ "DEBUG|debug" ]] && return 0
-	typeset arg="${@}"
-	typeset msg
-	typeset funcname=${FUNCNAME[1]}
-	typeset lineno=${BASH_LINENO[0]}
-	printf -v msg "$(date +'%Y%m%d_%H:%M:%S') %08d [%03d] [${funcname}]%s\n" $$ ${lineno} "${arg}"
-	printf "%s" "${msg}"
-	return 0
-} 
+	[[ "${MYDBG^^}" != "DEBUG" ]] && return 0
+	typeset arg="${@}"; typeset msg; typeset funcname=${FUNCNAME[1]}; typeset lineno=${BASH_LINENO[0]}
+	printf "$(date +'%Y%m%d_%H:%M:%S') %08d [%03d] [${funcname}]%s\n" $$ ${lineno} "${arg}" >&2
+}
 function LOG {
-	typeset arg="${@}"
-	typeset msg
-	typeset funcname=${FUNCNAME[1]}
-	typeset lineno=${BASH_LINENO[0]}
-	printf -v msg "$(date +'%Y%m%d_%H:%M:%S') %08d [%03d] [${funcname}]%s\n" $$ ${lineno} "${arg}"
-	printf "%s" "${msg}"
-	return 0
-} 
-
+	typeset arg="${@}"; typeset msg; typeset funcname=${FUNCNAME[1]}; typeset lineno=${BASH_LINENO[0]}
+	printf "$(date +'%Y%m%d_%H:%M:%S') %08d [%03d] [${funcname}]%s\n" $$ ${lineno} "${arg}"
+}
 function ERR {
-	typeset arg="${@}"
-	typeset msg
-	typeset funcname=${FUNCNAME[1]}
-	typeset lineno=${BASH_LINENO[0]}
-	printf -v msg "$(date +'%Y%m%d_%H:%M:%S') %08d [%03d] [${funcname}]%s\n" $$ ${lineno} "ERROR: ${arg}"
-	printf "%s" "${msg}"
-	return 0
-} 
+	typeset arg="${@}"; typeset msg; typeset funcname=${FUNCNAME[1]}; typeset lineno=${BASH_LINENO[0]}
+	printf "$(date +'%Y%m%d_%H:%M:%S') %08d [%03d] [${funcname}]%s\n" $$ ${lineno} "ERROR: ${arg}" >&2
+}
+function WARN {
+	typeset arg="${@}"; typeset msg; typeset funcname=${FUNCNAME[1]}; typeset lineno=${BASH_LINENO[0]}
+	printf "$(date +'%Y%m%d_%H:%M:%S') %08d [%03d] [${funcname}]%s\n" $$ ${lineno} "WARN: ${arg}" >&2
+}
+function MSG {
+	typeset arg="${@}"; typeset msg; typeset funcname=${FUNCNAME[1]}; typeset lineno=${BASH_LINENO[0]}
+	printf "%s\n" "${arg}"
+}
+##############################################
+alias BCS_CHK_RC0='{ 
+	#### function check RC Block Begin #####
+	RET=$?
+	if [[ ${RET} -ne 0 ]]; then
+		MSG=$(cat -); ERR "${MSG}, RET=${RET}"; return "${RET}"
+	fi
+	#### function check RC Block End #####
+}<<<' 
+alias BCS_CHK_ACT_RC0='{
+    #### function check RC Block Begin #####
+    RET=$?; INPUTSTR=$(cat -); MSG="${INPUTSTR%%&&&*}"; ACT=""
+    [[ "${MSG}" != "${INPUTSTR}" ]] && ACT="${INPUTSTR##*&&&}"
+	NGACT="${ACT%%|||*}"; OKACG=""
+    [[ "${NGACT}" != "${ACT}" ]] && OKACG="${ACT##*|||}"
+    if [[ ${RET} -ne 0 ]]; then
+        eval "${NGACT}"
+        ERR "${MSG}, RET=${RET}"
+		return ${RET}
+    else
+        eval "${OKACT}"
+    fi
+    #### function check RC Block End #####
+}<<<' 
+alias BCS_WARN_RC0='{ 
+	#### function check RC Block Begin #####
+	RET=$?
+	if [[ ${RET} -ne 0 ]]; then
+		MSG=$(cat -)
+		WARN "${MSG}, RET=${RET}"
+	fi
+	#### function check RC Block End #####
+}<<<'
+alias BCS_WARN_ACT_RC0='{
+    #### function check RC Block Begin #####
+    RET=$?; INPUTSTR=$(cat -); MSG="${INPUTSTR%%&&&*}"; ACT=""
+    [[ "${MSG}" != "${INPUTSTR}" ]] && ACT="${INPUTSTR##*&&&}"
+	NGACT="${ACT%%|||*}"; OKACG=""
+    [[ "${NGACT}" != "${ACT}" ]] && OKACG="${ACT##*|||}"
+    if [[ ${RET} -ne 0 ]]; then
+        eval "${NGACT}"
+        WARN "${MSG}, RET=${RET}"
+    else
+        eval "${OKACT}"
+    fi
+    #### function check RC Block End #####
+}<<<' 
+##############################################
+
+function show_usage {
+	cat - <<EOF
+Usage: ${g_appname##*/} [-d] [-l <PCAR_URL>]
+	-l : URL for pcar
+	-d : Debug mode
+Example:
+	${g_appname##*/} -l http://xxxxx/xxxx/xxx.pcar
+EOF
+}
 
 function send_cmd {
 	typeset session=$1

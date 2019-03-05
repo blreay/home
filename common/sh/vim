@@ -1,7 +1,22 @@
 #!/bin/bash
 
 #set -vx
+:<<EOF
+-c {command}
+   {command}  will  be  executed after the first file has been read.  {command} is interpreted as an Ex command.  If the {command} contains spaces it
+   must be enclosed in double quotes (this depends on the shell that is used).  Example: Vim "+set si" main.c
+   Note: You can use up to 10 "+" or "-c" commands.  
+EOF
 
-CMD="TERM=xterm-256color $vimexe -X --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc $@"
-echo $CMD
-eval $CMD
+### vimdiff (git difftool) can't work if don't process $@ with replacing " " with "\ " because of above. because the final diff command line include "-c"
+#echo "$#"
+for i in $(seq $#); do
+	eval a=\${$i}
+	ARG="$ARG ${a// /\\ }"
+done
+#echo "$@"
+#echo "${ARG}"
+#exit 0
+CMD="TERM=xterm-256color $vimexe -X --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc ${ARG}"
+echo "${CMD}"
+eval "${CMD}"
