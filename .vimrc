@@ -88,14 +88,14 @@ if has("cscope")
         endif      
      endif
 	 "add key mapping for cs find
-    nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
-    nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
-    nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>:botright copen<CR><CR>
+    nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>:botright copen<CR><CR>
+    nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>:botright copen<CR><CR>
+    nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>:botright copen<CR><CR>
+    nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>:botright copen<CR><CR>
+    nmap <C-\>i :cs find i <C-R>=expand("<cfile>")<CR><CR>:botright copen<CR><CR>
+    nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>:botright copen<CR><CR>
+    nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>:botright copen<CR><CR>
 endif
 
 "let Tlist_Ctags_Cmd='/usr/bin/ctags'
@@ -437,8 +437,9 @@ set statusline=%1*%F%m%r,\ %Y,\ %{&fileformat}\ \ \ ASCII=\%b(\0x\%B)buf=%n\ \ \
 set laststatus=2
 
 "autocmd BufNewFile,BufRead * if match(getline(1),"node") >= 0 | set filetype=sh | endif
-autocmd BufRead,BufNewFile m* set filetype=sh
-setfiletype sh
+"for BatchRT only, it's a history issue
+"autocmd BufRead,BufNewFile m* set filetype=sh
+"setfiletype sh
 hi Directory guifg=#FF0000 ctermfg=red
 nnoremap ` :ShowMarksOnce<cr>`
 set autoindent
@@ -448,7 +449,7 @@ autocmd FileType c              DoShowMarks
 "设置tagbar使用的ctags的插件,必须要设置对  
 "let g:tagbar_ctags_bin='/usr/bin/ctags'  
 "设置tagbar的窗口宽度  
-let g:tagbar_width=30  
+let g:tagbar_width=25
 "设置tagbar的窗口显示的位置,为左边  
 let g:tagbar_left=0
 "打开文件自动 打开tagbar  
