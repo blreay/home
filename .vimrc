@@ -126,6 +126,7 @@ if myos == "Linux"
 let Tlist_Auto_Open=0
 let Tlist_Process_File_Always=1
 endif
+map <F4> :TlistToggle<CR>
 
 "for minibuffer
 let g:miniBufExplCycleArround=1
@@ -139,6 +140,7 @@ noremap <silent><leader>;   :MBEbn<CR>:<BS>
 noremap <silent><leader>j   :MBEbp<CR>:<BS>
 "noremap <silent><leader>k   :call <SID>CycleBuffer(0)<CR>:<BS>
 noremap <silent><leader>l   :b#<CR>:<BS>
+noremap <silent><leader>'   :b#<cr>:<BS>
 
 let NERDTreeShowBookmarks = 1
 let NERDChristmasTree = 1
@@ -149,11 +151,9 @@ let NERDTreeWinSize=30
 let NERDTreeChDirMode=1 
 "let g:SuperTabRetainCompletionType="context"
 
-
 "ctrlp
 let g:ctrlp_working_path_mode = ''
 
-map <F4> :TlistToggle<CR>
 
 set <S-F6>=[29~
 set <S-F7>=[31~
@@ -163,11 +163,9 @@ set <F7>=[18~
 nmap <F9> :cn<cr>
 nmap <F10> :cp<cr>
 nmap <F11> :QFix<cr>
-nmap <F12> :cclose<cr>
-nmap <leader>' :b#<cr>
 
 "Toggle quickfix window
-command -bang -nargs=? QFix call QFixToggle(<bang>0)
+command! -bang -nargs=? QFix call QFixToggle(<bang>0)
 function! QFixToggle(forced)
   if exists("g:qfix_win") && a:forced == 0
     cclose
