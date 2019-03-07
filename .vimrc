@@ -87,6 +87,15 @@ if has("cscope")
             exe "silent! cs add" cscope_file
         endif      
      endif
+	 "add key mapping for cs find
+    nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+    nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
+    nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
 endif
 
 "let Tlist_Ctags_Cmd='/usr/bin/ctags'
@@ -114,7 +123,7 @@ let Tlist_Inc_Winwidth = 1
 let Tlist_Compact_Format = 1
 
 if myos == "Linux"
-let Tlist_Auto_Open=1
+let Tlist_Auto_Open=0
 let Tlist_Process_File_Always=1
 endif
 
@@ -153,7 +162,21 @@ set <F7>=[18~
 
 nmap <F9> :cn<cr>
 nmap <F10> :cp<cr>
+nmap <F11> :QFix<cr>
+nmap <F12> :cclose<cr>
 nmap <leader>' :b#<cr>
+
+"Toggle quickfix window
+command -bang -nargs=? QFix call QFixToggle(<bang>0)
+function! QFixToggle(forced)
+  if exists("g:qfix_win") && a:forced == 0
+    cclose
+    unlet g:qfix_win
+  else
+    botright copen 10
+    let g:qfix_win = bufnr("$")
+  endif
+endfunction
 
 "nnoremap <S-F6> :echo "shift-F6"<CR>
 "nnoremap <S-F8> :echo "shift-F8"<CR>
@@ -427,10 +450,10 @@ autocmd FileType c              DoShowMarks
 "设置tagbar的窗口宽度  
 let g:tagbar_width=30  
 "设置tagbar的窗口显示的位置,为左边  
-let g:tagbar_left=1 
+let g:tagbar_left=0
 "打开文件自动 打开tagbar  
-"autocmd BufReadPost *.cpp,*.c,*.h,*.hpp,*.cc,*.cxx,*.go call tagbar#autoopen()  
-autocmd BufReadPost *.cxx,*.go,*.sh call tagbar#autoopen()  
+autocmd BufReadPost *.cpp,*.c,*.h,*.hpp,*.cc,*.cxx,*.go,* call tagbar#autoopen()
+"autocmd BufReadPost *.cxx,*.go,*.sh call tagbar#autoopen()  
 "disable auto format for go source code
 let g:go_fmt_autosave = 0
 "映射tagbar的快捷键  
@@ -439,5 +462,5 @@ map <F8> :TagbarToggle<CR>
 "don't auto format go source code
 let g:go_fmt_autosave = 0
 let g:go_version_warning = 0
-set paste
 set autoindent 
+set paste
