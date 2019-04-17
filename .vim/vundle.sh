@@ -27,7 +27,7 @@ call vundle#begin()
 EOF
 
 ###############################################################
-#git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+[[ ! -d ~/.vim/bundle ]] && git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 . ~/.bashrc
 type vim
 vim +PluginInstall +qall
