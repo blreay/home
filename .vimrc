@@ -4,7 +4,6 @@ set t_AB=[48;5;%dm
 set t_AF=[38;5;%dm
 colorscheme desert
 set number
-set tabstop=4
 "make gf can work normally: If you wish to delete other characters from isfname, 
 "be sure to delete them one character at a time. That is, execute :set isfname-=- and :set isfname-=:,
 "not :set isfname-=-:. The last command will work only if -: are present in isfname together and in that order
@@ -13,24 +12,6 @@ set isfname-=}
 set isfname-=,
 set isfname+=@-@
 
-"set cindent
-"set cindent shiftwidth=4  
-"set smartindent
-"set autoindent shiftwidth=4  
-set cinoptions={0,1s,t0,n-2,p2s,(03s,=.5s,>1s,=1s,:1s
-"set cindent cinoptions=:0,g0,t0
-"set autochdir 
-set cinoptions={0,1s,t0,n-2,p2s,(03s,=.5s,>1s,=1s,:1s 
-set expandtab 
-set enc=utf8
-set fileencodings=ucs-bom,utf8,GB18030,Big5,latin1 
-set fileformat=unix 
-"set cursorline 
-"set smartindent 
-set shiftwidth=4 
-set softtabstop=4 
-set smartcase 
-set hidden
 "set statusline=%F%m%r,\ %Y,\ %{&fileformat}\ \ \ ASCII=\%b,HEX=\0x\%B\ \ \ %l,%c%V\ \ %p%% 
 
 let myos = substitute(system('uname'), "\n", "", "")
@@ -42,7 +23,6 @@ let myos = substitute(system('uname'), "\n", "", "")
 
 set wildmode=list:full
 set wildmenu
-set ai
 set showmatch
 set ignorecase
 syntax enable
@@ -441,7 +421,6 @@ set laststatus=2
 "setfiletype sh
 hi Directory guifg=#FF0000 ctermfg=red
 nnoremap ` :ShowMarksOnce<cr>`
-set autoindent
 "silent execute ':redraw!'
 autocmd FileType c              DoShowMarks
 
@@ -462,5 +441,27 @@ map <F8> :TagbarToggle<CR>
 "don't auto format go source code
 let g:go_fmt_autosave = 0
 let g:go_version_warning = 0
-set autoindent 
+
+"==============================================================
+" run set at tail part to provent other plugin changing them
+"==============================================================
 set paste
+set expandtab 
+"set cindent
+"set cindent shiftwidth=4  
+"set smartindent
+set autoindent shiftwidth=4  
+set cinoptions={0,1s,t0,n-2,p2s,(03s,=.5s,>1s,=1s,:1s
+"set cindent cinoptions=:0,g0,t0
+"set autochdir 
+set cinoptions={0,1s,t0,n-2,p2s,(03s,=.5s,>1s,=1s,:1s 
+set enc=utf8
+set fileencodings=ucs-bom,utf8,GB18030,Big5,latin1 
+set fileformat=unix 
+"set cursorline 
+"set smartindent 
+set shiftwidth=4 
+set softtabstop=4 
+set smartcase 
+set hidden
+set tabstop=4
