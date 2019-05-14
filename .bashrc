@@ -67,6 +67,7 @@ export NFSPATH=/nfs/users/${MYSELFID}
 [[ ! -d $NFSPATH ]] && export NFSPATH=$HOME
 export NFS=$NFSPATH
 export PATH=$NFSPATH/common/sh:$PATH:$NFSPATH/common/$OS/bin:/usr/vac/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/openwin/bin:/usr/X11/bin
+export PATH=/opt/taobao/java/bin:/opt/taobao/antx/bin:/opt/taobao/ant/bin:/opt/taobao/antx/dist/antx/bin:/opt/taobao/mysql/bin:/opt/taobao/install/R/bin:/opt/taobao/maven/bin:/opt/rational/clearcase/bin:/opt/taobao/install/gnupg/bin:/opt/taobao/node/bin:$PATH
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/lib:/usr/local/lib:$NFSPATH/common/`uname -s`/lib
 
 ## COMMON ###
