@@ -194,6 +194,7 @@ map <F5> :NERDTreeMirror<CR>
 map <F5> :NERDTreeToggle<CR>
 
 noremap ;vv <Esc>bi{<Esc>ea}<Esc>
+noremap ;jj <Esc>ea_<Esc>
 
 " Commenting blocks of code.
 autocmd FileType c                let b:comment_leader = 'aa'
