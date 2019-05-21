@@ -130,8 +130,12 @@ function main {
 	DBG "\$@=$@"
 	############################################
 	#echo "Do something here"
-	scale=${1:-3};
-	while read line; do echo "scale=${scale}; ${line}" | bc; done 
+    act=$1
+    case $act in
+    sum|sumary)  sum=0; while read line; do ((sum=sum+$line)); done; echo $sum;;
+    avg|average) sum=0; count=0; while read line; do ((sum=sum+$line));((count++)); done; echo "$sum/$count"; echo "$sum/$count" | bc;;
+    *) scale=${1:-3}; while read line; do echo "scale=${scale}; ${line}" | bc; done;;
+    esac
 	############################################
 
 	return $RET
