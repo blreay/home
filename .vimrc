@@ -302,6 +302,8 @@ Plugin 'taglist.vim'
 Plugin 'jlanzarotta/bufexplorer'
 Plugin 'weynhamz/vim-plugin-minibufexpl'
 Plugin 'jacquesbh/vim-showmarks'
+Plugin 'elzr/vim-json'
+
 "Plugin 'minibufexpl.vim'
 "Plugin 'fholgado/minibufexpl.vim'
 
