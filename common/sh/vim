@@ -17,6 +17,7 @@ done
 #echo "$@"
 #echo "${ARG}"
 #exit 0
-CMD="TERM=xterm-256color $vimexe -X --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc ${ARG}"
+## set HOME so that other user can use my plugin correctly, otherwise vim will search vundle plugin in ~/.vim
+CMD="TERM=xterm-256color HOME=$MYHOME $vimexe -X --cmd \"set runtimepath+=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc ${ARG}"
 echo "${CMD}"
 eval "${CMD}"
