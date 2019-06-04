@@ -1,3 +1,4 @@
+""""" created by zzy """"""""""""""""""""""""
 "set rtp=~/.vim
 set t_Co=256
 set t_AB=[48;5;%dm
@@ -11,8 +12,6 @@ set isfname-={
 set isfname-=}
 set isfname-=,
 set isfname+=@-@
-
-"set statusline=%F%m%r,\ %Y,\ %{&fileformat}\ \ \ ASCII=\%b,HEX=\0x\%B\ \ \ %l,%c%V\ \ %p%% 
 
 let myos = substitute(system('uname'), "\n", "", "")
 "if myos == "SunOS"
@@ -174,7 +173,8 @@ map <F5> :NERDTreeMirror<CR>
 map <F5> :NERDTreeToggle<CR>
 
 noremap ;vv <Esc>bi{<Esc>ea}<Esc>
-noremap ;jj <Esc>ea_<Esc>
+"following line lead to ;j can't back to previous buffer immediatelly
+"noremap ;jj <Esc>ea_<Esc>
 
 " Commenting blocks of code.
 autocmd FileType c                let b:comment_leader = 'aa'
@@ -246,11 +246,27 @@ endfunction
 
 autocmd BufWritePost *.c,*.h,*.cpp,*.sh call UpdateCtags() 
 "nnoremap <leader>mc :call ToggleComment()<cr>
-
 "showmarks style
 "highlight hlShowMarks ctermbg=white ctermfg=blue guibg=grey guifg=RoyalBlue3
-highlight hlShowMarks ctermfg=white ctermbg=blue guifg=white guibg=RoyalBlue3
-let g:showmarks_marks = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+"highlight hlShowMarks ctermfg=white ctermbg=blue guifg=white guibg=RoyalBlue3
+"let g:showmarks_marks = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+""""""""""""""""""""""""""""""
+" showmarks setting
+""""""""""""""""""""""""""""""
+" Enable ShowMarks
+let g:showmarks_enable = 1
+" Show which marks
+let g:showmarks_include = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+" Ignore help, quickfix, non-modifiable buffers
+let g:showmarks_ignore_type = "hqm"
+" Hilight lower & upper marks
+
+let g:showmarks_hlline_lower = 1
+let g:showmarks_hlline_upper = 1 
+" For showmarks plugin, high light one whole line
+hi ShowMarksHLl ctermbg=Yellow   ctermfg=Black  guibg=#FFDB72    guifg=Black
+hi ShowMarksHLu ctermbg=Magenta  ctermfg=Black  guibg=#FFB3FF    guifg=Black 
 
 " OmniCppcomplete {{{
 "let OmniCpp_NamespaceSearch = 1
@@ -294,6 +310,7 @@ Plugin 'scrooloose/nerdcommenter'
 "Plugin 'vim-scripts/OmniCppComplete'
 "Plugin 'OmniCppComplete'
 Plugin 'vim-scripts/AutoComplPop'
+Plugin 'vim-scripts/ShowMarks'
 Plugin 'ervandew/supertab'
 Plugin 'majutsushi/tagbar'
 Plugin 'ctrlpvim/ctrlp.vim'
@@ -301,9 +318,8 @@ Plugin 'fatih/vim-go'
 Plugin 'taglist.vim'
 Plugin 'jlanzarotta/bufexplorer'
 Plugin 'weynhamz/vim-plugin-minibufexpl'
-Plugin 'jacquesbh/vim-showmarks'
-Plugin 'elzr/vim-json'
-
+"Plugin 'jacquesbh/vim-showmarks'
+Plugin 'elzr/vim-json' 
 "Plugin 'minibufexpl.vim'
 "Plugin 'fholgado/minibufexpl.vim'
 
@@ -361,15 +377,15 @@ filetype plugin indent on    " required
 "let g:SuperTabRetainCompletionType = 1
 "let g:SuperTabDefaultCompletionType = "<C-X><C-O>" 
 
-	let g:showmarks_marks_notime = 1
+	"let g:showmarks_marks_notime = 1
 
+	" {{{
 "let g:unite_source_mark_marks = '01abcABCDEFGHIJKLNMOPQRSTUVWXYZ' 
 let g:unite_source_mark_marks =  
 \   "abcdefghijklmnopqrstuvwxyz" 
 "\ . "ABCDEFGHIJKLMNOPQRSTUVWXYZ" 
 "\ . "0123456789.'`^<>[]{}()\""   
 
-	let g:showmarks_enable       = 0
 	if !exists('g:markrement_char')
 		let g:markrement_char = [
 		\     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
@@ -389,25 +405,51 @@ let g:unite_source_mark_marks =
 		echo 'marked' g:markrement_char[b:markrement_pos]
 	endf
 
+    "delete mark in current line
+    function! Delmarks()
+        let l:m = join(filter(
+           \ map(range(char2nr('a'), char2nr('z')), 'nr2char(v:val)'),
+           \ 'line("''".v:val) == line(".")'))
+        if !empty(l:m)
+            exe 'delmarks' l:m
+        endif
+    endfunction 
+    function! DoShowMarksIfHave()
+        let l:m = join(filter(
+           \ map(range(char2nr('a'), char2nr('z')), 'nr2char(v:val)'),
+           \ 'line("''".v:val) != 0'))
+        echo "l:m" l:m
+        if !empty(l:m)
+            " let g:showmarks_enable = 1
+            " exe 'ShowMarksToggle'
+            exe 'ShowMarksOn'
+        endif
+    endfunction 
+
 	aug show-marks-sync
 			au!
 			"au BufReadPost * sil! ShowMarksOnce
-			au BufReadPost * sil! DoShowMarks
+			au BufReadPost * sil! call DoShowMarksIfHave()
 	aug END
 
+    "define key for UniteMark
 	nn [Mark] <Nop>
 	nm <leader>m [Mark]
-	nn <silent> [Mark]m :Unite mark<CR>
+	nn <silent> [Mark]s :Unite mark<CR>
 	nn <silent> [Mark]b :Unite buffer<CR>
 	"nn <silent> [Mark]b :Unite buffer file_mru<CR>
 	nn <silent> [Mark]c :UniteClose<CR>
 	nn <silent> [Mark]f :UniteWithBufferDir -buffer-name=files file<CR>
 	nn <silent> [Mark]r :Unite -buffer-name=register register<CR>
-	"nn <silent> [Mark]l :Unite file_mru<CR>
+	nn <silent> [Mark]l :Unite file_mru<CR>
 	"nn <silent> [Mark]m :unite<CR>
 	nn [Mark]j :<C-u>call <SID>AutoMarkrement()<CR><CR>:ShowMarksOnce<CR>
 	com! -bar MarksDelete sil :delm! | :delm 0-9A-Z | :wv! | :ShowMarksOnce
-	nn <silent> [Mark]d :MarksDelete<CR>
+	nn <silent> [Mark]D :MarksDelete<CR>
+    "add by zzy
+    nnoremap    [Mark]d :<c-u>call Delmarks()<cr>
+    nnoremap    [Mark]n ]'
+    nnoremap    [Mark]p ['
 	" }}}
 
 "define 3 custom highlight groups                                            
@@ -424,7 +466,9 @@ set laststatus=2
 hi Directory guifg=#FF0000 ctermfg=red
 nnoremap ` :ShowMarksOnce<cr>`
 "silent execute ':redraw!'
-autocmd FileType c              DoShowMarks
+" autocmd FileType c              call DoShowMarksIfHave()
+" autocmd FileType sh             call DoShowMarksIfHave()
+autocmd FileType *             call DoShowMarksIfHave()
 
 "设置tagbar使用的ctags的插件,必须要设置对  
 "let g:tagbar_ctags_bin='/usr/bin/ctags'  
@@ -447,12 +491,10 @@ let g:go_version_warning = 0
 "==============================================================
 " run set at tail part to provent other plugin changing them
 "==============================================================
-set paste
 set expandtab 
 "set cindent
 "set cindent shiftwidth=4  
 "set smartindent
-set autoindent shiftwidth=4  
 set cinoptions={0,1s,t0,n-2,p2s,(03s,=.5s,>1s,=1s,:1s
 "set cindent cinoptions=:0,g0,t0
 "set autochdir 
@@ -467,3 +509,5 @@ set softtabstop=4
 set smartcase 
 set hidden
 set tabstop=4
+set paste
+set autoindent shiftwidth=4  
