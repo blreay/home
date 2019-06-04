@@ -34,6 +34,7 @@ export LC_ALL="zh_CN.UTF-8"
 function set_vimrc {
 vimnewrc1=$NFS/.vim/.vimrc.conf
 vimnewrc2=$HOME/.vim/.vimrc.conf
+#axx1xx
 while read line; do eval $line; done <<-EOF
 $({ test -f $vimnewrc1 && DISPLAY= gpg -o - $vimnewrc1 2>/dev/null; }  || { test -f $vimnewrc2 && DISPLAY= gpg -o - $vimnewrc2 2>/dev/null; })
 EOF
