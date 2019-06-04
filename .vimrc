@@ -1,5 +1,6 @@
 """"" created by zzy """"""""""""""""""""""""
 "set rtp=~/.vim
+let mapleader = ";"
 set t_Co=256
 set t_AB=[48;5;%dm
 set t_AF=[38;5;%dm
@@ -12,6 +13,7 @@ set isfname-={
 set isfname-=}
 set isfname-=,
 set isfname+=@-@
+let leader=';'
 
 let myos = substitute(system('uname'), "\n", "", "")
 "if myos == "SunOS"
@@ -109,12 +111,16 @@ map <F4> :TlistToggle<CR>
 
 "for minibuffer
 let g:miniBufExplCycleArround=1
-let g:miniBufExplAutoStart = 1
+"let g:miniBufExplAutoStart = 1
 let g:miniBufExplUseSingleClick = 1
 let g:miniBufExplMapWindowNavVim=1  
 let g:miniBufExplMapCTabSwitchBufs=1  
 let g:miniBufExplMapWindowNavArrows=1  
 let g:miniBufExplModSelTarget=1 
+"new
+"let g:miniBufExplStatusLineText="%<%f%=\ [%1*%M%*%n%R%H]\ %-19(%3l,%02c%03V%)%O'%02b'"
+let g:miniBufExplStatusLineText=' '
+let g:miniBufExplorerAutoStart = 1
 noremap <silent><leader>;   :MBEbn<CR>:<BS>
 noremap <silent><leader>j   :MBEbp<CR>:<BS>
 "noremap <silent><leader>k   :call <SID>CycleBuffer(0)<CR>:<BS>
@@ -194,7 +200,6 @@ noremap <silent> ,cc :<C-B>silent <C-E>s/^/<C-R>=escape(b:comment_leader,'\/')<C
 noremap <silent> ,cu :<C-B>silent <C-E>s/^\V<C-R>=escape(b:comment_leader,'\/')<CR>//e<CR>:nohlsearch<CR>
 noremap <silent> ,zc :<C-B>silent <C-E>s/^\(.*\)$/<C-R>=escape(b:comment_begin,'\/*')<CR> \1 <C-R>=escape(b:comment_end,'\/*')<CR>/g<CR>:nohlsearch<CR> 
 noremap <silent> ,zu :<C-B>silent <C-E>s/^\(\s*\)<C-R>=escape(b:comment_begin,'\/*')<CR>\(.*\)<C-R>=escape(b:comment_end,'\/*')<CR>/\1\2/e<CR>:nohlsearch<CR>
-let mapleader = ";"
 
 function! ToggleComment()
 " help with :h \v or pattern-atoms
@@ -418,7 +423,7 @@ let g:unite_source_mark_marks =
         let l:m = join(filter(
            \ map(range(char2nr('a'), char2nr('z')), 'nr2char(v:val)'),
            \ 'line("''".v:val) != 0'))
-        echo "l:m" l:m
+        " echo "l:m" l:m
         if !empty(l:m)
             " let g:showmarks_enable = 1
             " exe 'ShowMarksToggle'
