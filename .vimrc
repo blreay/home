@@ -15,6 +15,7 @@ set isfname-=,
 set isfname+=@-@
 let leader=';'
 
+
 let myos = substitute(system('uname'), "\n", "", "")
 "if myos == "SunOS"
 " Do Sun-specific stuff.
@@ -291,6 +292,20 @@ hi ShowMarksHLu ctermbg=Magenta  ctermfg=Black  guibg=#FFB3FF    guifg=Black
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" for YouCompleteMe
+let g:ycm_global_ycm_extra_conf='~/.ycm_extra_conf.py' "设置全局配置文件的路径
+let g:ycm_seed_identifiers_with_syntax=1 " 语法关键字补全
+let g:ycm_confirm_extra_conf=0 " 打开vim时不再询问是否加载ycm_extra_conf.py配置
+let g:ycm_key_invoke_completion = '<C-a>' " ctrl + a 触发补全
+set completeopt=longest,menu "让Vim的补全菜单行为与一般IDE一致(参考VimTip1228)
+let g:ycm_error_symbol = '>>'
+let g:ycm_warning_symbol = '>*'
+nnoremap <leader>gl :YcmCompleter GoToDeclaration<CR>
+nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>
+nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>
+nmap <F6> :YcmDiags<CR>
+
 " set the runtime path to include Vundle and initialize
 set rtp+=$MYHOME/.vim/bundle/Vundle.vim
 " set rtp+=~/nfs/users/zhaozhan/tmp/.vim/bundle/vundle
@@ -324,7 +339,9 @@ Plugin 'taglist.vim'
 Plugin 'jlanzarotta/bufexplorer'
 Plugin 'weynhamz/vim-plugin-minibufexpl'
 "Plugin 'jacquesbh/vim-showmarks'
-Plugin 'elzr/vim-json' 
+Plugin 'elzr/vim-json'
+Plugin 'yegappan/grep'
+Plugin 'Valloric/YouCompleteMe'
 "Plugin 'minibufexpl.vim'
 "Plugin 'fholgado/minibufexpl.vim'
 
