@@ -304,6 +304,7 @@ let g:ycm_warning_symbol = '>*'
 nnoremap <leader>gl :YcmCompleter GoToDeclaration<CR>
 nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>
 nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>
+nnoremap <leader>f  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 nmap <F6> :YcmDiags<CR>
 
 " set the runtime path to include Vundle and initialize
@@ -342,6 +343,8 @@ Plugin 'weynhamz/vim-plugin-minibufexpl'
 Plugin 'elzr/vim-json'
 Plugin 'yegappan/grep'
 Plugin 'Valloric/YouCompleteMe'
+Plugin 'tpope/vim-surround'
+Plugin 'jiangmiao/auto-pairs'
 "Plugin 'minibufexpl.vim'
 "Plugin 'fholgado/minibufexpl.vim'
 

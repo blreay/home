@@ -8,7 +8,7 @@ import re
 BASE_FLAGS = [
         '-Wall',
         '-Wextra',
-        '-Werror',
+        '-Wno-error',
         '-Wno-long-long',
         '-Wno-variadic-macros',
         '-fexceptions',
