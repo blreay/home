@@ -307,6 +307,22 @@ nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>
 nnoremap <leader>f  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 nmap <F6> :YcmDiags<CR>
 
+">""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"Can't work with plugin auto-pairs use the default mapping (
+"Because the auto-pairs use inoremap to mapping the keys. It can't call this plugin after the auto-pairs process.
+"You can add the following setting to you .vimrc, and it'll work well.
+let g:AutoPairs = {'[':']', '{':'}',"'":"'",'"':'"', '`':'`'}
+inoremap <buffer><silent> ) <C-R>=AutoPairsInsert(')')<CR>
+inoremap <silent><expr> ( complete_parameter#pre_complete("()")
+smap <M-m> <Plug>(complete_parameter#goto_next_parameter)
+imap <M-m> <Plug>(complete_parameter#goto_next_parameter)
+smap <M-n> <Plug>(complete_parameter#goto_previous_parameter)
+imap <M-n> <Plug>(complete_parameter#goto_previous_parameter)
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+nmap ]h <Plug>GitGutterNextHunk
+nmap [h <Plug>GitGutterPrevHunk
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " set the runtime path to include Vundle and initialize
 set rtp+=$MYHOME/.vim/bundle/Vundle.vim
 " set rtp+=~/nfs/users/zhaozhan/tmp/.vim/bundle/vundle
@@ -345,6 +361,9 @@ Plugin 'yegappan/grep'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'tpope/vim-surround'
 Plugin 'jiangmiao/auto-pairs'
+Plugin 'airblade/vim-gitgutter'
+"Plugin 'tenfyzhong/CompleteParameter.vim'
+"Plugin 'scrooloose/syntastic'
 "Plugin 'minibufexpl.vim'
 "Plugin 'fholgado/minibufexpl.vim'
 
@@ -536,3 +555,7 @@ set hidden
 set tabstop=4
 set paste
 set autoindent shiftwidth=4  
+
+"highlight GitGutterAdd    guifg=#009900 guibg=0 ctermfg=2 ctermbg=0
+"highlight GitGutterChange guifg=#bbbb00 guibg=0 ctermfg=3 ctermbg=0
+"highlight GitGutterDelete guifg=#ff2222 guibg=0 ctermfg=1 ctermbg=0
