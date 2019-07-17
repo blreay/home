@@ -255,6 +255,7 @@ case $(uname -n) in
 	exe="/usr/bin/vim" && [[ -f $exe ]] || exe="vim"
 	alias vim="TERM=xterm-256color $exe -X"
 	alias tmux="tmux"
+	alias cdzzy="[[ ! -f /shr/zzy/.bashrc ]] && mount //zzy.inc.alipay.net/home /shr/zzy; cd /shr/zzy"
 	;;
 (*)
 	export SANITYPATH=$NFSPATH/work_batchrt/mf/sanity/batchrt
