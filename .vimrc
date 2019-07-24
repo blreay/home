@@ -156,6 +156,10 @@ command! -nargs=+ Mygrep call Mygrep(<f-args>)
 function! Mygrep( ... )
     exe 'vimgrep' a:1 a:2 | botright copen 10
 endfunction
+"nmap <C-\>S :Mygrep <C-R>=expand("<cword>")<CR><CR>:botright copen<CR><CR>
+nmap <C-\>S :Mygrep <C-R>=expand('<cword>')<CR> %<CR>
+nmap <C-\>C :Mygrep <C-R>=expand('<cword>')<CR> *<CR>
+nmap <C-\>A :Mygrep <C-R>=expand('<cword>')<CR> **<CR>
 
 
 "Toggle quickfix window
