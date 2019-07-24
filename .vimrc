@@ -23,6 +23,8 @@ let myos = substitute(system('uname'), "\n", "", "")
 " Do Linux-specific stuff.
 "endif
 
+set sessionoptions=buffers
+
 set wildmode=list:full
 set wildmenu
 set showmatch
@@ -149,6 +151,12 @@ set <F7>=[18~
 nmap <F9> :cn<cr>
 nmap <F10> :cp<cr>
 nmap <F11> :QFix<cr>
+
+command! -nargs=+ Mygrep call Mygrep(<f-args>)
+function! Mygrep( ... )
+    exe 'vimgrep' a:1 a:2 | botright copen 10
+endfunction
+
 
 "Toggle quickfix window
 command! -bang -nargs=? QFix call QFixToggle(<bang>0)
