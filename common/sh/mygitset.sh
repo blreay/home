@@ -8,10 +8,10 @@ git config --global alias.br branch
 if [[ "$(uname)" == "Linux" ]]; then
 	git config --global diff.tool diffmerge
 	git config --global difftool.prompt true
-	git config --global difftool.diffmerge.cmd 'diffmerge $LOCAL $REMOTE'
+	git config --global difftool.diffmerge.cmd 'mygit_diffmerge_wrapper.sh diff $LOCAL $REMOTE'
 	git config --global merge.tool diffmerge
 	git config --global mergetool.prompt true
-	git config --global mergetool.diffmerge.cmd 'diffmerge $LOCAL $REMOTE $BASE $MERGED'
+	git config --global mergetool.diffmerge.cmd 'mygit_diffmerge_wrapper.sh merge $LOCAL $REMOTE $BASE $MERGED'
 else
     git config --global diff.tool bc4
     git config --global difftool.prompt true
