@@ -14,7 +14,8 @@ function showmsg {
 
 function myusage {
 cat - <<EOF
-$0 <pid> [test|list|all]
+====== Usage =======
+${0##*/} <pid> [test|list|all]
   test|list: just show the process tree
         all: kill the root process <pid> also
 EOF
@@ -24,6 +25,9 @@ EOF
 #set -vx
 typeset PidRunning=$1
 typeset act=$2
+echo "pid=${PidRunning}  act=${act}"
+
+[[ ! $act =~ (test|list|all) ]] && echo "ERROR: act[$act] is wrong" && myusage && exit 1
 
 case ${PidRunning}${act} in
 -h|help|"") myusage; exit 0;;

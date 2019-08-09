@@ -95,6 +95,14 @@ Example:
 EOF
 }
 
+function my_check_utility {
+	for u in ${g_mandatory_utilities[*]}; do
+		which $u >/dev/null 2>&1
+		BCS_CHK_RC0 "$u can not be found in $PATH"
+		DBG "$u is $(which $u)"
+	done
+}
+
 ############################################################
 function main {
 	DBG "BASH_SOURCE: ${BASH_SOURCE[*]}"
@@ -125,6 +133,12 @@ function main {
 		esac
 	done
 	shift $((OPTIND-1))
+
+	# check is all mandatory utilities have been ready
+	typeset -a g_mandatory_utilities=(jq curl awk sed)
+	my_check_utility
+	BCS_CHK_RC0 "not all mandatory utilities are ready"
+
 	DBG "g_appname=$g_appname"
 	DBG "g_apppath=$g_apppath"
 	DBG "\$@=$@"
