@@ -188,7 +188,7 @@ function main {
 			${cmd} select-window -t ${session}:1
 			#:<<EOF
 			#${cmd} send-keys -t ${session}:${main_win_name}.0 'cd ~; locale; s; ipconfig; cmd2remote.sh -h bej301712 -f /nfs/users/zhaozhan/mypc.txt -c "ipconfig;echo record ip"' C-m C-m
-			${cmd} send-keys -t ${session}:${main_win_name}.0 'cd ~; locale; s; ipconfig;' C-m C-m
+			${cmd} send-keys -t ${session}:${main_win_name}.0 'cd ~; locale; $HOME/smblogin.sh; s; ipconfig;' C-m C-m
 			#${cmd} send-keys -t ${session}:${main_win_name}.0 'cd ~; ssh -f -g -N -R 30022:localhost:22 bej301738.cn.oracle.com' C-m C-m
 			#${cmd} send-keys -t ${session}:${main_win_name}.0 'cd ~; ssh -f -g -N -R 33389:localhost:3389 bej301738.cn.oracle.com' C-m C-m
 			#${cmd} send-keys -t ${session}:${main_win_name}.1 'cd $SH; monitor_network.sh always' C-m 

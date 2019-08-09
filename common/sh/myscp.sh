@@ -5,10 +5,12 @@ if [[ -z ${MYPWD} && ! -f ~/.ssh/id_rsa ]]; then
 	exit 1
 fi
 
+sshopt="-o ServerAliveCountMax=2 -o ServerAliveInterval=120 -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa"
+
 cmd="${@}"
 #set -vx
 case "$MYPSD" in
-	"") CMD="scp -i ~/.ssh/id_rsa ${cmd}" ;; 
+	"") CMD="scp ${sshopt} ${cmd}" ;;
 	*) CMD="remote-exec.sh \"scp ${cmd}\" $MYPWD" ;;
 esac
 echo ${CMD}
