@@ -105,7 +105,7 @@ export EDITOR=vim
 export MYM=${MYSELFID}@slc09wou.us.oracle.com
 export MYPC=$(who |grep $USER | grep "${SSH_TTY/\/dev\/}" | awk '{print $NF}' | uniq | sed 's/(//g;s/)//g')
 
-ulimit -c unlimited
+#ulimit -c unlimited
 alias ll='ls -l'
 alias rm="$NFS/common/sh/myrm.sh"
 vimexe="$NFSPATH/common/$OS/bin/vim" && [[ -f $vimexe ]] || vimexe="vim"
@@ -291,6 +291,9 @@ export LS_COLORS='rs=0:di=01;37;44:ln=04;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=
 
 ## for PDKSH
 export ENV=$HOME/.pdkshrc
+
+## for ant
+export MYVM=11.158.79.78
 
 ## for chinese input
 #export GTK_IM_MODULE=ibus
