@@ -8,10 +8,6 @@ export EDITOR=vim
 MYSELFID=zhaoyong.zzy
 [[ -d /home/${MYSELFID} ]] && MYHOME=/home/${MYSELFID} || MYHOME=$HOME
 
-title() {
-    echo -ne "\033]0;$1@${HOSTNAME}\007"
-}
-
 function set_proxy {
 [[ "no" == "$1" ]] && unset http_proxy HTTP_PROXY https_proxy ftp_proxy && echo "proxy has been disabled $(env|grep -i proxy)" && return
 export HTTP_PROXY=http://cn-proxy.jp.oracle.com:80
@@ -25,17 +21,14 @@ function set_java {
 export PATH=$JAVA_HOME/bin:$MAVEN_HOME/bin:$DERBY_HOME/bin:NFS/application/Linux/eclipse:$PATH
 export LD_LIBRARY_PATH=$JAVA_HOME/lib:$MAVEN_HOME/lib:$DERBY_HOME/lib:$LD_LIBRARY_PATH
 }
-
 function set_cn {
 export LANG="zh_CN.UTF-8"
 export LC_ALL="zh_CN.UTF-8"
 }
 function set_en {
-	## set code page for windows command to english, chinese code page is "936"
-	chcp.com 437
+    ## set code page for windows command to english, chinese code page is "936"
+    chcp.com 437
 }
-
-
 function set_vimrc {
 vimnewrc1=$NFS/.vim/.vimrc.conf
 vimnewrc2=$HOME/.vim/.vimrc.conf
@@ -79,12 +72,10 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/lib:/usr/local/lib:$NFSPATH/co
 ## COMMON ###
 #export CVSROOT=:pserver:${MYSELFID}@bjsrc.cn.oracle.com:/repos
 #export CVSROOT=":ext;privatekey=$(echo ~${MYSELFID})/.ssh/id_rsa:${MYSELFID}@bjsrc.cn.oracle.com:/repos"
-export CVSROOT=":ext:${MYSELFID}@bjsrc.cn.oracle.com:/repos"
-export CVS_RSH=ssh
-#if [[ $USER = @(${MYSELFID}|opc) ]]; then
-export MYCVSROOT=":pserver:${MYSELFID}@bej301738.cn.oracle.com:/home/${MYSELFID}/repos"
-alias s=set_vimrc
-#fi
+#export CVSROOT=":ext:${MYSELFID}@bjsrc.cn.oracle.com:/repos"
+#export CVS_RSH=ssh
+#export MYCVSROOT=":pserver:${MYSELFID}@bej301738.cn.oracle.com:/home/${MYSELFID}/repos"
+
 export CVSLOG=$NFSPATH/_cvslog_important_do_NOT_delete
 #[[ $HOME = "/nfs/users/${MYSELFID}" ]] && export DIR_TRASH=$NFS/gomihako || export DIR_TRASH=$HOME/gomihako
 export DIR_TRASH=$HOME/gomihako && mkdir -p $DIR_TRASH >/dev/null 2>&1
@@ -106,8 +97,6 @@ export MYM=${MYSELFID}@slc09wou.us.oracle.com
 export MYPC=$(who |grep $USER | grep "${SSH_TTY/\/dev\/}" | awk '{print $NF}' | uniq | sed 's/(//g;s/)//g')
 
 #ulimit -c unlimited
-alias ll='ls -l'
-alias rm="$NFS/common/sh/myrm.sh"
 vimexe="$NFSPATH/common/$OS/bin/vim" && [[ -f $vimexe ]] || vimexe="vim"
 [[ -f "/usr/bin/vim" ]] && vimexe=/usr/bin/vim
 export vimexe MYHOME
@@ -115,21 +104,13 @@ export vimexe MYHOME
 #alias vim="TERM=xterm-256color $vimexe -X"
 #alias vim="TERM=xterm-256color VIMRUNTIME=$MYHOME/.vim $vimexe -X --cmd \"set runtimepath^=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
 #alias vim="TERM=xterm-256color $vimexe -X --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
+alias s=set_vimrc
+alias ll='ls -l'
+alias rm="$NFS/common/sh/myrm.sh"
 alias cmy="source $NFS/work/mychain/setenv.sh ; eval cd \${SCRIPTDIR}"
-alias cit="source $NFS/cobset.sh cit"
-alias cit2="source $NFS/cobset.sh cit"
-alias cmf="source $NFS/cobset.sh mf"
-alias cno="source myinit.sh"
-alias cgo="cd \$MT_ROOT/SOURCE && . ./setenv.sh"
 alias CD='cd $(pwd -P)'
 alias git_proxy="git config --global http.proxy http://cn-proxy.jp.oracle.com:80"
-alias myproxy=set_proxy
 alias mydate="date +'%Y%m%d %H:%M:%S.%N'"
-alias le="myjesps.sh |grep \"EJR -e \""
-alias lj="ls -alrt \$JESROOT/runningjobs/*"
-alias lc='cat \$JESROOT/artjes2_jobid;echo'
-alias jl="artjesadmin -x showjobexec; myqmsgcount.sh ;lj"
-alias mydb2="source mysetdb.sh"
 alias d="docker "
 alias ds="docker service "
 alias dstk="docker stack "
@@ -140,134 +121,136 @@ alias cdvm="cd $NFS/bcs/psmenv.cvs/vm/"
 alias setbcs="cd $NFS/bcs/psmenv.cvs && . ./setenv.sh && cd -"
 case ${OS} in
 (Linux)
-	#infocmp putty-256color >/dev/null 2>&1 && export TERM=putty-256color || export TERM=xterm
-	export TERM=xterm-256color
-	export TERMINFO=$NFS/.terminfo/$OS
-	alias ls='ls --color=auto'
-	exe="$NFSPATH/common/$OS/bin/tmux" && [[ -f $exe ]] || exe="tmux"
-	#alias tmux="TERM=putty-256color $exe"
-	alias tmux="$exe -2u"
-	#[[ -f $NFSPATH/.dir_colors ]] && dircolors $NFSPATH/.dir_colors > /dev/null
-	#eval `dircolors $NFSPATH/.dir_colors`
-	#export PATH=$NFSPATH/common/$OS/bin:$PATH
-	;;
+    #infocmp putty-256color >/dev/null 2>&1 && export TERM=putty-256color || export TERM=xterm
+    export TERM=xterm-256color
+    export TERMINFO=$NFS/.terminfo/$OS
+    alias ls='ls --color=auto'
+    exe="$NFSPATH/common/$OS/bin/tmux" && [[ -f $exe ]] || exe="tmux"
+    #alias tmux="TERM=putty-256color $exe"
+    alias tmux="$exe -2u"
+    #[[ -f $NFSPATH/.dir_colors ]] && dircolors $NFSPATH/.dir_colors > /dev/null
+    #eval `dircolors $NFSPATH/.dir_colors`
+    #export PATH=$NFSPATH/common/$OS/bin:$PATH
+    ;;
 (SunOS)
-	#set TERM=sun-color
-	#export TERM=sun-color
-	#export TERM=putty-256color
-	export TERM=xterm-256color
-	export TERMINFO=$NFS/.terminfo/$OS
-	exe="$NFSPATH/common/$OS/bin/tmux" && [[ -f $exe ]] || exe="tmux"
-	alias tmux="TERM=putty-256color $exe"
-	export VIMRUNTIME=$NFS/.vim
-	export VIM=$NFS/.vim
-	export PATH=/usr/xpg4/bin:$PATH:/opt/csw/bin::$NFS/application/SunOS/csw/bin
-	#ldd $(which gls)|grep "found" >/dev/null 2>&1 || alias ls='gls --color=auto'
-	#which gls >/dev/null 2>&1 && { ldd $(which gls 2>/dev/null)|grep "found" >/dev/null 2>&1 || alias ls='gls --color=auto'; }
-	which gls 2>&1 | grep -v "no gls" >/dev/null 2>&1 && { ldd $(which gls 2>/dev/null)|grep "found" >/dev/null 2>&1 || alias ls='gls --color=auto'; }
-	export LD_LIBRARY_PATH=/usr/sfw/lib/64:$LD_LIBRARY_PATH:/usr/sfw/lib
-	;;
+    #set TERM=sun-color
+    #export TERM=sun-color
+    #export TERM=putty-256color
+    export TERM=xterm-256color
+    export TERMINFO=$NFS/.terminfo/$OS
+    exe="$NFSPATH/common/$OS/bin/tmux" && [[ -f $exe ]] || exe="tmux"
+    alias tmux="TERM=putty-256color $exe"
+    export VIMRUNTIME=$NFS/.vim
+    export VIM=$NFS/.vim
+    export PATH=/usr/xpg4/bin:$PATH:/opt/csw/bin::$NFS/application/SunOS/csw/bin
+    #ldd $(which gls)|grep "found" >/dev/null 2>&1 || alias ls='gls --color=auto'
+    #which gls >/dev/null 2>&1 && { ldd $(which gls 2>/dev/null)|grep "found" >/dev/null 2>&1 || alias ls='gls --color=auto'; }
+    which gls 2>&1 | grep -v "no gls" >/dev/null 2>&1 && { ldd $(which gls 2>/dev/null)|grep "found" >/dev/null 2>&1 || alias ls='gls --color=auto'; }
+    export LD_LIBRARY_PATH=/usr/sfw/lib/64:$LD_LIBRARY_PATH:/usr/sfw/lib
+    ;;
 (AIX)
-	#export TERM=screen-256color
-	export TERM=putty-256color
-	export TERMINFO=$NFS/.terminfo/$OS
-	export VIMRUNTIME=$NFS/.vim
-	export VIM=$NFS/.vim
-	export PATH=$PATH:/opt/csw/bin:$NFSPATH/common/$OS/freeware/bin
-	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NFSPATH/common/$OS/freeware/lib
-	which gls 2>&1 | grep -v "no gls" >/dev/null 2>&1 && { ldd $(which gls 2>/dev/null)|grep "found" >/dev/null 2>&1 || alias ls='gls --color=auto'; }
-	exe="$NFSPATH/common/$OS/bin/tmux" && [[ -f $exe ]] || exe="tmux"
-	alias tmux="TERM=putty-256color $exe -2u"
-	;;
+    #export TERM=screen-256color
+    export TERM=putty-256color
+    export TERMINFO=$NFS/.terminfo/$OS
+    export VIMRUNTIME=$NFS/.vim
+    export VIM=$NFS/.vim
+    export PATH=$PATH:/opt/csw/bin:$NFSPATH/common/$OS/freeware/bin
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NFSPATH/common/$OS/freeware/lib
+    which gls 2>&1 | grep -v "no gls" >/dev/null 2>&1 && { ldd $(which gls 2>/dev/null)|grep "found" >/dev/null 2>&1 || alias ls='gls --color=auto'; }
+    exe="$NFSPATH/common/$OS/bin/tmux" && [[ -f $exe ]] || exe="tmux"
+    alias tmux="TERM=putty-256color $exe -2u"
+    ;;
 (*)
-	;;
+    ;;
 esac
 
 [[ -n "$(which rlwrap 2>/dev/null)" ]] && alias sqlplus='rlwrap sqlplus' && alias ij='rlwrap ij'
 
 case $(uname -n) in
 (bej301713.cn.oracle.com)
-	export LD_LIBRARY_PATH=/usr/local/gcc-4.1.2/lib64:$LD_LIBRARY_PATH:/lib64:/usr/lib64:/usr/local/lib
-	export SANITYPATH=$HOME/sanity/cron/cvs_batch_sanity
-	export DEVJES=~/dev/art/jes/art_MainBranch/jes.12cR3
-	export JAVA_HOME=$NFS/application/Linux/jdk1.8.0_74
-	export MAVEN_HOME=$NFS/application/Linux/apache-maven-3.5.0
-	export DERBY_HOME=$NFS/application/Linux/db-derby-10.13.1.1-bin
-	export LD_LIBRARY_PATH=/usr/local/gcc-4.1.2/lib64:$LD_LIBRARY_PATH:/lib64:/usr/lib64:/usr/local/lib
- 	;;
+    export LD_LIBRARY_PATH=/usr/local/gcc-4.1.2/lib64:$LD_LIBRARY_PATH:/lib64:/usr/lib64:/usr/local/lib
+    export SANITYPATH=$HOME/sanity/cron/cvs_batch_sanity
+    export DEVJES=~/dev/art/jes/art_MainBranch/jes.12cR3
+    export JAVA_HOME=$NFS/application/Linux/jdk1.8.0_74
+    export MAVEN_HOME=$NFS/application/Linux/apache-maven-3.5.0
+    export DERBY_HOME=$NFS/application/Linux/db-derby-10.13.1.1-bin
+    export LD_LIBRARY_PATH=/usr/local/gcc-4.1.2/lib64:$LD_LIBRARY_PATH:/lib64:/usr/lib64:/usr/local/lib
+     ;;
 (bej301712.cn.oracle.com)
-	export SANITYPATH=$HOME/sanity/cron/cvs_batch_sanity
-	#export DEVPATH=~/dev/art/jes/art_MainBranch/jes.jclexecutor/
-	export DEVPATH=~/dev/tsam/agent
-	export DEVJES=/home/${MYSELFID}/dev/art/jes/art_MainBranch/jes.12cR3
-	export JAVA_HOME=$NFS/application/Linux/jdk1.8.0_74
-	export MAVEN_HOME=$NFS/application/Linux/apache-maven-3.5.0
-	export DERBY_HOME=$NFS/application/Linux/db-derby-10.13.1.1-bin
-	#export LD_LIBRARY_PATH=/usr/local/gcc-4.1.2/lib64:$LD_LIBRARY_PATH:/lib64:/usr/lib64:/usr/local/lib
-	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/lib64:/usr/lib64:/usr/local/lib
-	## for wine process
-	[[ $USER == "${MYSELFID}" ]] && { export MYDBG_SHOWALL=yes && export MYDBG_SHOWDBG=DEBUG0; }
-	[[ $USER != "${MYSELFID}" ]] && { unset MYDBG_SHOWALL MYDBG_SHOWDBG; }
- 	;;
+    export SANITYPATH=$HOME/sanity/cron/cvs_batch_sanity
+    #export DEVPATH=~/dev/art/jes/art_MainBranch/jes.jclexecutor/
+    export DEVPATH=~/dev/tsam/agent
+    export DEVJES=/home/${MYSELFID}/dev/art/jes/art_MainBranch/jes.12cR3
+    export JAVA_HOME=$NFS/application/Linux/jdk1.8.0_74
+    export MAVEN_HOME=$NFS/application/Linux/apache-maven-3.5.0
+    export DERBY_HOME=$NFS/application/Linux/db-derby-10.13.1.1-bin
+    #export LD_LIBRARY_PATH=/usr/local/gcc-4.1.2/lib64:$LD_LIBRARY_PATH:/lib64:/usr/lib64:/usr/local/lib
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/lib64:/usr/lib64:/usr/local/lib
+    ## for wine process
+    [[ $USER == "${MYSELFID}" ]] && { export MYDBG_SHOWALL=yes && export MYDBG_SHOWDBG=DEBUG0; }
+    [[ $USER != "${MYSELFID}" ]] && { unset MYDBG_SHOWALL MYDBG_SHOWDBG; }
+     ;;
 (bej301738.cn.oracle.com)
-	export DEVJES=/home/${MYSELFID}/dev/art/jes/art_MainBranch/jes.12cR3
-	export DEVTMA=/home/${MYSELFID}/dev/tma
-	export JAVA_HOME=$NFS/application/Linux/jdk1.8.0_74
-	export MAVEN_HOME=$NFS/application/Linux/apache-maven-3.5.0
-	export DERBY_HOME=$NFS/application/Linux/db-derby-10.13.1.1-bin
-	 #[[ $USER != "${MYSELFID}" ]] && { alias vim="TERM=xterm-256color VIMRUNTIME=/home/${MYSELFID}/.vim $vimexe -X --cmd \"set runtimepath^=/home/${MYSELFID}/.vim\" --cmd \"set runtimepath+=/home/${MYSELFID}/.vim/bundle/Vundle.vim\" -u /home/${MYSELFID}/.vimrc"; }
-	 [[ "$USER" != "${MYSELFID}" ]] && { alias vim="TERM=xterm-256color VIMRUNTIME=$MYHOME/.vim $vimexe -X --cmd \"set runtimepath^=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"; }
- 	;;
+    export DEVJES=/home/${MYSELFID}/dev/art/jes/art_MainBranch/jes.12cR3
+    export DEVTMA=/home/${MYSELFID}/dev/tma
+    export JAVA_HOME=$NFS/application/Linux/jdk1.8.0_74
+    export MAVEN_HOME=$NFS/application/Linux/apache-maven-3.5.0
+    export DERBY_HOME=$NFS/application/Linux/db-derby-10.13.1.1-bin
+     #[[ $USER != "${MYSELFID}" ]] && { alias vim="TERM=xterm-256color VIMRUNTIME=/home/${MYSELFID}/.vim $vimexe -X --cmd \"set runtimepath^=/home/${MYSELFID}/.vim\" --cmd \"set runtimepath+=/home/${MYSELFID}/.vim/bundle/Vundle.vim\" -u /home/${MYSELFID}/.vimrc"; }
+     [[ "$USER" != "${MYSELFID}" ]] && { alias vim="TERM=xterm-256color VIMRUNTIME=$MYHOME/.vim $vimexe -X --cmd \"set runtimepath^=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"; }
+     ;;
 (bej301459*)
-	 ## for wine process
-	 [[ $USER == "${MYSELFID}" ]] && { export MYDBG_SHOWALL=yes && export MYDBG_SHOWDBG=DEBUG0; }
-	 [[ $USER != "${MYSELFID}" ]] && { unset MYDBG_SHOWALL MYDBG_SHOWDBG; }
- 	;;
+     ## for wine process
+     [[ $USER == "${MYSELFID}" ]] && { export MYDBG_SHOWALL=yes && export MYDBG_SHOWDBG=DEBUG0; }
+     [[ $USER != "${MYSELFID}" ]] && { unset MYDBG_SHOWALL MYDBG_SHOWDBG; }
+     ;;
 (slc09wou*)
-	 vimexe="/usr/bin/vim"
-	 alias vim="TERM=xterm-256color VIMRUNTIME=$MYHOME/.vim $vimexe -X --cmd \"set runtimepath^=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
-	 ## for wine process
-	 [[ $USER == "${MYSELFID}" ]] && { export MYDBG_SHOWALL=yes && export MYDBG_SHOWDBG=DEBUG0; }
-	 [[ $USER != "${MYSELFID}" ]] && { unset MYDBG_SHOWALL MYDBG_SHOWDBG; }
- 	;;
+     vimexe="/usr/bin/vim"
+     alias vim="TERM=xterm-256color VIMRUNTIME=$MYHOME/.vim $vimexe -X --cmd \"set runtimepath^=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
+     ## for wine process
+     [[ $USER == "${MYSELFID}" ]] && { export MYDBG_SHOWALL=yes && export MYDBG_SHOWDBG=DEBUG0; }
+     [[ $USER != "${MYSELFID}" ]] && { unset MYDBG_SHOWALL MYDBG_SHOWDBG; }
+     ;;
 (rno05038)
-	 [[ $USER == "${MYSELFID}" ]] && export CVS_PASSFILE=$NFS/.cvspass
-	 [[ $USER != "${MYSELFID}" ]] && { alias vim="TERM=xterm-256color $vimexe -X -u /home/${MYSELFID}/.vimrc"; }
-	alias cvs=/usr/bin/cvs
- 	;;
+     [[ $USER == "${MYSELFID}" ]] && export CVS_PASSFILE=$NFS/.cvspass
+     [[ $USER != "${MYSELFID}" ]] && { alias vim="TERM=xterm-256color $vimexe -X -u /home/${MYSELFID}/.vimrc"; }
+    alias cvs=/usr/bin/cvs
+     ;;
 (burf07cn05)
-	## remove sfw/lib/64
-	export LD_LIBRARY_PATH=$(echo $LD_LIBRARY_PATH|sed 's/[^:]*\/usr\/sfw\/lib\/64[^:]*//g')
- 	;;
+    ## remove sfw/lib/64
+    export LD_LIBRARY_PATH=$(echo $LD_LIBRARY_PATH|sed 's/[^:]*\/usr\/sfw\/lib\/64[^:]*//g')
+     ;;
 (burf07cn10|slc10avp)
-	alias cvs=$NFS/common/SunOS/bin/cvs
-	## remove sfw/lib/64
-	#export LD_LIBRARY_PATH=$(echo $LD_LIBRARY_PATH|sed 's/[^:]*\/usr\/sfw\/lib\/64[^:]*//g')
-	eval `/usr/openwin/bin/resize`
-	shopt -s checkwinsize
-	export TERM=$TERM
- 	;;
+    alias cvs=$NFS/common/SunOS/bin/cvs
+    ## remove sfw/lib/64
+    #export LD_LIBRARY_PATH=$(echo $LD_LIBRARY_PATH|sed 's/[^:]*\/usr\/sfw\/lib\/64[^:]*//g')
+    eval `/usr/openwin/bin/resize`
+    shopt -s checkwinsize
+    export TERM=$TERM
+     ;;
 (bej301159)
-	exe="$NFSPATH/common/$OS/bin/vim.static" && [[ -f $exe ]] || exe="vim"
-	alias vim="TERM=xterm-256color $exe -X"
-	;;
+    exe="$NFSPATH/common/$OS/bin/vim.static" && [[ -f $exe ]] || exe="vim"
+    alias vim="TERM=xterm-256color $exe -X"
+    ;;
 (bejan08-?.cn.oracle.com)
-	exe="/usr/bin/vim" && [[ -f $exe ]] || exe="vim"
-	alias vim="TERM=xterm-256color $exe -X"
-	;;
+    exe="/usr/bin/vim" && [[ -f $exe ]] || exe="vim"
+    alias vim="TERM=xterm-256color $exe -X"
+    ;;
 (R90MURWD)
-	export PATH=/bin:/usr/bin:/sbin:$PATH
-	exe="/usr/bin/vim" && [[ -f $exe ]] || exe="vim"
-	alias vim="TERM=xterm-256color $exe -X"
-	alias tmux="tmux"
-	alias cdzzy="[[ ! -f /shr/zzy/.bashrc ]] && mount //zzy.inc.alipay.net/home /shr/zzy; cd /shr/zzy"
-	;;
+    export PATH=/bin:/usr/bin:/sbin:$PATH
+    exe="/usr/bin/vim" && [[ -f $exe ]] || exe="vim"
+    alias vim="TERM=xterm-256color $exe -X"
+    alias tmux="tmux"
+    alias cdzzy="[[ ! -f /shr/zzy/.bashrc ]] && mount //zzy.inc.alipay.net/home /shr/zzy; cd /shr/zzy"
+    ;;
+(mychaintest*)
+    :
+    #export PATH=$NFS/common/$OS/bin:$PATH
+    ;;
 (*)
-	export SANITYPATH=$NFSPATH/work_batchrt/mf/sanity/batchrt
-	;;
+    :
+    ;;
 esac
-
-export DEVBP=/nfs/users/${MYSELFID}/dev/batchplus/src
 
 ##### SET prompt color #####
 c_1="\[\e[0m\]"
