@@ -120,7 +120,7 @@ function main {
     while getopts :dfc: ch; do
         case $ch in
         c) sendcmd="$OPTARG"; echo "sendcmd=$sendcmd";;
-        d) g_detach=1; echo "don't attach";;
+        d) g_detach=1; echo "only create session, don't attach";;
         f) g_force=1; echo "force mode";;
         ?) echo "unknown option" && return 1;;
         esac
@@ -136,7 +136,6 @@ function main {
     typeset cmd_win_name="win_cmd"
     typeset cmd=
     typeset mybash="/bin/bash"
-    set -vx
 
     if [[ "$(uname)" =~ CYGWIN ]]; then
         cmd="tmux"
