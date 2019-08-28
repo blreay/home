@@ -7,11 +7,12 @@ chmod 755 /bin/jq
 #chmod 755 /bin/git
 
 yum groupinstall -y "Development Tools"
+yum install -y xauth xclock
 yum install -y wget perl-CPAN gettext-devel perl-devel  openssl-devel  zlib-devel
 
 yum install -y cvs vim zip lsof ksh git jq openssl expect ftp perl
 yum install -y gcc-c++ cmake3 automake autoconf perl-Thread-Queue libtool openssl zlib-devel git strace ltrace iotop ctags cscope gdb
-yum install -y libcurl-devel expat-devel jre-openjdk java maven
+yum install -y libcurl-devel expat-devel jre-openjdk java maven enca
 yum install -y libatomic libatomic-static libstdc++ libstdc++-static
 yum install git-m -b test -y 
 
