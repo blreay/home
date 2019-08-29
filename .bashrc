@@ -85,6 +85,7 @@ export SHR=$NFS/share
 
 ## for git
 export GIT_SSH_COMMAND="ssh -x "
+export LESSCHARSET=utf-8 #make sure git log can show Chinese correctly
 
 ## Can't set VIMRUNTIME,otherwise :help will not work
 #export VIMRUNTIME=$NFS/.vim
