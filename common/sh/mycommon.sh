@@ -17,9 +17,9 @@ typeset g_appname_short
 
 ##############################################
 function DBG {
-    set +vx && [[ "${MYDBG^^}" != "DEBUG" ]] && return 0
+    set +vx && [[ "${MYDBG^^}" == "DEBUG" ]] && {
     typeset arg="${@}"; typeset msg; typeset funcname=${FUNCNAME[1]}; typeset lineno=${BASH_LINENO[0]}
-    printf "$(date +'%Y%m%d_%H:%M:%S') %08d [%03d] [${funcname}]%s\n" $$ ${lineno} "${arg}" >&2
+    printf "$(date +'%Y%m%d_%H:%M:%S') %08d [%03d] [${funcname}]%s\n" $$ ${lineno} "${arg}" >&2; }
     [[ ${g_verbose} -eq 1 ]] && set -vx || true
 }
 function LOG {
@@ -105,7 +105,7 @@ function my_check_utility {
     for u in ${g_mandatory_utilities[*]}; do
         type $u >/dev/null 2>&1
         BCS_CHK_RC0 "---->$u<---- could not be found in $PATH"
-        DBG "$(type $u)"
+        DBG "$u is $(which $u)"
     done
 }
 
@@ -125,22 +125,19 @@ function main {
     export g_appname_short=${g_appname##*/}
     export g_verbose=0
 
-    # set debug
-    unset OPTIND
-    while getopts :l:n:N:T:dDh ch; do
-        DBG "ch=$ch"
-        case $ch in
-        "d") export MYDBG=DEBUG;;
-        "D") export g_verbose=1; set -vx;;
-        "n") export STACKNAME="${OPTARG}";;
-        "N") export OLDSTACKNAME="${OPTARG}";;
-        "T") export ACT_SCOPE="${OPTARG}";; ##debug purpose
-        "l") export PCARURL="${OPTARG}";;
-        "h") my_show_usage_entry; return 0;;
-        *) LOG "wrong parameter $ch"; return 1;;
-        esac
-    done
-    shift $((OPTIND-1))
+    init_arg=$1
+    init_arg2=$(echo "${init_arg}" | tr -d '\-dDh')
+    shift 1
+    if [[ ! -z "$init_arg" ]]; then
+        unset OPTIND
+        while getopts :dDh ch ${init_arg}; do
+            case $ch in
+            "d") export MYDBG=DEBUG;;
+            "D") export g_verbose=1; set -vx;;
+            "h") my_show_usage_entry; return 0;;
+            esac
+        done
+    fi
 
     # check is all mandatory utilities have been ready
     my_check_utility
@@ -148,9 +145,10 @@ function main {
 
     DBG "g_appname=$g_appname"
     DBG "g_apppath=$g_apppath"
-    DBG "\$@=$@"
+    #DBG "\$@=$@"
+    DBG "\$@=${init_arg2:+-${init_arg2}} $@"
     ############################################
-    my_entry "$@"
+    my_entry "${init_arg2:+-${init_arg2}} $@"
     ############################################
 
     return $RET
