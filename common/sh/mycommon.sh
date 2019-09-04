@@ -103,9 +103,9 @@ EOF
 
 function my_check_utility {
     for u in ${g_mandatory_utilities[*]}; do
-        which $u >/dev/null 2>&1
-        BCS_CHK_RC0 "$u can not be found in $PATH"
-        DBG "$u is $(which $u)"
+        type $u >/dev/null 2>&1
+        BCS_CHK_RC0 "---->$u<---- could not be found in $PATH"
+        DBG "$(type $u)"
     done
 }
 
