@@ -148,7 +148,7 @@ function main {
     #DBG "\$@=$@"
     DBG "\$@=${init_arg2:+-${init_arg2}} $@"
     ############################################
-    my_entry "${init_arg2:+-${init_arg2}} $@"
+    my_entry "${init_arg2:+-"${init_arg2} "}$@"
     ############################################
 
     return $RET
