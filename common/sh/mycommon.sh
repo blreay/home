@@ -169,16 +169,16 @@ typeset -a g_mandatory_utilities=(jq curl awk sed docker)
 
 ###################################################
 function my_show_usage {
-    cat - <<EOF
+	cat - <<EOF
 Usage: ${g_appname_short} [-u UserName]
          -u : specify docker entry user name
 Example:
-    ${g_appname_short} -u zhaoyong.zzy
+	${g_appname_short} -u zhaoyong.zzy
 EOF
 } 
 ######## write your own logic #####################
 function my_entry {
-    echo "do your own work"
+	echo "do your own work"
 } 
 ###########################################
 main ${@:+"$@"} 
