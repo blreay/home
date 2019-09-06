@@ -105,7 +105,7 @@ function my_check_utility {
     for u in ${g_mandatory_utilities[*]}; do
         type $u >/dev/null 2>&1
         BCS_CHK_RC0 "---->$u<---- could not be found in $PATH"
-        DBG "$u is $(which $u)"
+        DBG "$u is $(type $u)"
     done
 }
 
@@ -126,17 +126,19 @@ function main {
     export g_verbose=0
 
     init_arg=$1
-    init_arg2=$(echo "${init_arg}" | tr -d '\-dDh')
-    shift 1
-    if [[ ! -z "$init_arg" ]]; then
-        unset OPTIND
-        while getopts :dDh ch ${init_arg}; do
-            case $ch in
-            "d") export MYDBG=DEBUG;;
-            "D") export g_verbose=1; set -vx;;
-            "h") my_show_usage_entry; return 0;;
-            esac
-        done
+    if [[ ${init_arg} =~ ^- ]]; then
+        init_arg2=$(echo "${init_arg}" | tr -d '\-dDh')
+        shift 1
+        if [[ ! -z "$init_arg" ]]; then
+            unset OPTIND
+            while getopts :dDh ch ${init_arg}; do
+                case $ch in
+                "d") export MYDBG=DEBUG;;
+                "D") export g_verbose=1; set -vx;;
+                "h") my_show_usage_entry; return 0;;
+                esac
+            done
+        fi
     fi
 
     # check is all mandatory utilities have been ready
@@ -148,7 +150,7 @@ function main {
     #DBG "\$@=$@"
     DBG "\$@=${init_arg2:+-${init_arg2}} $@"
     ############################################
-    my_entry "${init_arg2:+-${init_arg2}} $@"
+    my_entry ${init_arg2:+-${init_arg2}} $@
     ############################################
 
     return $RET
@@ -167,16 +169,16 @@ typeset -a g_mandatory_utilities=(jq curl awk sed docker)
 
 ###################################################
 function my_show_usage {
-	cat - <<EOF
+    cat - <<EOF
 Usage: ${g_appname_short} [-u UserName]
          -u : specify docker entry user name
 Example:
-	${g_appname_short} -u zhaoyong.zzy
+    ${g_appname_short} -u zhaoyong.zzy
 EOF
 } 
 ######## write your own logic #####################
 function my_entry {
-	echo "do your own work"
+    echo "do your own work"
 } 
 ###########################################
 main ${@:+"$@"} 
