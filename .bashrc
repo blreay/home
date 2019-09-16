@@ -105,7 +105,7 @@ export vimexe MYHOME
 #alias vim="TERM=xterm-256color $vimexe -X"
 #alias vim="TERM=xterm-256color VIMRUNTIME=$MYHOME/.vim $vimexe -X --cmd \"set runtimepath^=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
 #alias vim="TERM=xterm-256color $vimexe -X --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
-alias s=set_vimrc
+#alias s=set_vimrc
 alias ll='ls -l'
 alias rm="$NFS/common/sh/myrm.sh"
 alias cmy="source $NFS/work/mychain/setenv.sh ; eval cd \${SCRIPTDIR}"
