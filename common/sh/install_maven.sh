@@ -1,8 +1,9 @@
 #!/bin/bash
 
-VER=3.6.0
+VER=3.6.2
 
 TMPDIR=$HOME/tmp
+#URL=https://www-us.apache.org/dist/maven/maven-3/3.6.2/binaries/apache-maven-3.6.2-bin.tar.gz
 wget https://www-us.apache.org/dist/maven/maven-3/${VER}/binaries/apache-maven-${VER}-bin.tar.gz -P ${TMPDIR}
 sudo tar xf ${TMPDIR}/apache-maven-${VER}-bin.tar.gz -C /opt
 sudo ln -s /opt/apache-maven-${VER} /opt/maven

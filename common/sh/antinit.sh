@@ -20,3 +20,14 @@ ln -svnf $(which cmake3) /usr/bin/cmake
 
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 cat /etc/selinux/config
+
+## if zh_CN can't be set, using commane line
+:<<EOF
+locale
+sudo yum -y install kde-l10n-Chinese telnet
+sudo yum -y reinstall glibc-common
+sudo yum clean all
+sudo localedef -c -f UTF-8 -i zh_CN zh_CN.utf8
+locale -a
+EOF
+
