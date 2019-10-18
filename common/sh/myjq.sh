@@ -199,3 +199,8 @@ EOF
 g_appname=${0##*/}
 DBG "g_appname=$g_appname"
 main ${@}
+
+# some usefule commandline to change something if some condition satisfied
+# jq '(.dataSet[] | select(.type.id=="AsynTransactionCheck") | .input.data.timeout) |= 300' 02_parallel_callcontract_balance.json
+# jq '((.cells[].outputs | select(.) ) |= []) | (((.cells[].execution_count | select(.))) |= null)'
+
