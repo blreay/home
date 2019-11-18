@@ -215,7 +215,7 @@ function main {
         fi
     fi
 
-    [[ ${g_detach} -eq 0 ]] && ${cmd} att -t ${session}
+    [[ ${g_detach} -eq 0 ]] && ${cmd} att -t ${session} -d
 }
 
 ###############################################
