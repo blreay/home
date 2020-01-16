@@ -49,8 +49,8 @@ alias BCS_CHK_ACT_RC0='{
     #### function check RC Block Begin #####
     RET=$?; INPUTSTR=$(cat -); MSG="${INPUTSTR%%&&&*}"; ACT=""
     [[ "${MSG}" != "${INPUTSTR}" ]] && ACT="${INPUTSTR##*&&&}"
-	NGACT="${ACT%%|||*}"; OKACG=""
-    [[ "${NGACT}" != "${ACT}" ]] && OKACG="${ACT##*|||}"
+	NGACT="${ACT%%|||*}"; OKACT=""
+    [[ "${NGACT}" != "${ACT}" ]] && OKACT="${ACT##*|||}"
     if [[ ${RET} -ne 0 ]]; then
         eval "${NGACT}"
         ERR "${MSG}, RET=${RET}"
@@ -73,8 +73,8 @@ alias BCS_WARN_ACT_RC0='{
     #### function check RC Block Begin #####
     RET=$?; INPUTSTR=$(cat -); MSG="${INPUTSTR%%&&&*}"; ACT=""
     [[ "${MSG}" != "${INPUTSTR}" ]] && ACT="${INPUTSTR##*&&&}"
-	NGACT="${ACT%%|||*}"; OKACG=""
-    [[ "${NGACT}" != "${ACT}" ]] && OKACG="${ACT##*|||}"
+	NGACT="${ACT%%|||*}"; OKACT=""
+    [[ "${NGACT}" != "${ACT}" ]] && OKACT="${ACT##*|||}"
     if [[ ${RET} -ne 0 ]]; then
         eval "${NGACT}"
         WARN "${MSG}, RET=${RET}"

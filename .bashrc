@@ -109,6 +109,7 @@ export vimexe MYHOME
 alias ll='ls -l'
 alias rm="$NFS/common/sh/myrm.sh"
 alias cmy="source $NFS/work/mychain/setenv.sh ; eval cd \${SCRIPTDIR}"
+alias cmy2="source $NFS/work/mychain/setenv.sh 1; eval cd \${SCRIPTDIR}"
 alias CD='cd $(pwd -P)'
 alias git_proxy="git config --global http.proxy http://cn-proxy.jp.oracle.com:80"
 alias mydate="date +'%Y%m%d %H:%M:%S.%N'"
