@@ -14,6 +14,7 @@ shopt -s extdebug
 # global variables
 typeset g_appname
 typeset g_appname_short
+typeset g_debug_framework=1
 
 ##############################################
 function DBG {
@@ -43,30 +44,49 @@ function MSG {
     [[ ${g_verbose} -eq 1 ]] && set -vx || true
 }
 ##############################################
-alias BCS_CHK_RC0='{ 
+alias BCS_SH_VERBOSE='set -o | egrep "verbose.*on" 2>/dev/null'
+alias BCS_CHK_RC0='{
     #### function check RC Block Begin #####
     RET=$?
     if [[ ${RET} -ne 0 ]]; then
         MSG=$(cat -); ERR "${MSG}, RET=${RET}"; return "${RET}"
     fi
     #### function check RC Block End #####
-}<<<' 
+}<<<'
 alias BCS_CHK_ACT_RC0='{
-    #### function check RC Block Begin #####
-    RET=$?; INPUTSTR=$(cat -); MSG="${INPUTSTR%%&&&*}"; ACT=""
-    [[ "${MSG}" != "${INPUTSTR}" ]] && ACT="${INPUTSTR##*&&&}"
-    NGACT="${ACT%%|||*}"; OKACG=""
-    [[ "${NGACT}" != "${ACT}" ]] && OKACG="${ACT##*|||}"
+    #### function check RC Block Begin #######################
+    ## $1 FORMAT: msg &&& err_actoin ||| ok_action !!! both_action
+    ##    msg: print to stdout if RC of last command (that is $!) is not 0
+    ##    err_action: shell statement will be run if $? not equal 0
+    ##    ok_action : shell statement will be run if $? equal 0
+    ##    both_action : shell statement will be run regardless of $!
+    ############################################################
+    RET=$?;  BCS_SH_VERBOSE && is_verbose=1 || is_verbose=0
+    [[ ${g_debug_framework} -ne 1 ]] && set +vx
+
+     INPUTSTR=$(cat -); MSG="${INPUTSTR}"
+    MSG="${MSG%%&&&*}"; MSG="${MSG%%|||*}"; MSG="${MSG%%!!!*}";
+
+    NGACT="${INPUTSTR##*&&&}"; [[ "${NGACT}" == "${INPUTSTR}" ]] && NGACT="" \
+    || { NGACT="${NGACT%%|||*}"; NGACT="${NGACT%%!!!*}"; }
+
+    OKACT="${INPUTSTR##*|||}"; [[ "${OKACT}" == "${INPUTSTR}" ]] && OKACT="" \
+    || { OKACT="${OKACT%%!!!*}"; OKACT="${OKACT%%&&&*}"; }
+
+    ALACT="${INPUTSTR##*!!!}"; [[ "${ALACT}" == "${INPUTSTR}" ]] && ALACT="" \
+    || { ALACT="${ALACT%%|||*}"; ALACT="${ALACT%%&&&*}"; }
+
     if [[ ${RET} -ne 0 ]]; then
-        eval "${NGACT}"
-        ERR "${MSG}, RET=${RET}"
+        eval "${NGACT}"; eval "${ALACT}"; ERR "${MSG}, RET=${RET}"
+        [[ ${is_verbose} -eq 1 ]]  && set -vx || true
         return ${RET}
     else
-        eval "${OKACT}"
+        eval "${OKACT}"; eval "${ALACT}"
     fi
+    [[ ${is_verbose} -eq 1 ]]  && set -vx || true
     #### function check RC Block End #####
-}<<<' 
-alias BCS_WARN_RC0='{ 
+}<<<'
+alias BCS_WARN_RC0='{
     #### function check RC Block Begin #####
     RET=$?
     if [[ ${RET} -ne 0 ]]; then
@@ -88,7 +108,7 @@ alias BCS_WARN_ACT_RC0='{
         eval "${OKACT}"
     fi
     #### function check RC Block End #####
-}<<<' 
+}<<<'
 ##############################################
 
 function my_show_usage_entry {
@@ -154,7 +174,7 @@ function main {
     ############################################
 
     return $?
-} 
+}
 
 ########################################################
 # Following is the sample to use this common shell file
@@ -162,26 +182,26 @@ function main {
 #!/bin/bash
 
 ####### Source my shell script framework ########
-source "${SH}/mycommon.sh" 
+source "${SH}/mycommon.sh"
 
 ####### define global variables ##################
-typeset -a g_mandatory_utilities=(jq curl awk sed docker) 
+typeset -a g_mandatory_utilities=(jq curl awk sed docker)
 
 ###################################################
 function my_show_usage {
-	cat - <<EOF
+    cat - <<EOF
 Usage: ${g_appname_short} [-u UserName]
          -u : specify docker entry user name
 Example:
-	${g_appname_short} -u zhaoyong.zzy
+    ${g_appname_short} -u zhaoyong.zzy
 EOF
-} 
+}
 ######## write your own logic #####################
 function my_entry {
-	echo "do your own work"
-} 
+    echo "do your own work"
+}
 ###########################################
-main ${@:+"$@"} 
+main ${@:+"$@"}
 EOFSAMPLE
 ########################################################
 
