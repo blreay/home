@@ -14,7 +14,7 @@ shopt -s extdebug
 # global variables
 typeset g_appname
 typeset g_appname_short
-typeset g_debug_framework=1
+typeset g_debug_framework=0
 
 ##############################################
 function DBG {
@@ -44,7 +44,7 @@ function MSG {
     [[ ${g_verbose} -eq 1 ]] && set -vx || true
 }
 ##############################################
-alias BCS_SH_VERBOSE='set -o | egrep "verbose.*on" 2>/dev/null'
+alias BCS_SH_VERBOSE='set -o | egrep "verbose.*on" 2>/dev/null 2>&1'
 alias BCS_CHK_RC0='{
     #### function check RC Block Begin #####
     RET=$?
