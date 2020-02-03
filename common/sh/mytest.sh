@@ -103,7 +103,12 @@ ret=$(runcase "pwd0000" "pwd !!! echo all")
 
 echo "--------- cmd NG, 0 -----------------------"
 ret=$(runcase "pwd0000" "pwd")
-#[[ $? -ne 0 && $(echo ${ret}) == "pwd, RET=127" ]] && echo "ok" || echo "ng ${ret}"
+[[ $? -ne 0 && "$(echo "${ret}" | tr '\n' ' ')" =~ .*pwd.*RET=127 ]] && echo "ok" || echo "ng [${ret}]"
+
+echo "--------- cmd NG, alias -----------------------"
+AA=123; BB=456
+alias aaa='echo ${AA} ${BB}'
+ret=$(runcase "pwd" "pwd &&& aaa ||| aaa !!! aaa")
 [[ $? -ne 0 && "$(echo "${ret}" | tr '\n' ' ')" =~ .*pwd.*RET=127 ]] && echo "ok" || echo "ng [${ret}]"
 }
 

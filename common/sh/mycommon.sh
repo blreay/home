@@ -44,7 +44,7 @@ function MSG {
     [[ ${g_verbose} -eq 1 ]] && set -vx || true
 }
 ##############################################
-alias BCS_SH_VERBOSE='set -o | egrep "verbose.*on" 2>/dev/null 2>&1'
+alias BCS_SH_VERBOSE='set -o | egrep "verbose.*on" >/dev/null 2>&1'
 alias BCS_CHK_RC0='{
     #### function check RC Block Begin #####
     RET=$?
