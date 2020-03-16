@@ -15,33 +15,69 @@ shopt -s extdebug
 typeset g_appname
 typeset g_appname_short
 typeset g_debug_framework=0
+typeset g_tmp_list="_tmp.list"
+typeset g_tmp_dir="$(pwd)"
+typeset g_log="stdout"
+
+typeset g_color_black=`tput   setaf 0`
+typeset g_color_red=`tput     setaf 1`
+typeset g_color_green=`tput   setaf 2`
+typeset g_color_yellow=`tput  setaf 3`
+typeset g_color_blue=`tput    setaf 4`
+typeset g_color_magenta=`tput setaf 5`
+typeset g_color_cyan=`tput    setaf 6`
+typeset g_color_white=`tput   setaf 7`
+typeset g_color_reset=`tput   sgr0`
 
 ##############################################
 function DBG {
-    set +vx && [[ "${MYDBG^^}" == "DEBUG" ]] && {
+    [[ ${SHELLOPTS} =~ verbose ]] && verbose=1 || verbose=0
+    set +vx && [[ "${MYDBG^^}" == "DEBUG" ]] && { typeset srcfile=${BASH_SOURCE[1]##*/}
     typeset arg="${@}"; typeset msg; typeset funcname=${FUNCNAME[1]}; typeset lineno=${BASH_LINENO[0]}
-    printf "$(date +'%Y%m%d_%H:%M:%S') %08d [%03d] [${funcname}]%s\n" $$ ${lineno} "${arg}" >&2; }
-    [[ ${g_verbose} -eq 1 ]] && set -vx || true
+    printf "$(date +'%Y%m%d_%H:%M:%S') %06d [%03d] [${srcfile} ${funcname}]%s\n" ${BASHPID} ${lineno} "${arg}" >&2; }
+    [[ "${verbose}" -eq 1 ]] && set -vx || true
 }
 function LOG {
+    [[ ${SHELLOPTS} =~ verbose ]] && verbose=1 || verbose=0
     set +vx && typeset arg="${@}"; typeset msg; typeset funcname=${FUNCNAME[1]}; typeset lineno=${BASH_LINENO[0]}
-    printf "$(date +'%Y%m%d_%H:%M:%S') %08d [%03d] [${funcname}]%s\n" $$ ${lineno} "${arg}"
-    [[ ${g_verbose} -eq 1 ]] && set -vx || true
+    typeset srcfile=${BASH_SOURCE[1]##*/}
+    printf -v MSG "$(date +'%Y%m%d_%H:%M:%S') %06d [%03d] [${srcfile} ${funcname}]%s\n" ${BASHPID} ${lineno} "${arg}"
+    [[ -z ${g_log} || "${g_log}" == "stdout" ]] && printf "%s" "${MSG}" || printf "%s" "${MSG}" >> "${g_log}"
+    [[ "${verbose}" -eq 1 ]] && set -vx || true
 }
 function ERR {
+    [[ ${SHELLOPTS} =~ verbose ]] && verbose=1 || verbose=0
     set +vx && typeset arg="${@}"; typeset msg; typeset funcname=${FUNCNAME[1]}; typeset lineno=${BASH_LINENO[0]}
-    printf "$(date +'%Y%m%d_%H:%M:%S') %08d [%03d] [${funcname}]%s\n" $$ ${lineno} "ERROR: ${arg}" >&2
-    [[ ${g_verbose} -eq 1 ]] && set -vx || true
+    typeset srcfile=${BASH_SOURCE[1]##*/}
+    printf "$(date +'%Y%m%d_%H:%M:%S') %06d [%03d] [${srcfile} ${funcname}]%s\n" ${BASHPID} ${lineno} "ERROR: ${arg}" >&2
+    [[ "${verbose}" -eq 1 ]] && set -vx || true
 }
 function WARN {
+    [[ ${SHELLOPTS} =~ verbose ]] && verbose=1 || verbose=0
     set +vx && typeset arg="${@}"; typeset msg; typeset funcname=${FUNCNAME[1]}; typeset lineno=${BASH_LINENO[0]}
-    printf "$(date +'%Y%m%d_%H:%M:%S') %08d [%03d] [${funcname}]%s\n" $$ ${lineno} "WARN: ${arg}" >&2
-    [[ ${g_verbose} -eq 1 ]] && set -vx || true
+    typeset srcfile=${BASH_SOURCE[1]##*/}
+    printf "$(date +'%Y%m%d_%H:%M:%S') %06d [%03d] [${srcfile} ${funcname}]%s\n" ${BASHPID} ${lineno} "WARN: ${arg}" >&2
+    [[ "${verbose}" -eq 1 ]] && set -vx || true
 }
 function MSG {
+    [[ ${SHELLOPTS} =~ verbose ]] && verbose=1 || verbose=0
     set +vx && typeset arg="${@}"; typeset msg; typeset funcname=${FUNCNAME[1]}; typeset lineno=${BASH_LINENO[0]}
     printf "%s\n" "${arg}"
-    [[ ${g_verbose} -eq 1 ]] && set -vx || true
+    [[ "${verbose}" -eq 1 ]] && set -vx || true
+}
+function LOGJSON {
+    [[ ${SHELLOPTS} =~ verbose ]] && verbose=1 || verbose=0
+    set +vx && typeset file="${1}"; typeset msg="${2}"; typeset funcname=${FUNCNAME[1]}; typeset lineno=${BASH_LINENO[0]}
+    typeset srcfile=${BASH_SOURCE[1]##*/}
+    printf -v MSG "$(date +'%Y%m%d_%H:%M:%S') %06d [%03d] [${srcfile} ${funcname}]%s\n" ${BASHPID} ${lineno} "${msg}:dump json file ${file}"
+    if [[ -z ${g_log} || ${g_log} == "stdout" ]]; then
+        echo ${MSG}
+        [[ -f "${file}" ]] && cat "${file}" | jq . 2>&1
+    else
+        echo ${MSG} >> "${g_log}"
+        [[ -f "${file}" ]] && cat "${file}" | jq . >> "${g_log}" 2>&1
+    fi
+    [[ "${verbose}" -eq 1 ]] && set -vx || true
 }
 ##############################################
 alias BCS_SH_VERBOSE='set -o | egrep "verbose.*on" >/dev/null 2>&1'
@@ -86,6 +122,77 @@ alias BCS_CHK_ACT_RC0='{
     [[ ${is_verbose} -eq 1 ]]  && set -vx || true
     #### function check RC Block End #####
 }<<<'
+alias BCS_RUN_AND_CHK='{
+    #### function check RC Block Begin #######################
+    ## $1 FORMAT: msg &&& err_actoin ||| ok_action !!! both_action
+    ##    msg: print to stdout if RC of last command (that is $!) is not 0
+    ##    err_action: shell statement will be run if $? not equal 0
+    ##    ok_action : shell statement will be run if $? equal 0
+    ##    both_action : shell statement will be run regardless of $!
+    ############################################################
+    RET=$?;  BCS_SH_VERBOSE && is_verbose=1 || is_verbose=0
+    [[ ${g_debug_framework} -ne 1 ]] && set +vx
+
+    INPUTSTR=$(cat -); CMD="${INPUTSTR}"
+    CMD="${CMD%%@@@*}"; OTHER="${INPUTSTR##*@@@}"
+    [[ "${INPUTSTR}" == "${OTHER}" ]] && OTHER=
+    eval "${CMD}"
+    BCS_CHK_ACT_RC0 "failed to run (${CMD}),${OTHER}"
+    [[ ${is_verbose} -eq 1 ]]  && set -vx || true
+    #### function check RC Block End #####
+}<<<'
+alias BCS_CHK_ACT_EXIT_RC0='{
+    #### function check RC Block Begin #######################
+    ## $1 FORMAT: msg &&& err_actoin ||| ok_action !!! both_action
+    ##    msg: print to stdout if RC of last command (that is $!) is not 0
+    ##    err_action: shell statement will be run if $? not equal 0
+    ##    ok_action : shell statement will be run if $? equal 0
+    ##    both_action : shell statement will be run regardless of $!
+    ############################################################
+    RET=$?;  BCS_SH_VERBOSE && is_verbose=1 || is_verbose=0
+    [[ ${g_debug_framework} -ne 1 ]] && set +vx
+
+     INPUTSTR=$(cat -); MSG="${INPUTSTR}"
+    MSG="${MSG%%&&&*}"; MSG="${MSG%%|||*}"; MSG="${MSG%%!!!*}";
+
+    NGACT="${INPUTSTR##*&&&}"; [[ "${NGACT}" == "${INPUTSTR}" ]] && NGACT="" \
+    || { NGACT="${NGACT%%|||*}"; NGACT="${NGACT%%!!!*}"; }
+
+    OKACT="${INPUTSTR##*|||}"; [[ "${OKACT}" == "${INPUTSTR}" ]] && OKACT="" \
+    || { OKACT="${OKACT%%!!!*}"; OKACT="${OKACT%%&&&*}"; }
+
+    ALACT="${INPUTSTR##*!!!}"; [[ "${ALACT}" == "${INPUTSTR}" ]] && ALACT="" \
+    || { ALACT="${ALACT%%|||*}"; ALACT="${ALACT%%&&&*}"; }
+
+    if [[ ${RET} -ne 0 ]]; then
+        eval "${NGACT}"; eval "${ALACT}"; ERR "${MSG}, RET=${RET}"
+        [[ ${is_verbose} -eq 1 ]]  && set -vx || true
+        exit ${RET}
+    else
+        eval "${OKACT}"; eval "${ALACT}"
+    fi
+    [[ ${is_verbose} -eq 1 ]]  && set -vx || true
+    #### function check RC Block End #####
+}<<<'
+alias BCS_ASSERT='{
+    #### function check RC Block Begin #######################
+    ## $1 FORMAT: msg &&& err_actoin ||| ok_action !!! both_action
+    ##    msg: print to stdout if RC of last command (that is $!) is not 0
+    ##    err_action: shell statement will be run if $? not equal 0
+    ##    ok_action : shell statement will be run if $? equal 0
+    ##    both_action : shell statement will be run regardless of $!
+    ############################################################
+    RET=$?;  BCS_SH_VERBOSE && is_verbose=1 || is_verbose=0
+    [[ ${g_debug_framework} -ne 1 ]] && set +vx
+
+    INPUTSTR=$(cat -); COND="${INPUTSTR}"
+    COND="${COND%%@@@*}"; OTHER="${INPUTSTR##*@@@}"
+    [[ "${INPUTSTR}" == "${OTHER}" ]] && OTHER=
+    eval "${COND}"
+    BCS_CHK_ACT_EXIT_RC0 "ASSERT failed(${COND}),${OTHER}"
+    [[ ${is_verbose} -eq 1 ]]  && set -vx || true
+    #### function check RC Block End #####
+}<<<'
 alias BCS_WARN_RC0='{
     #### function check RC Block Begin #####
     RET=$?
@@ -127,6 +234,28 @@ function my_check_utility {
         BCS_CHK_RC0 "---->$u<---- could not be found in $PATH"
         DBG "$u is $(type $u)"
     done
+}
+
+function my_gen_temp {
+    typeset vname=${1?"no var name is specified"}
+    typeset appendix=${2:-"tmp"}
+    typeset fn="${g_tmp_dir}/tmp.$(id -un).$(date +'%m%d_%H%M%S.%N').$(printf "%05d" $((${RANDOM} % 10000))).${appendix}"
+    echo ${fn} >> ${g_tmp_list}
+    eval ${vname}="${fn}"
+}
+function my_clean_temp {
+    [[ ! -f ${g_tmp_list} ]] && return 0
+    cat ${g_tmp_list} | while read f; do
+        ## don't remove log file if it's size is greater than 0
+        [[ $f =~ .log$ ]] && [[ -s ${f} ]] && continue
+        rm -f $f
+    done
+    rm -f ${g_tmp_list}
+    return 0
+}
+function my_init_temp {
+    > ${g_tmp_list}
+    return $?
 }
 
 ############################################################
