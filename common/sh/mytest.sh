@@ -88,6 +88,15 @@ function my_test_BCS_RUN_AND_CHK {
     [[ $? -ne 0 && $(echo ${ret}) =~ ^999.*888.*AAA\ BBB.*RET=1$ ]] && echo "ok" || echo "ng ${ret}"
     ret=$(run_and_chk "${CMDNG}" "@@@ AAA BBB ${CMD} &&& echo 999 ||| echo 888 !!! echo 777" 2>&1)
     [[ $? -ne 0 && $(echo ${ret}) =~ ^999.*777.*AAA\ BBB.*RET=1$ ]] && echo "ok" || echo "ng ${ret}"
+
+    echo "------ CMD COND ------"
+    a="NNN"
+    ret=$(run_and_chk "[[ -n '$a' ]]" "@@@ AAA BBB" 2>&1)
+    [[ $? -eq 0 && $(echo ${ret}) == "" ]] && echo "ok" || echo "ng ${ret}"
+
+    a=
+    ret=$(run_and_chk "[[ -n \"$a\" ]]" "@@@ AAA BBB" 2>&1)
+    [[ $? -ne 0 && $(echo ${ret}) =~ AAA\ BBB.*RET=1$ ]] && echo "ok" || echo "ng ${ret}"
 }
 function my_entry_BCS_ASSERT {
     BCS_ASSERT "rm /aaa/bbb @@@ faild to delete file /aaa/bbb &&& echo 999 ||| echo 888 !!! echo 777"
