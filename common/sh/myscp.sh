@@ -5,7 +5,7 @@
 	#exit 1
 #fi
 
-sshopt="-o ServerAliveCountMax=2 -o ServerAliveInterval=120 -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa"
+sshopt="-o ForwardAgent=yes -o TCPKeepAlive=yes -o ServerAliveCountMax=2 -o ServerAliveInterval=1 -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa"
 
 cmd="${@}"
 #set -vx
