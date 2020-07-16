@@ -65,7 +65,7 @@ export NFSPATH=/nfs/users/${MYSELFID}
 [[ ! -d $NFSPATH ]] && export NFSPATH=/home/${MYSELFID}
 [[ ! -d $NFSPATH ]] && export NFSPATH=$HOME
 export NFS=$NFSPATH
-export PATH=$NFSPATH/common/sh:$PATH:$NFSPATH/common/$OS/bin:/usr/vac/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/openwin/bin:/usr/X11/bin
+export PATH=$NFSPATH/common/sh:$NFSPATH/common/py:$PATH:$NFSPATH/common/$OS/bin:/usr/vac/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/openwin/bin:/usr/X11/bin
 export PATH=/opt/taobao/java/bin:/opt/taobao/antx/bin:/opt/taobao/ant/bin:/opt/taobao/antx/dist/antx/bin:/opt/taobao/mysql/bin:/opt/taobao/install/R/bin:/opt/taobao/maven/bin:/opt/rational/clearcase/bin:/opt/taobao/install/gnupg/bin:/opt/taobao/node/bin::/usr/local/mychain.mycdt/bin:$PATH
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/lib:/usr/local/lib:$NFSPATH/common/`uname -s`/lib
 
@@ -80,6 +80,7 @@ export CVSLOG=$NFSPATH/_cvslog_important_do_NOT_delete
 #[[ $HOME = "/nfs/users/${MYSELFID}" ]] && export DIR_TRASH=$NFS/gomihako || export DIR_TRASH=$HOME/gomihako
 export DIR_TRASH=$HOME/gomihako && mkdir -p $DIR_TRASH >/dev/null 2>&1
 export SH=$NFS/common/sh
+export PY=$NFS/common/py
 export WINSH=$NFS/common/winsh
 export SHR=$NFS/share
 
