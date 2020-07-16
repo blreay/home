@@ -1,4 +1,13 @@
 #!/usr/bin/python
+# 在Linux下面浏览代码，一般都是Vim／Emacs加上tags和cscope的组合。但是，ctags和cscope程序在生成相应的索引文件时，一般都是默认查找项目中的所有文件，这样就会在项目较大时造成索引文件过大的后果，比如Linux kernel，解压缩之后有几百M，如果完全索引，对应的ctags文件和cscope文件加起来也有一百多M，这样间接的也造成了如果有新的文件加入项目中想重新生成索引文件时时间过长。当然可以使用find＋grep命令指定需要查找的文件和目录，把这些文件路径写入一个文件，然后再调用ctags和cscope根据该文件中记录的文件来生成索引，但是毕竟这样做麻烦。
+
+#mktags项目就是基于要上面需要解决的几个问题而出现的，它的目的是可以让使用者指定需要关注的项目路径和文件类型，然后根据这些来生成索引文件。
+# 比如，我可以在存放Linux kernel代码的路径中键入如下命令：
+#mktags -a include/ arch/ mm/  kernel/ ipc/ -t .c .h
+#表示我只关注 include.arch,mm,kernel,ipc下面的.c和.h文件
+
+#项目地址在:
+#http://code.google.com/p/mktags/
 
 __author__ = "Lichuang"
 __version__ = "0.4"
