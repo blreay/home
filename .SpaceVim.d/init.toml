@@ -1,0 +1,76 @@
+#=============================================================================
+# basic.toml --- basic configuration example for SpaceVim
+# Copyright (c) 2016-2017 Wang Shidong & Contributors
+# Author: Wang Shidong < wsdjeg at 163.com >
+# URL: https://spacevim.org
+# License: GPLv3
+#=============================================================================
+
+# All SpaceVim option below [option] section
+[options]
+    # set spacevim theme. by default colorscheme layer is not loaded,
+    # if you want to use more colorscheme, please load the colorscheme
+    # layer
+    colorscheme = "gruvbox"
+    colorscheme_bg = "dark"
+    #colorscheme = "molokai"
+    # Disable guicolors in basic mode, many terminal do not support 24bit
+    # true colors
+# enable_guicolors = false
+    enable_guicolors = false
+    enable_powerline_fonts = 1
+    guifont = "SauceCodePro Nerd Font Mono:h11"
+    # Disable statusline separator, if you want to use other value, please
+    # install nerd fonts
+    statusline_separator = "arrow"
+    statusline_inactive_separator = "bar"
+    buffer_index_type = 4
+    windows_index_type = 3
+    enable_tabline_filetype_icon = false
+    enable_statusline_mode = false
+    statusline_unicode_symbols = false
+    enable_statusline_tag = true
+    # Enable vim compatible mode, avoid changing origin vim key bindings
+    vimcompatible = true
+
+  # by zhaoyong.zzy
+  relativenumber = false
+  bootstrap_before = "myspacevim#before"
+  bootstrap_after = "myspacevim#after"
+
+[[custom_plugins]]
+name = "vim-scripts/ShowMarks"
+# on_cmd = ["ColorHighlight", "ColorToggle"]
+# merged = false
+
+
+# Enable autocomplete layer
+[[layers]]
+name = 'autocomplete'
+auto_completion_return_key_behavior = "complete"
+auto_completion_tab_key_behavior = "cycle"
+enable = true
+
+[[layers]]
+name = "tools"
+enable = true
+
+[[layers]]
+name = "unite"
+enable = true
+
+[[layers]]
+name = "git"
+git-plugin = "fugitive"
+enable = true
+
+[[layers]]
+name = "VersionControl"
+enable = true
+
+[[layers]]
+name = "shell"
+enable = true
+default_position = "top"
+default_height = 30
+
