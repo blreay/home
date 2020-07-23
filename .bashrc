@@ -102,6 +102,7 @@ export MYPC=$(who |grep $USER | grep "${SSH_TTY/\/dev\/}" | awk '{print $NF}' | 
 vimexe="$NFSPATH/common/$OS/bin/vim" && [[ -f $vimexe ]] || vimexe="vim"
 [[ -f "/usr/bin/vim" ]] && vimexe=/usr/bin/vim
 [[ -f "/usr/local/bin/vim" ]] && vimexe=/usr/local/bin/vim
+[[ -f "/usr/local/vim/bin/vim" ]] && vimexe=/usr/local/vim/bin/vim
 export vimexe MYHOME
 ## vim is shell script: common/sh/vim, in order to show parameter clearly in fg command
 #alias vim="TERM=xterm-256color $vimexe -X"
