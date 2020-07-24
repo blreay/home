@@ -71,9 +71,8 @@ function! myspacevim#after() abort
   " hi ShowMarksHLu ctermbg=Magenta  ctermfg=Black  guibg=#FFB3FF    guifg=Black
   hi! ShowMarksHLu ctermbg=green  ctermfg=Black  guibg=#FFB3FF    guifg=Black
   highlight BookmarkLine ctermbg=Yellow ctermfg=Black
-  set autochdir
-  "to avoid warn msg when starting vim: "Found a swap file by the name"
-  set noswapfile
+  "set autochdir  "===============if set autochdir, cannot open file in the quickfix window of ctrl-] and ctrl-\ s output
+  set noswapfile "to avoid warn msg when starting vim: "Found a swap file by the name"
 
   " set timeout after presss space key
   set timeoutlen=300
