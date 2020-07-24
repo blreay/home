@@ -13,12 +13,14 @@ EOF
 
 function build_vim_prepare {
   ## on CentOS Linux release 7.6.1810 (Core)
+  set -vx
   sudo yum install -y ncurses-devel.x86_64
   sudo yum install -y python3 python3-devel
 
 }
 
 function build_from_src {
+  set -vx
   url=https://github.com/vim/vim/archive/v8.2.1153.zip
   zip=${url##*/}
   dir=$(unzip -l ${zip} | grep CONTRIBUTING.md | awk '{print $NF}' | cut -d '/' -f 1)
@@ -33,19 +35,20 @@ function build_from_src {
     --enable-gui=gtk2 \
     --enable-cscope \
     --prefix=/usr/local/vim
-  make -j16
-}
+      make -j16
+    }
 
-function install_from_yum {
-  ## another way
-  ## in order to support spacevim
-  sudo wget -P /etc/yum.repos.d/ https://copr.fedorainfracloud.org/coprs/elyezer/vim-latest/repo/epel-7/elyezer-vim-latest-epel-7.repo
-  sudo yum install -y vim
-}
+  function install_from_yum {
+    ## another way
+    ## in order to support spacevim
+    sudo wget -P /etc/yum.repos.d/ https://copr.fedorainfracloud.org/coprs/elyezer/vim-latest/repo/epel-7/elyezer-vim-latest-epel-7.repo
+    sudo yum install -y vim
+  }
 
 function install_space_vim {
   ## install spacevim
   # https://spacevim.org/quick-start-guide/
+  set -vx
   cd ~
   curl -sLf https://spacevim.org/install.sh | bash
 
@@ -58,16 +61,27 @@ function install_space_vim {
   ./install.py
 }
 
+function install_space_vim_from_tgz {
+  set -vx
+  cd ~
+  wget http://${MYVM}:38080/tools/SpaceVim.tgz
+  tar zxf SpaceVim.tgz
+  mv .vim .vim.bk.$(date +'%Y%m%d_%H%M%S')
+  ln -svnf .SpaceVim .vim
+}
+
 function main {
   act=$1
-  if [[ $act == "src" ]]; then
-    build_vim_prepare
-    workdir=$HOME/tools/vim
-    mkdir -p $workdir && cd $workdir
-    build_from_src
-  else
-    install_from_yum
-  fi
+  case $act in
+    src)
+      build_vim_prepare
+      workdir=$HOME/tools/vim && mkdir -p $workdir && cd $workdir
+      build_from_src
+      ;;
+    SpaceVim_tgz) install_space_vim_from_tgz;;
+    SpaceVim_git) install_space_vim;;
+    *) install_from_yum;;
+  esac
 }
 
 main $@
