@@ -1,23 +1,24 @@
-#!/bin/sh 
+#!/bin/sh
 
 function showdbg {
-	if [[ -n "$MYDBG" ]]; then
-		showerr ${@:+"$@"}
-	fi
-} 
+    if [[ -n "$MYDBG" ]]; then
+        showerr ${@:+"$@"}
+    fi
+}
 function showerr {
-	echo "$(date +'%Y%m%d_%H%M%S') ${@:+"$@"}" >&2
+    echo "$(date +'%Y%m%d_%H%M%S') ${@:+"$@"}" >&2
 }
 function showmsg {
-	echo "$(date +'%Y%m%d_%H%M%S') ${@:+"$@"}"
+    echo "$(date +'%Y%m%d_%H%M%S') ${@:+"$@"}"
 }
 
 function myusage {
 cat - <<EOF
 ====== Usage =======
-${0##*/} <pid> [test|list|all]
+${0##*/} <pid> [test|list|all|child]
   test|list: just show the process tree
         all: kill the root process <pid> also
+      child: kill all child process of <pid>
 EOF
 }
 
@@ -25,13 +26,13 @@ EOF
 #set -vx
 typeset PidRunning=$1
 typeset act=$2
-echo "pid=${PidRunning}  act=${act}"
 
-[[ ! $act =~ (test|list|all) ]] && echo "ERROR: act[$act] is wrong" && myusage && exit 1
-
-case ${PidRunning}${act} in
+case "${PidRunning}${act}" in
 -h|help|"") myusage; exit 0;;
 esac
+
+echo "pid=${PidRunning}  act=${act}"
+[[ ! $act =~ (test|list|all|child) ]] && echo "ERROR: act[$act] is wrong" && myusage && exit 1
 
 kill -0 ${PidRunning} 2>/dev/null
 [[ $? -ne 0 ]] && echo "process: $PidRunning is not running" && exit 1
@@ -41,10 +42,10 @@ typeset -i i=1
 
 (( i=1 ))
 while [ ${i} -le ${mt_RetryKillMax} ]; do
-	#echo "###"
-    #mt_Action="$(procps -ef | egrep -v "(cps -ef|awk -v MONPID|grep -v|killpstree)" | 
-    #mt_Action="$(ps -ef | awk '{printf("%s %s %s\n", $2, $3, $NF)}' | egrep -v "(cps -ef|awk -v MONPID|grep -v|killpstree)" | 
-    mt_Action="$(UNIX95=1 ps -eo pid,ppid,args | grep -v "ps -eo pid,ppid,args"|grep -v "awk -v MONPID"|grep -v "grep -v" | 
+    #echo "###"
+    #mt_Action="$(procps -ef | egrep -v "(cps -ef|awk -v MONPID|grep -v|killpstree)" |
+    #mt_Action="$(ps -ef | awk '{printf("%s %s %s\n", $2, $3, $NF)}' | egrep -v "(cps -ef|awk -v MONPID|grep -v|killpstree)" |
+    mt_Action="$(UNIX95=1 ps -eo pid,ppid,args | grep -v "ps -eo pid,ppid,args"|grep -v "awk -v MONPID"|grep -v "grep -v" |
     awk -v MONPID="${PidRunning}" '
         {
             pchild[$2]=pchild[$2]" "$1;l[$1]=$0;
@@ -73,29 +74,29 @@ while [ ${i} -le ${mt_RetryKillMax} ]; do
         mt_Action=${PidRunning}
     fi
 
-	#echo "mt_Action="
-	echo "${mt_Action}"
-	[[ "${act}" == "test" || "${act}" == "list" ]] && exit 0
+    #echo "mt_Action="
+    echo "${mt_Action}"
+    [[ "${act}" == "test" || "${act}" == "list" ]] && exit 0
 
     while read mt_process_to_kill; do
         if [[ X${mt_process_to_kill} = X ]]; then
             continue
         fi
         mt_pid_to_kill=${mt_process_to_kill%%:*}
-		[[ "$mt_pid_to_kill" == "$PidRunning" && "${act}" != "all" ]] && showdbg "don't kill root process $PidRunning" && continue 
-		[[ "$mt_pid_to_kill" == "$$" ]] && showdbg "don't kill self $$" && continue 
-		echo "$mt_process_to_kill"
-		#procps -ef |grep $mt_pid_to_kill
+        [[ "$mt_pid_to_kill" == "$PidRunning" && "${act}" != "all" ]] && showdbg "don't kill root process $PidRunning" && continue
+        [[ "$mt_pid_to_kill" == "$$" ]] && showdbg "don't kill current shell itself $$" && continue
+        echo "$mt_process_to_kill"
+        #procps -ef |grep $mt_pid_to_kill
         kill -0 ${mt_pid_to_kill} 2>/dev/null
         if [[ $? -eq 0 ]]; then
            # process still running
-        	kill -9 ${mt_pid_to_kill} 2>/dev/null
-			:	
+            kill -9 ${mt_pid_to_kill} 2>/dev/null
+            :
         fi
     done <<-end_of_read
     ${mt_Action}
 end_of_read
-                
+
     #check if the JOB main process has been killed
     kill -0 ${PidRunning} 2>/dev/null
     if [[ $? -eq 0 ]]; then
@@ -106,5 +107,4 @@ end_of_read
         break
     fi
 done
-
 
