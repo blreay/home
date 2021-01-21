@@ -109,7 +109,7 @@ export vimexe MYHOME
 #alias vim="TERM=xterm-256color VIMRUNTIME=$MYHOME/.vim $vimexe -X --cmd \"set runtimepath^=$MYHOME/.vim\" --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
 #alias vim="TERM=xterm-256color $vimexe -X --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
 #alias s=set_vimrc
-alias ll='ls -l'
+alias ll='ls -alrt'
 alias rm="$NFS/common/sh/myrm.sh"
 alias cmy="source $NFS/work/mychain/setenv.sh ; eval cd \${SCRIPTDIR}"
 alias cmy2="source $NFS/work/mychain/setenv.sh 1 aldaba; eval cd \${SCRIPTDIR}"
@@ -282,7 +282,7 @@ export LS_COLORS='rs=0:di=01;37;44:ln=04;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=
 export ENV=$HOME/.pdkshrc
 
 ## for ant
-export MYVM=11.158.79.78
+export MYVM=100.88.149.43
 
 ## for chinese input
 #export GTK_IM_MODULE=ibus
