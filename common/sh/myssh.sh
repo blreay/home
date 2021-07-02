@@ -28,7 +28,11 @@ cmd="${@}"
 #remote-exec.sh """$cmd""" $MYPWD
 #./ssh2.sh """ssh $cmd""" $MYPWD
 #remote-ssh.sh """ssh $cmd""" "IGNORE"
-sshopt="-o TCPKeepAlive=yes -o ServerAliveCountMax=2 -o ServerAliveInterval=120 -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa"
+# -x  Disables X11 forwarding.
+# -Y  Enables trusted X11 forwarding.  Trusted X11 forwardings are not subjected to the X11 SECURITY extension controls.
+
+sshopt="-o TCPKeepAlive=yes -o ServerAliveCountMax=2 -o ServerAliveInterval=120 -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -Y"
+
 CMD="ssh ${sshopt} $@"
 echo "${CMD}"
 eval "${CMD}"
