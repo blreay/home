@@ -1,0 +1,20 @@
+[alias]
+	st = status
+	co = checkout
+	ci = commit
+	br = branch
+[receive]
+	denyCurrentBranch = ignore
+[diff]
+	tool = diffmerge
+[difftool]
+	prompt = true
+[difftool "diffmerge"]
+	cmd = diffmerge \"$LOCAL\" \"$REMOTE\"
+[merge]
+	tool = diffmerge
+[mergetool]
+	prompt = true
+[mergetool "diffmerge"]
+	cmd = diffmerge --merge --result=\"$MERGED\"  \"$LOCAL\" \"$BASE\" \"$REMOTE\"
+	trustExitCode = true
