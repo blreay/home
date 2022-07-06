@@ -289,11 +289,16 @@ export MYVM=100.88.149.43
 #export XMODIFIERS=@im=ibus
 #export QT_IM_MODULE=ibus
 
-#export LC_CTYPE="zh_CN.UTF-8"
+export LC_CTYPE="zh_CN.UTF-8"
 export XIM=fcitx
 export XIM_PROGRAM=fcitx
 export GTK_IM_MODULE=xim
 export XMODIFIERS="@im=fcitx"
+
+export MYVM10=100.88.149.43
+export MYVM010=100.88.165.27
+export MYVM=zzy.inc.alipay.net
+
 
 ##expand environment variable when press TAB
 shopt -s direxpand
