@@ -312,4 +312,3 @@ shopt -s direxpand
 [[ -t 1 ]] && stty erase '^?'
 [[ -t 1 ]] && stty intr ^C
 [[ -t 1 ]] && echo "Welcome to `uname -s` (`uname -n`) from (${MYPC})"
-

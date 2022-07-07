@@ -7,14 +7,27 @@
 	denyCurrentBranch = ignore
 [diff]
 	tool = diffmerge
+	guitool = bc4
 [difftool]
-	prompt = true
+	prompt = false
 [difftool "diffmerge"]
 	cmd = diffmerge \"$LOCAL\" \"$REMOTE\"
+[difftool "bc4"]
+	cmd = \"/cygdrive/c/Program Files/Beyond Compare 4/BCompare.exe\" \"$(cygpath -w $LOCAL)\" \"$(cygpath -w $REMOTE)\"
+	#path = \"/cygdrive/c/Program Files/Beyond Compare 4/BCompare.exe\"
+	#cmd = echo $LOCAL $REMOTE $(ls -l $LOCAL $REMOTE)
+	################################################################################
+	###### for window OS + cygwin, should use
+	######       "git difftool -g" or "git difftool --tool=gc4"
+	################################################################################
+
 [merge]
 	tool = diffmerge
+	guitool = bc4
 [mergetool]
 	prompt = true
 [mergetool "diffmerge"]
 	cmd = diffmerge --merge --result=\"$MERGED\"  \"$LOCAL\" \"$BASE\" \"$REMOTE\"
 	trustExitCode = true
+[mergetool "bc4"]
+        cmd = \"/cygdrive/c/Program Files/Beyond Compare 4/BCompare.exe\" \"$(cygpath -w $LOCAL)\" \"\"$(cygpath -w $REMOTE)\" \"$(cygpath -w $BASE)\" \"$(cygpath -w $MERGED)\"
