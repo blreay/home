@@ -1,4 +1,5 @@
-# coding=utf-8
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import commands
 import json
@@ -21,13 +22,13 @@ if __name__ == '__main__':
         #short_id = execute("docker ps | grep %s | awk '{print $1}'" % name)
         #short_id = execute("docker ps | grep %s | awk '{print $1}'" % name)
         short_id = id
-        print short_id
+        print(short_id)
         full_id = execute("docker inspect -f '{{.Id}}' %s" % short_id)
-        print full_id
+        print(full_id)
         state = execute("sudo cat /run/runc/%s/state.json" % full_id)
         f = json.loads(state)
         start_pid = f['init_process_pid']
-        print "[INFO] the init_process_pid is %s for container %s" % (start_pid, name)
+        print("[INFO] the init_process_pid is %s for container %s" % (start_pid, name))
         ns_index = execute("sudo ls -l /proc/%s/ns | awk '{print $11}'" % start_pid).split('\n')
 
         # save this ans into dict
@@ -41,4 +42,4 @@ if __name__ == '__main__':
 
         # print
         for ns in namespaces:
-            print ns, res[ns]
+            print(ns, res[ns])
