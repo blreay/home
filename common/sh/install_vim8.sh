@@ -15,34 +15,41 @@ function build_vim_prepare {
   ## on CentOS Linux release 7.6.1810 (Core)
   set -vx
   sudo yum install -y ncurses-devel.x86_64
-  sudo yum install -y python3 python3-devel
+  ## if python3 is 3.6.8, must use pyhton3-devel-3.6.8, otherwise vim start fail
+  ## but the default is python3-devel-3.8 if run: yum install python3-devel
+  sudo yum install -y python3 python3-devel-3.6.8
 
 }
 
 function build_from_src {
   set -vx
   url=https://github.com/vim/vim/archive/v8.2.1153.zip
+  wget ${url}
   zip=${url##*/}
   dir=$(unzip -l ${zip} | grep CONTRIBUTING.md | awk '{print $NF}' | cut -d '/' -f 1)
-  #wget ${url}
   unzip ${zip}
   cd ${dir}
   pwd
-  SRCDIR= ./configure --with-features=huge \
+  #SRCDIR= ./configure --with-features=huge \
+  ./configure --with-features=huge \
     --enable-multibyte \
     --enable-python3interp=yes \
     --with-python3-config-dir=/usr/lib64/python3.6/config-3.6m-x86_64-linux-gnu \
     --enable-gui=gtk2 \
     --enable-cscope \
     --prefix=/usr/local/vim
-      make -j16
-    }
+  make -j16
+  sudo make install
+  sudo cp -P /usr/local/vim/bin/* /usr/local/bin/
+}
 
   function install_from_yum {
-    ## another way
-    ## in order to support spacevim
-    sudo wget -P /etc/yum.repos.d/ https://copr.fedorainfracloud.org/coprs/elyezer/vim-latest/repo/epel-7/elyezer-vim-latest-epel-7.repo
+    ## another way, will install vim 8.0
+    sudo wget --no-check-certificate -P /etc/yum.repos.d/ https://copr.fedorainfracloud.org/coprs/elyezer/vim-latest/repo/epel-7/elyezer-vim-latest-epel-7.repo
     sudo yum install -y vim
+    # if you meet following error, run "" rpm -e --nodeps vim-minimal ""
+    #Transaction check error:
+    #file /usr/share/man/man1/vim.1.gz from install of vim-common-2:8.0.069-1.el7.centos.x86_64 conflicts with file from package vim-minimal-2:7.4.160-3.4.alios7.x86_64
   }
 
 function install_space_vim {
@@ -71,15 +78,17 @@ function install_space_vim_from_tgz {
 }
 
 function main {
-  act=$1
+  act=${1:-"src"}
   case $act in
     src)
+      ## this is the best way, suppory SpaceVim, will install vim8.2
       build_vim_prepare
       workdir=$HOME/tools/vim && mkdir -p $workdir && cd $workdir
       build_from_src
       ;;
     SpaceVim_tgz) install_space_vim_from_tgz;;
     SpaceVim_git) install_space_vim;;
+    ### will install vim8.0 which donot support SpaceVim
     *) install_from_yum;;
   esac
 }
