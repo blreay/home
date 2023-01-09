@@ -34,8 +34,8 @@ function set_en {
     chcp.com 437
 }
 function set_vimrc {
-vimnewrc1=$NFS/.vim/.vimrc.conf
-vimnewrc2=$HOME/.vim/.vimrc.conf
+vimnewrc1=$NFS/.vim.bk/.vimrc.conf
+vimnewrc2=$HOME/.vim.bk/.vimrc.conf
 #axx1xx
 while read line; do eval $line; done <<-EOF
 $({ test -f $vimnewrc1 && DISPLAY= gpg -o - $vimnewrc1 2>/dev/null; }  || { test -f $vimnewrc2 && DISPLAY= gpg -o - $vimnewrc2 2>/dev/null; })
@@ -80,7 +80,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/lib:/usr/local/lib:$NFSPATH/co
 #export CVS_RSH=ssh
 #export MYCVSROOT=":pserver:${MYSELFID}@bej301738.cn.oracle.com:/home/${MYSELFID}/repos"
 
-export CVSLOG=$NFSPATH/_cvslog_important_do_NOT_delete
+#export CVSLOG=$NFSPATH/_cvslog_important_do_NOT_delete
 #[[ $HOME = "/nfs/users/${MYSELFID}" ]] && export DIR_TRASH=$NFS/gomihako || export DIR_TRASH=$HOME/gomihako
 export DIR_TRASH=$HOME/gomihako && mkdir -p $DIR_TRASH >/dev/null 2>&1
 export SH=$NFS/common/sh
@@ -288,9 +288,6 @@ export LS_COLORS='rs=0:di=01;37;44:ln=04;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=
 
 ## for PDKSH
 export ENV=$HOME/.pdkshrc
-
-## for ant
-export MYVM=100.88.149.43
 
 ## for chinese input
 #export GTK_IM_MODULE=ibus
