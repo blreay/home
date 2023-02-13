@@ -70,6 +70,7 @@ import sys
 import logging
 import argparse
 import codecs
+import fcntl
 # import gflags
 # from absl import flags, app
 
@@ -108,11 +109,6 @@ class DbgAction(argparse.Action):
         setattr(namespace, self.dest, "DEBUG")
         my_logger.setLevel("DEBUG")
 
-
-# def parse(obj):
-#     enable_console_stdout_log(None);
-#     arg = obj.parse_args()
-#     return arg
 
 def exe_cmd(cmd:str, use_shell=1, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr):
     my_logger.debug(f'run command with popen[{cmd}] stdin={stdin} stdout={stdout} stderr={stderr}')
@@ -164,9 +160,99 @@ def write_json_data(params, file:str):
             json.dump(params, r)
     except:
         my_logger.exception(f'write json file[{file}] failed with exception[{e}]', exc_info=e)
-        raise e
+        # raise e
+        return 1
     return 0
 
 
 def format_json_data(params):
     return json.dumps(params, ensure_ascii=False, indent=4, separators=(',', ':'))
+
+class MyObject:
+    def __init__(self):
+        self.logger = my_logger
+        pass
+
+##############################################################################
+## Thread/Process safe named pipe implementation
+## used to do communication between 2 process or multithread
+## it's using file lock to protect cross-process
+##############################################################################
+class MySafeNamedPipe(MyObject):
+    def __init__(self, pipe_name, logger=None):
+        super().__init__()
+        self.logger = self.logger if logger is None else logger
+        tmp_file_root = "/tmp"
+        try:
+            self.fifo_path = "{}/{}.pipe".format(tmp_file_root, pipe_name)
+            self.logger.info(f'named pipe: fifo path={self.fifo_path}')
+            if not os.path.exists(self.fifo_path):
+                os.mkfifo(self.fifo_path)
+        except Exception as e:
+            self.logger.exception(f"exception occured when creating named pipe({pipe_name}) [{e}]", exc_info = e)
+
+        self.block_file = "{}/{}.pipe.lock".format(tmp_file_root, pipe_name)
+        self.logger.info(f'block file path={self.block_file}')
+        if not os.path.exists(self.block_file):
+            f = open(self.block_file, "w")
+            f.close()
+        self.fp_block = open(self.block_file, "w")
+
+    def __del__(self):
+        try:
+            self.logger.info(f'remove pipe file: {self.fifo_path}')
+            os.remove(self.fifo_path)
+        except:
+            self.logger.exception(f"exception occured when delete named pipe({self.fifo_path}) [{e}]", exc_info = e)
+
+        try:
+            self.logger.info(f'remove lock file: {self.block_file}')
+            os.remove(self.block_file)
+        except:
+            self.logger.exception(f"exception occured when delete named pipe({self.block_file}) [{e}]", exc_info = e)
+
+    def __lock(self, flag=fcntl.LOCK_EX | fcntl.LOCK_NB):
+        fcntl.flock(self.fp_block.fileno(), flag)
+
+    def __unlock(self):
+        fcntl.flock(self.fp_block.fileno(), fcntl.LOCK_UN)
+
+    def send(self, msg):
+        try:
+            self.__lock()
+            f = os.open(self.fifo_path, os.O_RDWR | os.O_NONBLOCK)
+            os.write(f, "{};".format(json.dumps(msg)).encode("utf-8"))
+        except Exception:
+            self.logger.info(traceback.format_exc())
+            return False
+        finally:
+            self.__unlock()
+        return True
+
+    def receive(self):
+        msg_str = ""
+        try:
+            self.__lock()
+            f = os.open(self.fifo_path, os.O_RDWR | os.O_NONBLOCK)
+            while True:
+                try:
+                    s = os.read(f, 1).decode("utf-8")
+                    #logger.info(f'msg0302 read {s}')
+                    if s != ";":
+                        msg_str += s
+                    else:
+                        break
+                except BlockingIOError as e:
+                    self.__unlock()
+                    time.sleep(1)
+                    self.__lock()
+                    continue
+                except Exception:
+                    self.logger.info(traceback.format_exc())
+                    break
+        except Exception as e:
+            self.logger.exception(f"exception occured e=[{e}]", exc_info=e)
+            return ""
+        finally:
+            self.__unlock()
+        return msg_str
