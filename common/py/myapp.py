@@ -104,13 +104,13 @@ class DbgAction(argparse.Action):
         super().__init__(option_strings, dest, 0, **kwargs)
 
     def __call__(self, parser, namespace, values, option_string=None):
-        print('%r %r 99=%r %s' % (namespace, values, option_string, self.dest))
+        #print('%r %r 999=%r %s' % (namespace, values, option_string, self.dest))
         # setattr(namespace, self.dest, values)
         setattr(namespace, self.dest, "DEBUG")
         my_logger.setLevel("DEBUG")
 
 
-def exe_cmd(cmd:str, use_shell=1, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr):
+def exe_cmd(cmd:str, use_shell=True, stdin=sys.stdin, stdout=None, stderr=None):
     my_logger.debug(f'run command with popen[{cmd}] stdin={stdin} stdout={stdout} stderr={stderr}')
     obj = subprocess.Popen([cmd], shell=use_shell, stdin=stdin, stdout=stdout, stderr=stderr)
     my_logger.debug(f'popen() return obj[{obj}]')
@@ -118,7 +118,7 @@ def exe_cmd(cmd:str, use_shell=1, stdin=sys.stdin, stdout=sys.stdout, stderr=sys
     # ret = obj.returncode
     return obj
 
-def exe_cmd_sync(cmd:str, use_shell=1, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr):
+def exe_cmd_sync(cmd:str, use_shell=True, stdin=sys.stdin, stdout=None, stderr=None):
     my_logger.debug(f'run command with popen[{cmd}] stdin={stdin} stdout={stdout} stderr={stderr}')
     obj = exe_cmd(cmd, use_shell, stdin, stdout, stderr)
     obj.wait()
@@ -126,10 +126,12 @@ def exe_cmd_sync(cmd:str, use_shell=1, stdin=sys.stdin, stdout=sys.stdout, stder
     my_logger.debug(f'command [{cmd}] end with code[{ret}]')
     return ret
 
-def run(func, appinfo):
+def run(func, appinfo = None):
     sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
-    # global g_appinfo
+    if appinfo == None:
+        appinfo = {"prog": f"{sys.argv[0]}", "description": ""}
+
     enable_console_stdout_log(None);
 
     # create the top-level parser
@@ -140,7 +142,8 @@ def run(func, appinfo):
                         help='enable debug log')
 
     ### run user main function
-    func(parser)
+    ret = func(parser)
+    my_logger.debug(f'Calling UDF End with [{ret}]')
 
 
 def load_json_data(file:str):

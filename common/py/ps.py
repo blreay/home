@@ -170,6 +170,9 @@ def main(parser):
     arg = parser.parse_args()
     # arg = myapp.parse(parser)
     g_logger.debug(f'commandline parse result: [{arg}]')
+    # if no valid command is specified, show help msg
+    if not hasattr(arg, 'func'):
+        parser.parse_args(['-h', '-a'])
     eval(arg.func)(arg)
     g_logger.debug(f'main end')
 
@@ -177,4 +180,5 @@ def main(parser):
 if __name__ == "__main__":
     g_logger.debug(f'python entry begin')
     myapp.run(main, g_appinfo)
+    #myapp.run(main)
     g_logger.debug(f'python entry end')
