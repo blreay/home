@@ -31,3 +31,6 @@
 	trustExitCode = true
 [mergetool "bc4"]
         cmd = \"/cygdrive/c/Program Files/Beyond Compare 4/BCompare.exe\" \"$(cygpath -w $LOCAL)\" \"\"$(cygpath -w $REMOTE)\" \"$(cygpath -w $BASE)\" \"$(cygpath -w $MERGED)\"
+[user]
+	email = happyblreay@hotmail.com
+	name = blreay
