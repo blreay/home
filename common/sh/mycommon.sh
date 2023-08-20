@@ -40,6 +40,26 @@ typeset g_bcs_stack_demiliter=";"
 typeset G_BCS_RET_CODE_STACK=""
 typeset G_BCS_VERBOSE_STACK=""
 
+###########################################################
+## This funciton may be called 2 times, one for ctrl-c
+## another one is normal exit
+function _my_framework_clean_ {
+  g_pid=$$
+  echo "############ cleanup pid: ${g_pid:-$$} $(cat ${PIDFILE} 2>/dev/null)"
+  #following statement must not use "all" because the second mykilltree.sh will not work
+  mykilltree.sh ${g_pid} child
+  echo "all child process have been killed, try to kill current process: ${g_pid}"
+  #including all to kill all include itself, this is mandatory because Ctrl-C lead to
+  #some child process's parent become 1, must store it's PID to physical file
+  [[ -f "${PIDFILE}" ]] && { mykilltree.sh $(cat $PIDFILE) all ; /bin/rm -f ${PIDFILE}; }
+  echo "############ after kill:  ${g_appname}"
+  ps -ef|grep ${g_appname} |egrep -v "(vim|grep|$$)"
+  #mykilltree.sh $$
+  echo "############ cleanup done"
+}
+#trap '_my_framework_clean_' INT EXIT
+[[ ! $0 =~ bash$ ]] && trap '_my_framework_clean_' INT
+
 ##############################################
 function my_bcs_stack_push {
   typeset stackname=${1?"ERROR: ${FUNCNAME[0]} argument 1 stackname is empty"}
@@ -107,6 +127,15 @@ function LOGJSON {
     printf -v MSG "$(date +'%Y%m%d_%H:%M:%S') %06d [%03d] [${srcfile} ${funcname}]%s\n" ${BASHPID} ${lineno} "${MSG}:dump json file ${file}"
     [[ -z "${g_log}" ]] && { cat "${file}" | jq .; true; } || (cat "${file}" | jq .) >> "${g_log}" 2>&1
     [[ "${verbose}" -eq 1 ]] && set -vx || true
+}
+function output_kv_with_color {
+  typeset key=$1
+  typeset value=$2
+  typeset length=$3
+  typeset COLOR=$4
+  typeset delmitor=${5:-" "}
+  ## COLOR is g_color_xxx
+  MSG "${COLOR}${key} $(eval printf \'${delmitor}%.0s\' {1..$((length-${#key}))}) ${value}${g_color_reset}"
 }
 ##############################################
 alias BCS_SH_VERBOSE='set -o | egrep "verbose.*on" >/dev/null 2>&1'
@@ -245,7 +274,6 @@ function my_check_utility {
         DBG "${u} is $(type ${u})"
     done
 }
-
 function my_gen_temp {
     typeset vname=${1?"no var name is specified"}
     typeset appendix=${2:-"tmp"}
@@ -271,6 +299,7 @@ function my_init_temp {
 
 ############################################################
 function main {
+    typeset g_pid=$$
     # check if current shell is bash, only support bash
     [[ -z "$BASH_VERSION" ]] && echo "Current shell[$0] is not bash. only support bash" && return 1
     DBG "BASH_SOURCE: ${BASH_SOURCE[*]}"
@@ -287,16 +316,20 @@ function main {
     export g_appname_short=${g_appname##*/}
     export g_verbose=0
 
+    g_appname=$(basename ${BASH_SOURCE[0]})
+    PIDFILE=_pid_of_${g_appname}
+    #/bin/rm -f ${PIDFILE} && echo $$ > ${PIDFILE}
+
     init_arg=${1:-}
     if [[ ${init_arg} =~ ^- ]]; then
-        init_arg2=$(echo "${init_arg}" | tr -d '\-dDfh')
+        init_arg2=$(echo "${init_arg}" | tr -d '\-dDFh')
         shift 1
         if [[ ! -z "$init_arg" ]]; then
             unset OPTIND
-            while getopts :dDfh ch ${init_arg}; do
+            while getopts :dDFh ch ${init_arg}; do
                 case $ch in
                 "d") export MYDBG=DEBUG;;
-                "f") export g_debug_framework=1;;
+                "F") export g_debug_framework=1;;
                 "D") export g_verbose=1; set -vx;;
                 "h") my_show_usage_entry; return 0;;
                 esac
