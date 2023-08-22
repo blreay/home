@@ -42,6 +42,10 @@
 name = "vim-scripts/ShowMarks"
 # on_cmd = ["ColorHighlight", "ColorToggle"]
 # merged = false
+[[custom_plugins]]
+name = 'roxma/vim-tmux-clipboard'
+repo = 'roxma/vim-tmux-clipboard'
+merged = false
 
 
 # Enable autocomplete layer

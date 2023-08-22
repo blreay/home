@@ -27,17 +27,24 @@ function build_from_src {
   wget ${url}
   zip=${url##*/}
   dir=$(unzip -l ${zip} | grep CONTRIBUTING.md | awk '{print $NF}' | cut -d '/' -f 1)
+  /bin/rm -rf ${dir:-NOVAL}
   unzip ${zip}
   cd ${dir}
+  mkdir myinstall
   pwd
+  #--enable-gui=yes --enable-gtk2-check --with-x \
+  # --enable-gui=gtk2 \
   #SRCDIR= ./configure --with-features=huge \
-  ./configure --with-features=huge \
+  ### NOTE: must make sure python3 is the correct executable file, especially conda is enabled
+  ### confirm it with which -a python3
+  ### SRCDIR has been exported by myself for project source code dir, must set it to empty
+  ### because ./configure command will use it
+  SRCDIR="" ./configure --with-features=huge \
     --enable-multibyte \
-    --enable-python3interp=yes \
+    --enable-python3interp \
     --with-python3-config-dir=/usr/lib64/python3.6/config-3.6m-x86_64-linux-gnu \
-    --enable-gui=gtk2 \
     --enable-cscope \
-    --prefix=/usr/local/vim
+    --prefix=$(pwd)/${dir}/myinstall
   make -j16
   sudo make install
   sudo cp -P /usr/local/vim/bin/* /usr/local/bin/

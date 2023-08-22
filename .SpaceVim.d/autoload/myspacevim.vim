@@ -23,6 +23,27 @@ function! myspacevim#before() abort
   let g:tagbar_silent      = 0
   let g:tagbar_iconchars = ['+', '-']
 
+  "############ Clipboard #################################
+  " copy to attached terminal using the yank(1) script:
+  " https://github.com/sunaku/home/blob/master/bin/yank
+  function! Yank(text) abort
+    let escape = system('myyank.sh', a:text)
+    if v:shell_error
+      echoerr escape
+    else
+      call writefile([escape], '/dev/tty', 'b')
+    endif
+  endfunction
+  noremap <silent> <Leader>y y:<C-U>call Yank(@0)<CR>
+
+  " automatically run yank(1) whenever yanking in Vim
+  " (this snippet was contributed by Larry Sanderson)
+  function! CopyYank() abort
+    call Yank(join(v:event.regcontents, "\n"))
+  endfunction
+  autocmd TextYankPost * call CopyYank()
+  "############ Clipboard #################################
+
   "############# YCM #######################
   let g:spacevim_enable_ycm = 1
   " let g:ycm_auto_hover = 'CursorHold'  " default is CursorHold, but very slow when moving cursor, must disable it
@@ -176,5 +197,5 @@ function! myspacevim#after() abort
     nmap <C-\>a :cs find a <C-R>=expand("<cword>")<CR><CR>:botright copen<CR><CR>
   endif
   set t_Co=256
-  ############# cscope and ctags END ###############################################################
+  " ############# cscope and ctags END ###############################################################
 endf
