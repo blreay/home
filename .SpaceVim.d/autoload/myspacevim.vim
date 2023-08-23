@@ -41,7 +41,9 @@ function! myspacevim#before() abort
   function! CopyYank() abort
     call Yank(join(v:event.regcontents, "\n"))
   endfunction
-  autocmd TextYankPost * call CopyYank()
+  " it's boring to pop up the "allow OSC 52" when press dd to delete one line,
+  " disable it for now
+  " autocmd TextYankPost * call CopyYank()
   "############ Clipboard #################################
 
   "############# YCM #######################
