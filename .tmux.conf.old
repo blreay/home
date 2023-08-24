@@ -1,0 +1,229 @@
+#
+# author   : ZhaoYong Zhang <happyblreay@gmail.com>
+# modified : 2019 Sep 22
+#
+# if this was changed, run "tmux source ~/.tmux.conf" to reload it and make sense immediatelly
+
+set-option -g default-shell /bin/bash
+
+## general
+set-option -g history-limit 65535
+
+## time
+set-option -g display-time 5000 # message display time in (ms), should long enough
+set-option -g repeat-time 1000 # lasting time (ms) between a repeatable command
+set-option -sg escape-time 1 # waiting time (ms) after prefix, small for more responsitive
+set-option -g default-terminal "screen-256color"
+set-window-option -g alternate-screen on
+set-option -g renumber-windows on
+ 
+## style
+set-option -g status-keys vi
+set-window-option -g mode-keys vi
+#set-window-option -g utf8 on
+ 
+## modify prefix to activate tmux
+#set-option -g prefix C-a
+unbind-key C-b
+#unbind-key C-j
+#bind-key C-a send-prefix
+set-option -g prefix C-j
+set-option -g prefix2 C-k
+#bind-key C-j send-prefix
+#bind-key C-h send-prefix
+#bind-key C-k send-prefix
+#bind-key C-l send-prefix
+ 
+# control sessions
+#bind-key z kill-session
+ 
+## split window
+unbind '"'
+bind - splitw -v # vertical split (prefix -)
+unbind %
+bind | splitw -h # horizontal split (prefix |)
+ 
+## select pane (move like vim)
+bind -r k select-pane -U # above (prefix k)
+bind -r j select-pane -D # below (prefix j)
+bind -r h select-pane -L # left (prefix h)
+bind -r l select-pane -R # right (prefix l)
+ 
+## resize pane
+#bind -r ^k resizep -U 10 # upward (prefix Ctrl+k)
+#bind -r ^j resizep -D 10 # downward (prefix Ctrl+j)
+#bind -r ^h resizep -L 10 # to the left (prefix Ctrl+h)
+#bind -r ^l resizep -R 10 # to the right (prefix Ctrl+l)
+ 
+## easy to swich window, like byobu
+#bind-key -n F2 new-window
+#bind-key -n F3 previous-window
+#bind-key -n F4 next-window
+#bind m command-prompt "splitw -h 'exec man %%'"
+#bind b command-prompt "splitw -h 'exec %% | less'"
+bind b command-prompt "splitw -h 'exec %%'"
+bind B command-prompt "splitw -v 'exec %%'"
+bind e command-prompt "swap-window -t %%"
+ 
+## color
+set -g status-fg black
+#set -g status-bg black
+#set -g status-bg bule
+setw -g window-status-style 'fg=white'
+setw -g window-status-style 'bg=default'
+setw -g window-status-style dim
+setw -g window-status-current-style 'fg=white'
+setw -g window-status-current-style 'bg=red'
+setw -g window-status-current-style 'bright'
+set -g pane-border-style 'fg=green'
+set -g pane-border-style 'bg=black'
+set -g pane-active-border 'fg=white'
+set -g pane-active-border 'bg=yellow'
+set -g message-style 'fg=white'
+set -g message-style 'bg=black'
+#set -g message-attr-style bright
+ 
+## status bar
+#set-option -g status-utf8 on
+##set -g status-bg yellow
+
+## for tmux 3.3a
+#set -g status-left-bg blue
+set -g status-style 'bg=blue'
+set -g status-interval 30
+#set -g status-left "#[fg=green]Session: #S #[fg=white,bold,blink]Window: #I #[fg=cyan,noblink]Pane: #P"
+set -g status-left "#[fg=green]Session:#S #[fg=yellow,bold]Window:#I #[fg=cyan,noblink]Pane:#P"
+set -g status-left-length 60
+#set-option -g status-right "#[fg=cyan]#(date +%H:%M' ')" # right part: time lisk 23:59
+set-option -g status-style "bg=blue,fg=red" # right part: time lisk 23:59
+#set-option -g status-right "#[fg=cyan,bg=blue]#(date)" # right part: time lisk 23:59
+set-option -g status-right "#[fg=cyan,bg=blue]" # right part: time lisk 23:59
+set-option -g status-right-length 30 # more space left for center part (window names)
+set -g status-justify centre
+ 
+#for v2.1
+set -g mouse on
+set -g focus-events on
+
+######## for system clipboard, OSC 52 ##########
+## https://sunaku.github.io/tmux-yank-osc52.html#configure-your-tmux-conf-1
+#bind-key -T copy-mode-vi Y send-keys -M copy-pipe 'myyank.sh > #{pane_tty}'
+# transfer copied text to attached terminal with yank
+#bind-key -t vi-copy y copy-pipe 'myyank.sh > #{pane_tty}'
+# transfer copied text to attached terminal with yank
+#bind-key -n M-y run-shell 'tmux save-buffer - | myyank.sh > #{pane_tty}'
+# transfer previously copied text (chosen from a menu) to attached terminal
+#bind-key -n M-Y choose-buffer 'run-shell "tmux save-buffer -b \"%%\" - | myyank.sh > #{pane_tty}"'
+
+## notify when window contain changed, find it slow in practise
+#setw -g monitor-activity on
+#set -g visual-activity on
+#setw -g mode-mouse on
+#setw -g mouse-resize-pane on
+
+#for the 2nd, you might bind "WheelUpStatus" with "next-window", but it doesn't work, i have not found the correct statement for this purpose
+#bind -n WheelUpStatus next-window; send-keys -M
+#setw -g mouse-select-pane on
+#setw -g mouse-select-window on
+## notify when window contain changed, find it slow in practise
+#if-shell "[[ $(tmux -V|awk '{print $2}') > "2.1" ]]" '\
+#if-shell "[[ 1 == 1 ]]" '\
+#if-shell "true" ' \
+#setw -g mode-mouse on; \
+#setw -g mouse-resize-pane on; \
+#setw -g mouse-select-pane on; \
+#setw -g mouse-select-window on; \
+#'
+#if-shell "[[ `tmux -V|awk '{print $2}'` > "2.0" ]]" '\
+#set -g mouse on; \
+#'
+#if-shell "test 1 == 1" ' \
+#if-shell "/usr/bin/test $(/usr/bin/uname -s) = AIX" "setw -g mode-mouse on; setw -g mouse-resize-pane on; setw -g mouse-select-pane on; setw -g mouse-select-window on;"
+#if-shell "true" "setw -g mode-mouse on; setw -g mouse-resize-pane on; setw -g mouse-select-pane on; setw -g mouse-select-window on;"
+
+#setw -g mode-mouse on; 
+#setw -g mouse-resize-pane on; 
+#setw -g mouse-select-pane on; 
+#setw -g mouse-select-window on; 
+#display "test aaaok"
+
+#if-shell "[[ $(tmux -V|awk '{print $2}') == "2.1" ]]" 'set -g mouse on'
+#if-shell "[[ $(tmux -V|awk '{print $2}') == "2.1" ]]" 'display-message 2.1'
+#if-shell "tmux -V|grep 2.1" 'set -g mouse on' 'display-message 2.1'
+if-shell "tmux -V|grep 2.1" 'set -g mouse on'
+
+# Start copy mode when scrolling up and exit when scrolling down to bottom.
+# The "#{mouse_any_flag}" check just sends scrolls to any program running that
+# has mouse support (like vim).
+#bind -n WheelUpPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" "if -Ft= '#{pane_in_mode}' 'send-keys -M' 'copy-mode -e'"
+
+#conclusion
+bind -n WheelUpPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" "if -Ft= '#{pane_in_mode}' 'send-keys -M' 'select-pane -t=; copy-mode -e; send-keys -M'"
+bind -n WheelDownPane select-pane -t= \; send-keys -M
+bind -n C-WheelUpPane select-pane -t= \; copy-mode -e \; send-keys -M
+#bind -t vi-copy    C-WheelUpPane   halfpage-up
+#bind -t vi-copy    C-WheelDownPane halfpage-down
+#bind -t emacs-copy C-WheelUpPane   halfpage-up
+#bind -t emacs-copy C-WheelDownPane halfpage-down
+################################################################
+#for the 2nd, you might bind "WheelUpStatus" with "next-window", but it doesn't work, i have not found the correct statement for this purpose
+#bind -n WheelUpStatus next-window; send-keys -M
+
+# zoom pane <-> window
+#http://tmux.svn.sourceforge.net/viewvc/tmux/trunk/examples/tmux-zoom.sh
+bind ^x run tmux-zoom
+##
+bind r source-file ~/.tmux.conf \; display "Configuration Reloaded!"
+#]new-session -n $HOST
+#unbind-key C-j
+bind-key C-j last-window
+bind-key j next-window
+bind-key C-k next-window
+bind-key C-l previous-window
+
+##don't allow rename 
+set-option -g allow-rename off
+ 
+
+#set -g terminal-overrides 'xterm*:smcup@:rmcup@'
+#setw -g aggressive-resize on 
+
+#configuration for  seebi/tmux-colors-solarized
+#set -g @colors-solarized '256'
+#set -g @colors-solarized 'dark'
+#set -g @colors-solarized 'light'
+# set -g @colors-solarized 'base16'
+
+#configuration for  jimeh/tmux-themepack
+#set -g @themepack 'basic'
+#set -g @themepack 'powerline/block/blue'
+#set -g @themepack 'powerline/block/cyan'
+#set -g @themepack 'powerline/default/gray'
+#set -g @themepack 'powerline/double/magenta'
+
+#####################################################
+# List of plugins
+# Supports `github_username/repo` or full git repo URLs
+set -g @tpm_plugins '              \
+  tmux-plugins/tpm                 \
+  tmux-plugins/tmux-sensible       \
+  tmux-plugins/tmux-logging        \
+'
+#set -g @plugin 'seebi/tmux-colors-solarized'
+#set -g @plugin 'jimeh/tmux-themepack'
+set -g @plugin 'tmux-plugins/tmux-resurrect'
+
+set -g history-limit 200000
+
+# Other examples:
+# github_username/plugin_name    \
+# git@github.com/user/plugin     \
+# git@bitbucket.com/user/plugin  \
+
+#
+# Initializes TMUX plugin manager: use <prefix>-I to install above plugin automatically, need to set proxy before start tmux.
+# Keep this line at the very bottom of tmux.conf.
+run-shell '~/.tmux/plugins/tpm/tpm'
+
+if "test ! -d ~/.tmux/plugins/tpm" \
+   "run 'git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm && ~/.tmux/plugins/tpm/bin/install_plugins'"
