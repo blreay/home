@@ -255,7 +255,7 @@ tmux_conf_theme_right_separator_sub="|"
 #     - #{username_ssh}
 #tmux_conf_theme_status_left=" ❐ #S | ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} "
 #tmux_conf_theme_status_right=" #{prefix}#{mouse}#{pairing}#{synchronized}#{?battery_status,#{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} , %R , %d %b | #{username}#{root} | #{hostname} "
-tmux_conf_theme_status_left=" ❐ #S | ↑#{username}"
+tmux_conf_theme_status_left=" ❐ #S | ↑#{username} |#{prefix_highlight}"
 #tmux_conf_theme_status_right="CPU:#{cpu_percentage},load:#{loadavg}"
 tmux_conf_theme_status_right="CPU:#{cpu_percentage}"
 #set -g status-right '#(tmux-cpu)'
@@ -425,10 +425,23 @@ tmux_conf_uninstall_plugins_on_reload=false
 set -g @plugin 'tmux-plugins/tmux-copycat'
 set -g @plugin 'tmux-plugins/tmux-cpu'
 set -g @plugin 'tmux-plugins/tmux-logging'
+set -g @plugin 'tmux-plugins/tmux-prefix-highlight'
 #set -g @tpm_plugins 'tmux-plugins/tmux-resurrect'
 #set -g @plugin 'seebi/tmux-colors-solarized'
 #set -g @plugin 'jimeh/tmux-themepack'
-
+#
+## -- variables for tmux-prefix-highlight -------------------------------------
+set -g @prefix_highlight_show_copy_mode 'on'
+set -g @prefix_highlight_copy_mode_attr 'fg=black,bg=yellow,bold' # default is 'fg=default,bg=yellow'
+set -g @prefix_highlight_show_sync_mode 'on'
+set -g @prefix_highlight_sync_mode_attr 'fg=black,bg=green' # default is 'fg=default,bg=yellow'
+set -g @prefix_highlight_prefix_prompt 'PREFIX'
+set -g @prefix_highlight_copy_prompt 'Copy'
+set -g @prefix_highlight_sync_prompt 'Sync'
+#set -g @prefix_highlight_output_prefix '< '
+#set -g @prefix_highlight_output_suffix ' >'
+#
+#
 # -- custom variables ----------------------------------------------------------
 
 # to define a custom #{foo} variable, define a POSIX shell function between the
