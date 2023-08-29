@@ -428,9 +428,22 @@ set -g @plugin 'tmux-plugins/tmux-copycat'
 set -g @plugin 'tmux-plugins/tmux-cpu'
 set -g @plugin 'tmux-plugins/tmux-logging'
 set -g @plugin 'tmux-plugins/tmux-prefix-highlight'
+set -g @plugin 'tmux-plugins/tmux-open'
+set -g @plugin 'tmux-plugins/tmux-yank'
 #set -g @tpm_plugins 'tmux-plugins/tmux-resurrect'
 #set -g @plugin 'seebi/tmux-colors-solarized'
 #set -g @plugin 'jimeh/tmux-themepack'
+
+## -- variables for tmux-yank -------------------------------------
+set -g @custom_copy_command 'myyank.sh'
+set -g @yank_action 'copy-pipe' # or 'copy-pipe-and-cancel' for the default
+set -g @yank_with_mouse off # or 'on'
+#我已经启用了鼠标模式，到目前为止效果很好。 当我选择文本时，它会自动复制到tmux-buffer中，并且窗口会跳到末尾
+#因此，如果我向上滚动并单击某个内容，它会跳到末尾...当我在窗格之间切换时，会触发一个复制命令，并将输出转到末尾。
+#我真的不喜欢这种行为，我宁愿按一个按钮来复制，或者点击Q来完成复制模式或其他什么。
+#是否可以在释放鼠标按钮时禁用自动复制//自动跳转到末尾？
+unbind -T copy-mode-vi MouseDragEnd1Pane
+
 #
 ## -- variables for tmux-prefix-highlight -------------------------------------
 set -g @prefix_highlight_show_copy_mode 'on'
