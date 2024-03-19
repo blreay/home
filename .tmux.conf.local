@@ -443,7 +443,35 @@ set -g @yank_with_mouse off # or 'on'
 #因此，如果我向上滚动并单击某个内容，它会跳到末尾...当我在窗格之间切换时，会触发一个复制命令，并将输出转到末尾。
 #我真的不喜欢这种行为，我宁愿按一个按钮来复制，或者点击Q来完成复制模式或其他什么。
 #是否可以在释放鼠标按钮时禁用自动复制//自动跳转到末尾？
+unbind -T copy-mode-vi DoubleClick1Pane
+unbind -T copy-mode-vi DoubleClick2Pane
+unbind -T copy-mode-vi MouseUp1Pane
+unbind -T copy-mode-vi MouseUp2Pane
+unbind -T copy-mode-vi MouseUp3Pane
 unbind -T copy-mode-vi MouseDragEnd1Pane
+unbind-key -T copy-mode-vi MouseDragEnd1Pane
+bind -T copy-mode-vi MouseUp1Pane send-keys -X cancel
+bind -T copy-mode-vi MouseUp2Pane send-keys -X cancel
+bind -T copy-mode-vi MouseUp3Pane send-keys -X cancel
+bind -T copy-mode-vi MouseDown1Pane send-keys -X cancel
+bind -T copy-mode-vi MouseDown2Pane send-keys -X cancel
+bind -T copy-mode-vi MouseDown3Pane send-keys -X cancel
+bind -T copy-mode MouseUp1Pane send-keys -X cancel
+bind -T copy-mode MouseUp2Pane send-keys -X cancel
+bind -T copy-mode MouseUp3Pane send-keys -X cancel
+bind -T copy-mode MouseDown1Pane send-keys -X cancel
+bind -T copy-mode MouseDown2Pane send-keys -X cancel
+bind -T copy-mode MouseDown3Pane send-keys -X cancel
+#unbind-key -t vi-copy MouseDragEnd1Pane
+# disable "release mouse drag to copy and exit copy-mode", ref: https://github.com/tmux/tmux/issues/140
+#unbind-key -T copy-mode-vi MouseDragEnd1Pane
+# since MouseDragEnd1Pane neither exit copy-mode nor clear selection now,
+# let single click do selection clearing for us.
+#bind-key -T copy-mode-vi MouseDown1Pane select-pane\; send-keys -X clear-selection
+# this line changes the default binding of MouseDrag1Pane, the only difference
+# is that we use `copy-mode -eM` instead of `copy-mode -M`, so that WheelDownPane
+# can trigger copy-mode to exit when copy-mode is entered by MouseDrag1Pane
+#bind -n MouseDrag1Pane if -Ft= '#{mouse_any_flag}' 'if -Ft= \"#{pane_in_mode}\" \"copy-mode -eM\" \"send-keys -M\"' 'copy-mode -eM'
 
 #
 ## -- variables for tmux-prefix-highlight -------------------------------------

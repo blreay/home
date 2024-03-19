@@ -116,6 +116,7 @@ export vimexe MYHOME
 alias ll='ls -alrt'
 alias rm="$NFS/common/sh/myrm.sh"
 alias cmy="source  $NFS/work/mychain/setenv.sh ; eval cd \${SCRIPTDIR}"
+alias cmy0="source $NFS/work/mychain/setenv.sh 1 ovn; eval cd \${SCRIPTDIR}"
 alias cmy1="source $NFS/work/mychain/setenv.sh 1 fair-compute; eval cd \${SCRIPTDIR}"
 alias cmy2="source $NFS/work/mychain/setenv.sh 1 aldaba; eval cd \${SCRIPTDIR}"
 alias cmy3="source $NFS/work/mychain/setenv.sh 1 storageservice; eval cd \${SCRIPTDIR}"
