@@ -304,6 +304,13 @@ export MYVM10=100.88.149.43
 export MYVM010=100.88.165.27
 export MYVM=zzy.inc.alipay.net
 
+## for golang
+#export GOPROXY="https://mirrors.aliyun.com/goproxy/,direct"
+export http_proxy=47.245.93.229:10087
+export https_proxy=47.245.93.229:10087
+export no_proxy=dl.google.com
+export PATH=${HOME}/go/bin:/usr/local/go/bin:$PATH
+
 
 ##expand environment variable when press TAB
 shopt -s direxpand
@@ -316,5 +323,5 @@ shopt -s direxpand
 [[ -t 1 ]] && stty erase ^H
 [[ -t 1 ]] && stty erase '^?'
 [[ -t 1 ]] && stty intr ^C
-[[ -t 1 ]] && echo "Welcome to `uname -s` (`uname -n`) from (${MYPC})"
+#[[ -t 1 ]] && echo "Welcome to `uname -s` (`uname -n`) from (${MYPC})"
 
