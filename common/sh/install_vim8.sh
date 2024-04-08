@@ -46,8 +46,8 @@ function build_from_src {
     --enable-cscope \
     --prefix=$(pwd)/${dir}/myinstall
   make -j16
-  sudo make install
-  sudo cp -P /usr/local/vim/bin/* /usr/local/bin/
+  make install
+  sudo cp -P $(pwd)/${dir}/myinstall/bin/* /usr/local/bin/
 }
 
   function install_from_yum {
@@ -78,7 +78,7 @@ function install_space_vim {
 function install_space_vim_from_tgz {
   set -vx
   cd ~
-  wget http://${MYVM}:38080/tools/SpaceVim.tgz
+  wget http://${MYVM:-"ENV_VALUE_IS_EMPTY"}:38080/tools/SpaceVim.tgz
   tar zxf SpaceVim.tgz
   mv .vim .vim.bk.$(date +'%Y%m%d_%H%M%S')
   ln -svnf .SpaceVim .vim
