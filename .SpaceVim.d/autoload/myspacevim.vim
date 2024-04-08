@@ -23,29 +23,6 @@ function! myspacevim#before() abort
   let g:tagbar_silent      = 0
   let g:tagbar_iconchars = ['+', '-']
 
-  "############ Clipboard #################################
-  " copy to attached terminal using the yank(1) script:
-  " https://github.com/sunaku/home/blob/master/bin/yank
-  function! Yank(text) abort
-    let escape = system('myyank.sh', a:text)
-    if v:shell_error
-      echoerr escape
-    else
-      call writefile([escape], '/dev/tty', 'b')
-    endif
-  endfunction
-  noremap <silent> <Leader>y y:<C-U>call Yank(@0)<CR>
-
-  " automatically run yank(1) whenever yanking in Vim
-  " (this snippet was contributed by Larry Sanderson)
-  function! CopyYank() abort
-    call Yank(join(v:event.regcontents, "\n"))
-  endfunction
-  " it's boring to pop up the "allow OSC 52" when press dd to delete one line,
-  " disable it for now
-  " autocmd TextYankPost * call CopyYank()
-  "############ Clipboard #################################
-
   "############# YCM #######################
   let g:spacevim_enable_ycm = 1
   " let g:ycm_auto_hover = 'CursorHold'  " default is CursorHold, but very slow when moving cursor, must disable it
@@ -94,8 +71,9 @@ function! myspacevim#after() abort
   " hi ShowMarksHLu ctermbg=Magenta  ctermfg=Black  guibg=#FFB3FF    guifg=Black
   hi! ShowMarksHLu ctermbg=green  ctermfg=Black  guibg=#FFB3FF    guifg=Black
   highlight BookmarkLine ctermbg=Yellow ctermfg=Black
-  "set autochdir  "===============if set autochdir, cannot open file in the quickfix window of ctrl-] and ctrl-\ s output
-  set noswapfile "to avoid warn msg when starting vim: "Found a swap file by the name"
+  set autochdir
+  "to avoid warn msg when starting vim: "Found a swap file by the name"
+  set noswapfile
 
   " set timeout after presss space key
   set timeoutlen=300
@@ -199,5 +177,5 @@ function! myspacevim#after() abort
     nmap <C-\>a :cs find a <C-R>=expand("<cword>")<CR><CR>:botright copen<CR><CR>
   endif
   set t_Co=256
-  " ############# cscope and ctags END ###############################################################
+  ############# cscope and ctags END ###############################################################
 endf

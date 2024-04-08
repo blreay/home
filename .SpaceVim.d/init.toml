@@ -22,8 +22,7 @@
     guifont = "SauceCodePro Nerd Font Mono:h11"
     # Disable statusline separator, if you want to use other value, please
     # install nerd fonts
-    #statusline_separator = "arrow"
-    statusline_separator = "nil"
+    statusline_separator = "arrow"
     statusline_inactive_separator = "bar"
     buffer_index_type = 4
     windows_index_type = 3
@@ -34,19 +33,15 @@
     # Enable vim compatible mode, avoid changing origin vim key bindings
     vimcompatible = true
 
-  # by zhaoyong.zzy
-  relativenumber = false
-  bootstrap_before = "myspacevim#before"
-  bootstrap_after = "myspacevim#after"
+    # by zhaoyong.zzy
+    relativenumber = false
+    bootstrap_before = "myspacevim#before"
+    bootstrap_after = "myspacevim#after"
 
 [[custom_plugins]]
 name = "vim-scripts/ShowMarks"
 # on_cmd = ["ColorHighlight", "ColorToggle"]
 # merged = false
-[[custom_plugins]]
-name = 'roxma/vim-tmux-clipboard'
-repo = 'roxma/vim-tmux-clipboard'
-merged = false
 
 
 # Enable autocomplete layer
