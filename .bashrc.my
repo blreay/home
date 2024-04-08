@@ -13,12 +13,13 @@ MYSELFID=zhaoyong.zzy
 [[ -d /home/${MYSELFID} ]] && MYHOME=/home/${MYSELFID} || MYHOME=$HOME
 
 function set_proxy {
-[[ "no" == "$1" ]] && unset http_proxy HTTP_PROXY https_proxy ftp_proxy && echo "proxy has been disabled $(env|grep -i proxy)" && return
+[[ "no" == "$1" ]] && unset http_proxy HTTP_PROXY https_proxy ftp_proxy no_proxy && echo "proxy has been disabled $(env|grep -i proxy)" && return
 export HTTP_PROXY=http://cn-proxy.jp.oracle.com:80
 [[ "us" == "$1" ]] && export HTTP_PROXY=http://www-proxy.us.oracle.com:80
 export http_proxy=$HTTP_PROXY
 export https_proxy=$HTTP_PROXY
 export ftp_proxy=$HTTP_PROXY
+export no_proxy=dl.google.com
 env|grep -i proxy
 }
 function set_java {
@@ -70,7 +71,7 @@ export NFSPATH=/nfs/users/${MYSELFID}
 [[ ! -d $NFSPATH ]] && export NFSPATH=$HOME
 export NFS=$NFSPATH
 export PATH=$NFSPATH/common/sh:$NFSPATH/common/py:$PATH:$NFSPATH/common/$OS/bin:/usr/vac/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/openwin/bin:/usr/X11/bin
-#export PATH=/opt/taobao/java/bin:/opt/taobao/antx/bin:/opt/taobao/ant/bin:/opt/taobao/antx/dist/antx/bin:/opt/taobao/mysql/bin:/opt/taobao/install/R/bin:/opt/taobao/maven/bin:/opt/rational/clearcase/bin:/opt/taobao/install/gnupg/bin:/opt/taobao/node/bin::/usr/local/mychain.mycdt/bin:$PATH
+#export PATH=/opt/taobao/java/bin:/opt/taobao/antx/bin:/opt/taobao/ant/bin:/opt/taobao/antx/dist/antx/bin:/opt/taobao/mysql/bin:/opt/taobao/install/R/bin:/opt/taobao/maven/bin:/opt/rational/clearcase/bin:/opt/taobao/install/gnupg/bin:/opt/taobao/node/bin:$PATH
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/lib:/usr/local/lib:$NFSPATH/common/`uname -s`/lib
 
 ## COMMON ###
@@ -115,12 +116,6 @@ export vimexe MYHOME
 #alias s=set_vimrc
 alias ll='ls -alrt'
 alias rm="$NFS/common/sh/myrm.sh"
-alias cmy="source  $NFS/work/mychain/setenv.sh ; eval cd \${SCRIPTDIR}"
-alias cmy0="source $NFS/work/mychain/setenv.sh 1 ovn; eval cd \${SCRIPTDIR}"
-alias cmy1="source $NFS/work/mychain/setenv.sh 1 fair-compute; eval cd \${SCRIPTDIR}"
-alias cmy2="source $NFS/work/mychain/setenv.sh 1 aldaba; eval cd \${SCRIPTDIR}"
-alias cmy3="source $NFS/work/mychain/setenv.sh 1 storageservice; eval cd \${SCRIPTDIR}"
-alias cmy4="source $NFS/work/mychain/setenv.sh 1 mychain-3.0; eval cd \${SCRIPTDIR}"
 alias CD='cd $(pwd -P)'
 alias git_proxy="git config --global http.proxy http://cn-proxy.jp.oracle.com:80"
 alias mydate="date +'%Y%m%d %H:%M:%S.%N'"
@@ -258,10 +253,6 @@ case $(uname -n) in
     alias tmux="tmux"
     alias cdzzy="[[ ! -f /shr/zzy/.bashrc ]] && mount //zzy.inc.alipay.net/home /shr/zzy; cd /shr/zzy"
     ;;
-(mychaintest*)
-    :
-    #export PATH=$NFS/common/$OS/bin:$PATH
-    ;;
 (*)
     :
     ;;
@@ -301,20 +292,18 @@ export XIM_PROGRAM=fcitx
 export GTK_IM_MODULE=xim
 export XMODIFIERS="@im=fcitx"
 
-export MYVM10=100.88.149.43
-export MYVM010=100.88.165.27
-export MYVM=zzy.inc.alipay.net
-
 ## for golang
 #export GOPROXY="https://mirrors.aliyun.com/goproxy/,direct"
-export http_proxy=47.245.93.229:10087
-export https_proxy=47.245.93.229:10087
-export no_proxy=dl.google.com
+#export http_proxy=XXX:80
+#export https_proxy=XXX:80
+#export no_proxy=dl.google.com
 export PATH=${HOME}/go/bin:/usr/local/go/bin:$PATH
 
 
 ##expand environment variable when press TAB
 shopt -s direxpand
+
+[[ -f $MYHOME/.bashrc.ant ]] && . $MYHOME/.bashrc.ant
 
 #################
 ## Welcome ##
