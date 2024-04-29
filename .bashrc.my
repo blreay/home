@@ -8,6 +8,7 @@
 #[ -f ~/.`hostname`_rc ] && . ~/.`hostname`_rc
 #[ -f /etc/bashrc ] && . /etc/bashrc
 
+unset TMOUT
 export EDITOR=vim
 MYSELFID=zhaoyong.zzy
 [[ -d /home/${MYSELFID} ]] && MYHOME=/home/${MYSELFID} || MYHOME=$HOME
@@ -99,7 +100,6 @@ export LESSCHARSET=utf-8 #make sure git log can show Chinese correctly
 #export VIMRUNTIME=$HOME/.vim
 
 export LANG=C
-export EDITOR=vim
 export MYM=${MYSELFID}@slc09wou.us.oracle.com
 export MYPC=$(who |grep $USER | grep "${SSH_TTY/\/dev\/}" | awk '{print $NF}' | uniq | sed 's/(//g;s/)//g')
 
