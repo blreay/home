@@ -21,6 +21,7 @@ export http_proxy=$HTTP_PROXY
 export https_proxy=$HTTP_PROXY
 export ftp_proxy=$HTTP_PROXY
 export no_proxy=dl.google.com
+export GOPROXY=https://goproxy.cn,direct
 env|grep -i proxy
 }
 function set_java {
