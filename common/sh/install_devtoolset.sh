@@ -23,7 +23,7 @@ scl enable devtoolset-9 bash
 
 yum info ${package_name}
 
-cat - <<EOF
+cat - <<\EOF
 
 为了确定一个已安装的软件包是从哪个 yum 仓库安装的，你可以使用 `yum` 工具的一些选项来查询包信息。下面的命令将显示软件包的来源仓库：
 
