@@ -10,7 +10,7 @@
 
 unset TMOUT
 export EDITOR=vim
-MYSELFID=zhaoyong.zzy
+MYSELFID=${MYSELFID:-zhaoyong.zzy}
 [[ -d /home/${MYSELFID} ]] && MYHOME=/home/${MYSELFID} || MYHOME=$HOME
 
 function set_proxy {
