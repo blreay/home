@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #run with normal user
+set -e
 
 export VER="2.23.0"
 if [[ ! -d git-$VER ]]; then
