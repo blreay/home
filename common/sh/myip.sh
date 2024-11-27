@@ -12,3 +12,14 @@ echo
 CMD="curl ip.me"
 echo $(printf "%0.1s" "="{1..10}) $CMD $(printf "%0.1s" "="{1..10})
 eval ${CMD}
+echo
+
+CMD="curl ipinfo.io"
+echo $(printf "%0.1s" "="{1..10}) $CMD $(printf "%0.1s" "="{1..10})
+eval ${CMD}
+echo
+
+CMD="curl icanhazip.com"
+echo $(printf "%0.1s" "="{1..10}) $CMD $(printf "%0.1s" "="{1..10})
+eval ${CMD}
+echo
