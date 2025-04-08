@@ -45,20 +45,27 @@ typeset G_BCS_VERBOSE_STACK=""
 ## another one is normal exit
 function _my_framework_clean_ {
   g_pid=$$
+  #set +e
   echo "############ cleanup pid: ${g_pid:-$$} $(cat ${PIDFILE} 2>/dev/null)"
   #following statement must not use "all" because the second mykilltree.sh will not work
   mykilltree.sh ${g_pid} child
   echo "all child process have been killed, try to kill current process: ${g_pid}"
   #including all to kill all include itself, this is mandatory because Ctrl-C lead to
   #some child process's parent become 1, must store it's PID to physical file
-  [[ -f "${PIDFILE}" ]] && { mykilltree.sh $(cat $PIDFILE) all ; /bin/rm -f ${PIDFILE}; }
+  # 2025/04/08 change parameter all to child
+  [[ -f "${PIDFILE}" ]] && { pid=$(cat $PIDFILE); /bin/rm -f ${PIDFILE}; mykilltree.sh ${pid} child; }
   echo "############ after kill:  ${g_appname}"
   ps -ef|grep ${g_appname} |egrep -v "(vim|grep|$$)"
   #mykilltree.sh $$
   echo "############ cleanup done"
 }
+function _my_framework_clean_exit_ {
+  [[ -f "${PIDFILE}" ]] && { /bin/rm -f ${PIDFILE}; }
+  DBG "############ exit:  ${g_appname}"
+}
 #trap '_my_framework_clean_' INT EXIT
 [[ ! $0 =~ bash$ ]] && trap '_my_framework_clean_' INT
+[[ ! $0 =~ bash$ ]] && trap '_my_framework_clean_exit_' EXIT
 
 ##############################################
 function my_bcs_stack_push {
@@ -311,14 +318,16 @@ function main {
         DBG "in normal mode: [$0] $@"
         #export SCRIPTDIR="$(cd "$(dirname "$0")" && pwd)"
     fi
+#set -vx
+#echo ${BASH_SOURCE[*]}
     export g_apppath="$(cd "$(dirname "${BASH_SOURCE[-1]}")" && pwd)"
     export g_appname=$(basename ${BASH_SOURCE[-1]})
     export g_appname_short=${g_appname##*/}
     export g_verbose=0
 
-    g_appname=$(basename ${BASH_SOURCE[0]})
+    #g_appname=$(basename ${BASH_SOURCE[0]})
     PIDFILE=_pid_of_${g_appname}
-    #/bin/rm -f ${PIDFILE} && echo $$ > ${PIDFILE}
+    /bin/rm -f ${PIDFILE} && echo $$ > ${PIDFILE}
 
     init_arg=${1:-}
     if [[ ${init_arg} =~ ^- ]]; then
