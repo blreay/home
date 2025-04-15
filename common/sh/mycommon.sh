@@ -57,7 +57,8 @@ function _my_framework_clean_ {
   echo "############ after kill:  ${g_appname}"
   ps -ef|grep ${g_appname} |egrep -v "(vim|grep|$$)"
   #mykilltree.sh $$
-  echo "############ cleanup done"
+  echo "############ cleanup done, kill myself again"
+  mykilltree.sh ${pid} all
 }
 function _my_framework_clean_exit_ {
   [[ -f "${PIDFILE}" ]] && { /bin/rm -f ${PIDFILE}; }
