@@ -31,8 +31,8 @@ cmd="${@}"
 # -x  Disables X11 forwarding.
 # -Y  Enables trusted X11 forwarding.  Trusted X11 forwardings are not subjected to the X11 SECURITY extension controls.
 
-sshopt="-o TCPKeepAlive=yes -o ServerAliveCountMax=2 -o ServerAliveInterval=120 -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -Y"
+sshopt="-o TCPKeepAlive=yes -o ServerAliveCountMax=2 -o ServerAliveInterval=120 -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -Y -t"
 
 CMD="ssh ${sshopt} $@"
-echo "${CMD}"
+echo "${CMD}" >&2
 eval "${CMD}"
