@@ -21,5 +21,7 @@ for i in *; do
 	sudo ln -svnf $PWD/$i /usr/bin/
 done
 
+sudo yum install -y git-lfs
+
 which git
 git --version
