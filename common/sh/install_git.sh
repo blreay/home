@@ -3,8 +3,6 @@
 #run with normal user
 set -e
 
-sudo yum install -y openssl-devel libcurl-devel
-
 export VER="2.23.0"
 if [[ ! -d git-$VER ]]; then
 	wget https://github.com/git/git/archive/v${VER}.tar.gz
