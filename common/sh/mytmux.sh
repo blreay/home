@@ -8,6 +8,17 @@ shopt -s expand_aliases
 shopt -s extglob
 shopt -s xpg_echo
 shopt -s extdebug
+###
+## if tmux start failed:
+#env|grep -i term
+#sudo apt-get install -y ncurses-term
+# 1. 取消可能干扰的 terminfo 环境变量
+#unset TERMINFO TERMINFO_DIRS
+
+# 2. 给自己装一份 terminfo
+#infocmp xterm-256color > /tmp/xterm-256color.ti
+#tic -x -o ~/.terminfo /tmp/xterm-256color.ti
+####
 
 ###############################################
 # global variables

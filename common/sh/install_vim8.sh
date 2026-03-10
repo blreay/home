@@ -19,6 +19,10 @@ function build_vim_prepare {
   ## but the default is python3-devel-3.8 if run: yum install python3-devel
   sudo yum install -y python3 python3-devel-3.6.8
 
+  #for ubuntu
+  sudo apt-get install -y ncurses-devel.x86_64
+  sudo apt-get  install -y python3 python3-devel-3.6.8
+
 }
 
 function build_from_src {
