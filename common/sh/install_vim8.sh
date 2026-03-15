@@ -22,12 +22,19 @@ function build_vim_prepare {
   #for ubuntu
   sudo apt-get install -y ncurses-devel.x86_64
   sudo apt-get  install -y python3 python3-devel-3.6.8
+  sudo apt-get install -y python3.12-dev
 
 }
 
 function build_from_src {
   set -vx
   url=https://github.com/vim/vim/archive/v8.2.1153.zip
+  url=https://github.com/vim/vim/archive/v8.2.5172.zip
+  url=https://github.com/vim/vim/archive/v8.2.4999.zip
+  url=https://github.com/vim/vim/archive/v8.2.1999.zip
+  url=https://github.com/vim/vim/archive/v8.2.1299.zip
+  url=https://github.com/vim/vim/archive/v8.2.1199.zip
+  url=https://github.com/vim/vim/archive/v8.2.1159.zip
   wget ${url}
   zip=${url##*/}
   dir=$(unzip -l ${zip} | grep CONTRIBUTING.md | awk '{print $NF}' | cut -d '/' -f 1)
@@ -43,10 +50,22 @@ function build_from_src {
   ### confirm it with which -a python3
   ### SRCDIR has been exported by myself for project source code dir, must set it to empty
   ### because ./configure command will use it
-  SRCDIR="" ./configure --with-features=huge \
+
+  #for python3.6
+  SRCDIR="" echo./configure --with-features=huge \
     --enable-multibyte \
     --enable-python3interp \
     --with-python3-config-dir=/usr/lib64/python3.6/config-3.6m-x86_64-linux-gnu \
+    --enable-cscope \
+    --prefix=$(pwd)/${dir}/myinstall
+
+  #for python3.12
+  SRCDIR="" ./configure --with-features=huge \
+    --enable-multibyte \
+    --enable-python3interp \
+    --with-python3-config-dir=/usr/lib/python3.12/config-3.12-x86_64-linux-gnu \
+    --enable-python3interp=yes \
+    --with-python3-command=/usr/bin/python3.12 \
     --enable-cscope \
     --prefix=$(pwd)/${dir}/myinstall
   make -j16
@@ -58,6 +77,7 @@ function build_from_src {
     ## another way, will install vim 8.0
     sudo wget --no-check-certificate -P /etc/yum.repos.d/ https://copr.fedorainfracloud.org/coprs/elyezer/vim-latest/repo/epel-7/elyezer-vim-latest-epel-7.repo
     sudo yum install -y vim
+    sudo apt-get install -y vim
     # if you meet following error, run "" rpm -e --nodeps vim-minimal ""
     #Transaction check error:
     #file /usr/share/man/man1/vim.1.gz from install of vim-common-2:8.0.069-1.el7.centos.x86_64 conflicts with file from package vim-minimal-2:7.4.160-3.4.alios7.x86_64
@@ -79,6 +99,24 @@ function install_space_vim {
   ./install.py
 }
 
+function install_space_vim_from_git {
+  #版权声明：本文为CSDN博主「劳泉文Luna」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+  #原文链接：https://blog.csdn.net/gitblog_00070/article/details/150642921 
+  # 备份现有配置
+  typeset tag=$(date +'%Y%m%d_%H%M%S')
+  mv ~/.vim ~/.vim.bak.${tag}
+  mv ~/.vimrc ~/.vimrc.bak.${tag}
+  mv ~/.config/nvim ~/.config/nvim.bak.${tag}
+  mv ~/.SpaceVim ~/.SpaceVim.bak.${tag}
+   
+  # 手动克隆仓库
+  git clone https://gitcode.com/gh_mirrors/sp/SpaceVim.git ~/.SpaceVim
+   
+  # 创建符号链接
+  ln -sf ~/.SpaceVim ~/.vim
+  ln -sf ~/.SpaceVim/init.vim ~/.vimrc
+  ln -sf ~/.SpaceVim ~/.config/nvim
+}
 function install_space_vim_from_tgz {
   set -vx
   cd ~
@@ -98,7 +136,8 @@ function main {
       build_from_src
       ;;
     SpaceVim_tgz) install_space_vim_from_tgz;;
-    SpaceVim_git) install_space_vim;;
+    #SpaceVim_git) install_space_vim;;
+    SpaceVim_git) install_space_vim_from_git;;
     ### will install vim8.0 which donot support SpaceVim
     *) install_from_yum;;
   esac

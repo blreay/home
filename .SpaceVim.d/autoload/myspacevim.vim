@@ -177,5 +177,5 @@ function! myspacevim#after() abort
     nmap <C-\>a :cs find a <C-R>=expand("<cword>")<CR><CR>:botright copen<CR><CR>
   endif
   set t_Co=256
-  ############# cscope and ctags END ###############################################################
+  "############# cscope and ctags END ###############################################################
 endf

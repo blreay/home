@@ -37,7 +37,6 @@
     relativenumber = false
     bootstrap_before = "myspacevim#before"
     bootstrap_after = "myspacevim#after"
-    disabled_plugins = ["YouCompleteMe"]
 
 [[custom_plugins]]
 name = "vim-scripts/ShowMarks"
@@ -50,6 +49,7 @@ name = "vim-scripts/ShowMarks"
 name = 'autocomplete'
 auto_completion_return_key_behavior = "complete"
 auto_completion_tab_key_behavior = "cycle"
+auto_completion_engine = 'deoplete'  # 比如：deoplete / coc / lsp，不用 ycm
 enable = true
 
 [[layers]]
