@@ -302,6 +302,10 @@ export XMODIFIERS="@im=fcitx"
 #export no_proxy=dl.google.com
 export PATH=${HOME}/go/bin:/usr/local/go/bin:$PATH
 
+##for neovim
+export PATH=$PATH:$MYHOME/.local/bin
+##for mcp
+export PATH=$PATH:$MYHOME/.utoo-proxy
 
 ##expand environment variable when press TAB
 shopt -s direxpand

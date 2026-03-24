@@ -11,6 +11,8 @@ function! myspacevim#before() abort
   noremap <silent><leader>'   :b#<cr>:<BS>
   nmap s <Plug>(easymotion-s2)
   nmap t <Plug>(easymotion-t2)
+  " 可视模式下：<leader>y 把选中内容送给 myyank.sh, 但是不起作用
+  "xnoremap <silent> <leader>Y :<C-u>w !myyank.sh<CR>
 
 
   let g:bookmark_sign = '>>'
@@ -178,4 +180,6 @@ function! myspacevim#after() abort
   endif
   set t_Co=256
   "############# cscope and ctags END ###############################################################
+   "call clipboard#set('/home/zhaoyong.zzy/common/sh/myyank.sh -', 'tmux save-buffer -')
+   "xnoremap <silent> <Leader>y :<C-u>call CopyToWindowsClipboard()<cr>
 endf

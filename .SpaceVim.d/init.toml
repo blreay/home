@@ -37,6 +37,7 @@
     relativenumber = false
     bootstrap_before = "myspacevim#before"
     bootstrap_after = "myspacevim#after"
+#clipboard = "osc52"
 
 [[custom_plugins]]
 name = "vim-scripts/ShowMarks"
