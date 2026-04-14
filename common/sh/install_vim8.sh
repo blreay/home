@@ -120,8 +120,10 @@ function install_space_vim_from_git {
 function install_space_vim_from_tgz {
   set -vx
   cd ~
-  wget http://${MYVM:-"ENV_VALUE_IS_EMPTY"}:38080/tools/SpaceVim.tgz
-  tar zxf SpaceVim.tgz
+  local filename=SpaceVim.tgz
+  [[ $ID == "ubuntu" ]] && filename=SpaceVim.ubuntu.tgz
+  wget http://${MYVM:-"ENV_VALUE_IS_EMPTY"}:38080/tools/${filename}
+  tar zxf ${filename}
   mv .vim .vim.bk.$(date +'%Y%m%d_%H%M%S')
   ln -svnf .SpaceVim .vim
 }
