@@ -110,7 +110,8 @@ function install_space_vim_from_git {
   mv ~/.SpaceVim ~/.SpaceVim.bak.${tag}
    
   # 手动克隆仓库
-  git clone https://gitcode.com/gh_mirrors/sp/SpaceVim.git ~/.SpaceVim
+  #git clone https://gitcode.com/gh_mirrors/sp/SpaceVim.git ~/.SpaceVim
+  git clone https://github.com/SpaceVim/SpaceVim.git ~/.SpaceVim
    
   # 创建符号链接
   ln -sf ~/.SpaceVim ~/.vim
