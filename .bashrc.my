@@ -308,10 +308,10 @@ export PATH=$PATH:$MYHOME/.local/bin
 export PATH=$PATH:$MYHOME/.utoo-proxy
 
 ##expand environment variable when press TAB
-shopt -s direxpand
+[[ -n $BASH_VERSION ]] && shopt -s direxpand
 
 ##share cmd history in bash
-shopt -s histappend
+[[ -n $BASH_VERSION ]] && shopt -s histappend
 export PROMPT_COMMAND='history -a'
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=100000
@@ -319,6 +319,7 @@ export HISTFILESIZE=2000000
 
 [[ /etc/os-release ]] && . /etc/os-release
 [[ -f $MYHOME/.bashrc.ant ]] && . $MYHOME/.bashrc.ant
+[[ $ID == "ubuntu" ]] && unalias tmux
 
 #################
 ## Welcome ##
