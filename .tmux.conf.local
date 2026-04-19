@@ -530,8 +530,9 @@ unbind -T root MouseDrag1Pane
 #再测试“切走窗口，再点回来”。
 #如果这样问题消失, 说明就是某个鼠标事件触发的，最可能是：
 #WheelUpPane MouseDrag1Pane 双击/三击事件 插件重绑 mouse 行为
-#如果这样还会进 copy-mode
-#那就基本不是普通 mouse bind，而是： hook 插件脚本 焦点事件 或者某个命令自动执行了 copy-mode
+#如果这样还会进 copy-mode 那就基本不是普通 mouse bind，而是： hook 插件脚本 焦点事件 或者某个命令自动执行了 copy-mode
+#### 查看所有的key binding ####
+#tmux list-keys
 ##########################
 #######################################
 # EOF
