@@ -431,7 +431,8 @@ set -g @plugin 'tmux-plugins/tmux-logging'
 set -g @plugin 'tmux-plugins/tmux-prefix-highlight'
 set -g @plugin 'tmux-plugins/tmux-open'
 set -g @plugin 'tmux-plugins/tmux-yank'
-set -g @plugin 'tmux-plugins/tmux-url'
+#set -g @plugin 'tmux-plugins/tmux-url'
+
 #set -g @tpm_plugins 'tmux-plugins/tmux-resurrect'
 #set -g @plugin 'seebi/tmux-colors-solarized'
 #set -g @plugin 'jimeh/tmux-themepack'
@@ -489,6 +490,51 @@ set -g @prefix_highlight_empty_prompt '      '
 #
 #
 # -- custom variables ----------------------------------------------------------
+
+#######################################20260313 chatgpt########################
+# 在 copy-mode-vi 表里重映射鼠标左键
+# 1. 先取消默认的鼠标左键按下行为
+#unbind -T copy-mode-vi MouseDown1Pane
+
+# 2. 重新绑定：如果在 copy-mode，点击时直接退出 copy-mode，并跳到面板底部
+#bind -T copy-mode-vi MouseDown1Pane \
+#    send-keys -X cancel \; \
+#    send-keys C-e
+
+
+set -g mode-keys vi    # 如果你用 vi 模式
+
+# root 表：单击左键只选 pane，不做选择、不进 copy-mode
+unbind -T root MouseDown1Pane
+#unbind -T root MouseDrag1Pane
+unbind -T root MouseUp1Pane
+bind   -T root MouseDown1Pane select-pane
+
+# copy-mode-vi 表：单击左键退出 copy-mode 并把光标移到行末
+unbind -T copy-mode-vi MouseDown1Pane
+bind   -T copy-mode-vi MouseDown1Pane send-keys -X cancel\; send-keys C-e
+
+##############################################################
+## the most import line found at 2026/04/20, compare the OK and NG conf of MYVM03 and MYVM04
+unbind -T root MouseDrag1Pane
+#### FOR debug this issue from GPT
+#为了最快定位，我建议你临时做一个“禁用所有容易触发 mode 的鼠标事件”的测试。 在 ~/.tmux.conf 最后加：
+#tmux unbind -T root MouseDown1Pane
+#tmux unbind -T root DoubleClick1Pane
+#tmux unbind -T root TripleClick1Pane
+#tmux unbind -T root MouseDrag1Pane
+#tmux unbind -T root WheelUpPane
+#tmux unbind -T root WheelDownPane
+#tmux bind -T root MouseDown1Pane select-pane -t =
+#然后 reload： tmux source-file ~/.tmux.conf
+#再测试“切走窗口，再点回来”。
+#如果这样问题消失, 说明就是某个鼠标事件触发的，最可能是：
+#WheelUpPane MouseDrag1Pane 双击/三击事件 插件重绑 mouse 行为
+#如果这样还会进 copy-mode
+#那就基本不是普通 mouse bind，而是： hook 插件脚本 焦点事件 或者某个命令自动执行了 copy-mode
+##########################
+#######################################
+# EOF
 
 # to define a custom #{foo} variable, define a POSIX shell function between the
 # '# EOF' and the '# "$@"' lines. Please note that the opening brace { character
