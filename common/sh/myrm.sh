@@ -1,4 +1,4 @@
-#/bin/pdksh
+#!/bin/bash
 
 typeset movetarget=${DIR_TRASH:-/nfs/users/zhaozhan/gomihako}
 typeset mt_srcfullpath=""

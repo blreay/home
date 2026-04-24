@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 
 typeset file=$1
