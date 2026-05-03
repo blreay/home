@@ -125,3 +125,22 @@ source ~/git/powerlevel10k/powerlevel10k.zsh-theme
 
 # Added by CodeFuse CLI installer
 export PATH="$HOME/.local/bin:$PATH"
+
+# bun completions
+[ -s "/home/admin/.bun/_bun" ] && source "/home/admin/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+export ANTHROPIC_BASE_URL="http://127.0.0.1:58597/v1/anthropic"
+
+export ANTHROPIC_MODEL="claude-sonnet"
+
+export ANTHROPIC_SMALL_FAST_MODEL="claude-haiku"
+
+export ANTHROPIC_DEFAULT_SONNET_MODEL="claude-sonnet"
+
+export ANTHROPIC_DEFAULT_OPUS_MODEL="claude-opus"
+
+export ANTHROPIC_DEFAULT_HAIKU_MODEL="claude-haiku"

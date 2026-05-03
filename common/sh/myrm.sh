@@ -1,6 +1,6 @@
 #!/bin/bash
 
-typeset movetarget=${DIR_TRASH:-/nfs/users/zhaozhan/gomihako}
+typeset movetarget=${DIR_TRASH:-$HOME/gomihako}
 typeset mt_srcfullpath=""
 for i in ${@}; do
 	#echo ${i}
