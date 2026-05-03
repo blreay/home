@@ -20,8 +20,9 @@ function build_vim_prepare {
   sudo yum install -y python3 python3-devel-3.6.8
 
   #for ubuntu
-  sudo apt-get install -y ncurses-devel.x86_64
-  sudo apt-get  install -y python3 python3-devel-3.6.8
+  #sudo apt-get install -y ncurses-devel.x86_64
+  sudo apt-get install -y build-essential libncurses-dev
+  #sudo apt-get install -y python3 python3-devel-3.6.8
   sudo apt-get install -y python3.12-dev
 
 }
@@ -29,12 +30,12 @@ function build_vim_prepare {
 function build_from_src {
   set -vx
   url=https://github.com/vim/vim/archive/v8.2.1153.zip
-  url=https://github.com/vim/vim/archive/v8.2.5172.zip
   url=https://github.com/vim/vim/archive/v8.2.4999.zip
   url=https://github.com/vim/vim/archive/v8.2.1999.zip
   url=https://github.com/vim/vim/archive/v8.2.1299.zip
   url=https://github.com/vim/vim/archive/v8.2.1199.zip
   url=https://github.com/vim/vim/archive/v8.2.1159.zip
+  url=https://github.com/vim/vim/archive/v8.2.5172.zip
   wget ${url}
   zip=${url##*/}
   dir=$(unzip -l ${zip} | grep CONTRIBUTING.md | awk '{print $NF}' | cut -d '/' -f 1)
