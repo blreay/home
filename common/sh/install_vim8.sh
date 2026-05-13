@@ -123,7 +123,7 @@ function install_space_vim_from_tgz {
   set -vx
   cd ~
   local filename=SpaceVim.tgz
-  [[ $ID == "ubuntu" ]] && filename=SpaceVim.ubuntu.tgz
+  [[ $ID == "ubuntu" ]] && filename=SpaceVim.ubuntu.tgz && echo "ubuntu"
   wget http://${MYVM:-"ENV_VALUE_IS_EMPTY"}:38080/tools/${filename}
   tar zxf ${filename}
   mv .vim .vim.bk.$(date +'%Y%m%d_%H%M%S')
@@ -132,6 +132,7 @@ function install_space_vim_from_tgz {
 
 function main {
   act=${1:-"src"}
+  . /etc/os-release
   case $act in
     src)
       ## this is the best way, suppory SpaceVim, will install vim8.2
