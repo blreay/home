@@ -41,6 +41,7 @@ else
 		fi
 	fi
 	scp $file ${user}@$ip:~/docs/
+  [[ $? -ne 0 ]] && echo "CMD run error: scp $file ${user}@$ip:~/docs/" && exit 1
 	fullpath=${remote_file}
 
 	# Register to md_index.md on MYVM
