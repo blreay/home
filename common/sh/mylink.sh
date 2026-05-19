@@ -6,12 +6,14 @@ typeset view_mode=0
 typeset send_mode=0
 typeset force_mode=0
 typeset src_machine=""
+typeset doc_index=0
 typeset user=zhaoyong.zzy
-while getopts vsfm: ch; do
+while getopts vsfm:i: ch; do
   case $ch in
     v) view_mode=1;;
     s) send_mode=1;;
     f) force_mode=1;;
+    i) doc_index=$OPTARG;;
     m) src_machine=$OPTARG;;
   esac
 done
@@ -50,9 +52,10 @@ else
 	typeset src_ip=${src_machine:-$(ip route get 1.1.1.1 | sed -n 's/.*src \([0-9.]\+\).*/\1/p')}
 	typeset src_dir=$(pwd)
 	typeset git_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "N/A")
-	typeset new_row="| [${md_title}](${preview_url}) | [原始md文件](${raw_url}) | ${ts} | ${src_ip} | ${src_dir} | ${git_branch} |"
+	typeset new_row="| [${md_title}](${preview_url}) | [md](${raw_url}) | ${ts} | ${src_ip} | ${src_dir} | ${git_branch} |"
 
 	typeset index_file='~/docs/md_index.md'
+  [[ $doc_index -eq 1 ]] && index_file='~/docs/md_index1.md'
 	typeset header='| 标题 | 原始文件 | 创建时间 | 来源机器 | 来源目录 | Git分支 |'
 	typeset separator='|------|----------|----------|----------|----------|---------|'
 
