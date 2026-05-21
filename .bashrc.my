@@ -318,6 +318,10 @@ export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=100000
 export HISTFILESIZE=2000000
 
+## add pyenv path: git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH" && eval "$(pyenv init -)"
+
 [[ /etc/os-release ]] && . /etc/os-release
 [[ -f $MYHOME/.bashrc.ant ]] && . $MYHOME/.bashrc.ant
 [[ $ID == "ubuntu" ]] && unalias tmux
