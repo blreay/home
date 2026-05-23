@@ -1,3 +1,6 @@
+[[ -f ~/.profile ]] && source ~/.profile
+
+######## For oh-my-zsh #############################################
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -118,7 +121,10 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 source ~/git/powerlevel10k/powerlevel10k.zsh-theme
+######## For oh-my-zsh end #############################################
 
+## for bashrc.my, always use real current user
+export MYSELFID=$(id -un)
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 [[ ! -f ~/.bashrc.my ]] || source ~/.bashrc.my
@@ -133,14 +139,7 @@ export PATH="$HOME/.local/bin:$PATH"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-export ANTHROPIC_BASE_URL="http://127.0.0.1:58597/v1/anthropic"
-
-export ANTHROPIC_MODEL="claude-sonnet"
-
-export ANTHROPIC_SMALL_FAST_MODEL="claude-haiku"
-
-export ANTHROPIC_DEFAULT_SONNET_MODEL="claude-sonnet"
-
-export ANTHROPIC_DEFAULT_OPUS_MODEL="claude-opus"
-
-export ANTHROPIC_DEFAULT_HAIKU_MODEL="claude-haiku"
+case ":$PATH:" in
+    *":$HOME/.local/bin:"*) ;;
+    *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac
