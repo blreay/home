@@ -23,11 +23,11 @@ function LOG {
 function ERR {
 	typeset arg="${@}"; typeset msg; typeset funcname=${FUNCNAME[1]}; typeset lineno=${BASH_LINENO[0]}
 	printf "$(date +'%Y%m%d_%H:%M:%S') %08d [%03d] [${funcname}]%s\n" $$ ${lineno} "ERROR: ${arg}" >&2
-} 
+}
 function MSG {
 	typeset arg="${@}"; typeset msg; typeset funcname=${FUNCNAME[1]}; typeset lineno=${BASH_LINENO[0]}
 	printf "%s\n" "${arg}"
-} 
+}
 ############################################## 
 
 typeset DPI="--dpi=96"
@@ -61,13 +61,15 @@ typeset jsonapp=$(cat - <<\EOF
 	  "firefox":    {"host":"host1",  "port":"7901",   "msg":""},
 	  "firefox2":   {"host":"host2",  "port":"31000",  "msg":""},
 	  "gedit":      {"host":"host2",  "port":"31001",  "msg":""},
-	  "wechat":     {"host":"host2",  "port":"7908",   "msg":""}
+	  "wechat":     {"host":"host2",  "port":"7908",   "msg":""},
+	  "cursor":      {"host":"host5",  "port":"6001",  "msg":""}
   },
   "host":{
 	  "host1":"bej301459.cn.oracle.com",
 	  "host2":"bej301712.cn.oracle.com",
 	  "host3":"bej301713.cn.oracle.com",
-	  "host4":"slc09wou.us.oracle.com"
+	  "host4":"slc09wou.us.oracle.com",
+	  "host5":"qqytesting01.inc.alipay.net"
   }
 }
 EOF
@@ -299,6 +301,21 @@ case "${command}" in
 		#CMD="${XPRACMD} start ${DPI} --start-child=\"${outfile}\" --bind-tcp=0.0.0.0:${appport} --html=on −−notifications=yes −−dbus−control=yes"
 		CMD="${XPRACMD} start ${DPI} --start-child=\"${outfile}\" --bind-tcp=0.0.0.0:${appport} --html=on"
 		#CMD="${XPRACMD} start ${DPI} --start-child=\"${outfile}\" --bind-tcp=0.0.0.0:${appport} −−notifications=yes --input-method=fcitx --start=\"fcitx -r\""
+		;;
+###################################### 2026/06/01 #########################
+	("cursor")
+		outfile=/home/zhaozhan/wx/vm/wx.sh
+		## by claude code
+		CMD="xpra start :101 ${DPI} --bind-tcp=0.0.0.0:6001 \
+  --start=xterm \
+  --start=\"fcitx5 -d --replace\" \
+  --start=cursor \
+  --env=GTK_IM_MODULE=fcitx5 \
+  --env=QT_IM_MODULE=fcitx5 \
+  --env=XMODIFIERS=@im=fcitx \
+  --daemon=yes --tcp-auth=none --html=on \
+  --input-method=keep"
+  #--dpi=144 \
 		;;
 	(*)
 		ERR "Unknown app: ${app}"
