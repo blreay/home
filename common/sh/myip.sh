@@ -23,3 +23,9 @@ CMD="curl icanhazip.com"
 echo $(printf "%0.1s" "="{1..10}) $CMD $(printf "%0.1s" "="{1..10})
 eval ${CMD}
 echo
+
+CMD="curl -s --connect-timeout 300 \"http://ip-api.com/json/$(curl -s ip.me)?fields=country,regionName,city,isp,org\""
+echo $(printf "%0.1s" "="{1..10}) $CMD $(printf "%0.1s" "="{1..10})
+eval "${CMD}"
+echo
+
