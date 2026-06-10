@@ -1,5 +1,15 @@
 #!/bin/bash
 
+typeset ip=$1
+
+if [[ -n "$ip" ]]; then
+  CMD="curl -s --connect-timeout 300 \"http://ip-api.com/json/$ip?fields=country,regionName,city,isp,org\""
+  echo $(printf "%0.1s" "="{1..10}) $CMD $(printf "%0.1s" "="{1..10})
+  eval "${CMD}" | jq .
+  echo
+  exit
+fi
+
 echo $(printf "%0.1s" "="{1..10}) ifconifg $(printf "%0.1s" "="{1..10})
 ifconfig | egrep "inet " | awk '{print $2}'
 echo
@@ -26,6 +36,6 @@ echo
 
 CMD="curl -s --connect-timeout 300 \"http://ip-api.com/json/$(curl -s ip.me)?fields=country,regionName,city,isp,org\""
 echo $(printf "%0.1s" "="{1..10}) $CMD $(printf "%0.1s" "="{1..10})
-eval "${CMD}"
+eval "${CMD}" | jq .
 echo
 
