@@ -62,12 +62,14 @@ echo   Done. NIC wake disabled - this blocks the main path for the
 echo   network to wake/keep the system busy during standby.
 echo ============================================================
 echo.
-echo NOTE: the "network connectivity in standby" power setting
-echo   (CONNECTIVITYINSTANDBY) often CANNOT be changed on company-
-echo   managed PCs - powercfg returns "Access is denied" even after
-echo   you approve the security prompt, and it has no /change alias.
-echo   That's expected; do not keep retrying it. NIC wake (above) +
-echo   the option below already cover it.
+echo NOTE: to also stop S0 from periodically self-connecting in
+echo   standby, disable CONNECTIVITYINSTANDBY. On company-managed PCs
+echo   powercfg may return "Access is denied" - that is the security
+echo   software intercepting, NOT a hard lock. Run it in a VISIBLE
+echo   elevated window and APPROVE the security prompt; it then works:
+echo     powercfg /setdcvalueindex SCHEME_CURRENT SUB_NONE ^
+echo       f15576e8-98b7-4186-b944-eafa664402d9 0
+echo   (retry the AC side separately if it gets denied once.)
 echo.
 echo TIP: the surest way to stop ALL network drain is to turn on
 echo      Airplane Mode (or switch Wi-Fi off) before closing the lid.

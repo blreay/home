@@ -18,9 +18,33 @@ allowed-tools: Bash, Read, Write, AskUserQuestion
 - **B 类：合盖后根本没进入待机**。某程序持有 **execution / away 请求**(如钉钉直播插件 **tblive.exe**、会议/媒体软件)，强行阻止系统入睡。系统盖着盖子在 **Active 状态满载运行**。sleepstudy 里这次会话 **State = Active**(而非 Sleep)。
   - ⚠️ B 类时"待机后兜底休眠"**无法生效**——因为它的前提是"先进入待机"，而程序把这步堵死了。需要靠**空闲超时强制睡眠(STANDBYIDLE)**或 **requestsoverride** 来治。
 
-**区分方法**：看 sleepstudy 最新那次合盖会话的 **State 列**——`Active` = B 类(程序阻止)，`Sleep` 但低功耗占比低 = A 类(降不下去)。或用 `powercfg /requests` 当场看谁在阻止。
+还有一类**看似异常、实则健康**的现象，要会识别避免误判：
 
-本 skill 提供五个 bat 脚本(位于 `scripts/`)和一套报告解析方法。
+- **C 类(非故障)：没到休眠超时却提前休眠了**。用户设了"睡 N 小时才转休眠"，结果远不到 N 小时(如 8 小时)就发现休眠了，但**电量几乎没掉**(如 70%→71%)。这**不是问题**，是 S0 被"非用户原因"短暂唤醒后触发了**无人值守睡眠超时(UNATTENDSLEEP，默认仅 2 分钟)**，直接转入休眠省电——与用户设的 HIBERNATEIDLE(如 16 小时)是**两套独立计时**，互不相关。详见下方"关键机制"。
+
+**区分方法**：看 sleepstudy 最新那次合盖会话的 **State 列**——`Active` = B 类(程序阻止)，`Sleep` 但低功耗占比低 = A 类(降不下去)。或用 `powercfg /requests` 当场看谁在阻止。提前休眠但电量没掉 = C 类(健康)。
+
+本 skill 提供七个 bat 脚本(位于 `scripts/`)和一套报告解析方法。**排查前建议先读 `docs/FINDINGS-comprehensive-analysis.md`** —— 它汇总了全部 4 类机制、CONNECTIVITYINSTANDBY 真相和跨轮次方法论，能快速建立全局认识。
+
+---
+
+## 关键机制与术语（避免误判，必读）
+
+- **`batteryreport` 里的 `Suspended` ≠ 休眠(Hibernate)**：`Suspended` 是电池报告对"低功耗状态"的统称，既可能是睡眠也可能是休眠，**不能据此判断进了休眠**。
+- **如何确认"真的休眠了"**：看事件日志(System / Kernel-General)恢复时是否有**系统时钟大跳变同步**(如 `系统时间已从 X 更改为 Y`，跨度=睡眠时长)。休眠会完全断电、RTC 不连续 → 恢复时重设时钟；普通睡眠时钟连续，无此日志。另一旁证：`nhi: Driver exit RTD3`(设备深度断电)、`powercfg /a` 中休眠已启用。
+- **无人值守睡眠超时(Unattended Sleep Timeout, GUID `7bc4a2f9-d8fc-4469-b07b-33eb785aaca0`)** ⭐：这是"提前休眠"的真凶，与 HIBERNATEIDLE 完全独立。触发条件**三者同时满足**：
+  1. 系统当前已处于睡眠/S0 待机；
+  2. 被一个**"非用户"源**唤醒——网络活动(Wi-Fi 自动重连最常见)、唤醒定时器(计划任务/Windows Update/维护)、USB/雷电/网卡等设备事件；**不是**键盘/鼠标/电源键/开盖(那些算"用户唤醒"，不触发)；
+  3. 唤醒后在超时时间内(默认 **0x78=120 秒=2 分钟**)无真人操作。
+  满足后系统**不回普通待机**，而是执行"无人值守动作"→ 进入睡眠并(若已启用休眠)很快转**休眠**。这就是"被网络唤醒一下 → 2 分钟后直接休眠 → 绕过 16 小时设置"的全过程。
+  - 查看其值：`powercfg /attributes SUB_SLEEP 7bc4a2f9-d8fc-4469-b07b-33eb785aaca0 -ATTRIB_HIDE`(先解除隐藏)后 `powercfg /q SCHEME_CURRENT SUB_SLEEP 7bc4a2f9-...`。
+  - 想让"N 小时内保持睡眠不提前休眠"：把 UNATTENDSLEEP 也设成 N 小时。但**通常不建议**——提前休眠是健康省电行为，拉长它反而可能让被坏驱动打扰的夜晚退回 A 类发烫掉电。
+- **判断提前休眠是否需要处理**：看进入/退出休眠时的**电量差**。几乎不掉(如 70%→71%) = 健康(C 类)，无需处理，仅向用户解释；若伴随大量掉电/发烫，才回到 A/B 类排查。
+- **"网络唤醒"有两种，禁用网卡唤醒只关掉其中一种** ⭐(高频混淆点)：用户常说"我已经禁用网络唤醒了，为什么睡眠还被网络唤醒？"——因为这是两个不同机制：
+  1. **Wake-on-LAN(网络唤醒 / 魔术包 / 模式匹配)**：**外部设备**发特定网络包，把睡死的电脑**从外部叫醒**。由"允许此设备唤醒计算机" / `WakeOnMagicPacket` / `WakeOnPattern` / `wake_armed` 控制。`disable_nic_wake.bat` 关的就是这个，**确实有效**。
+  2. **S0 连接待机的"网络保活"(系统自我上线)**：S0 现代待机**在睡眠中由系统自己周期性地短暂让网卡上线**，维持 Wi-Fi、收推送、跑后台维护——这是 **S0 设计行为，不是外部唤醒**。事件日志特征：`Connectivity state in standby: Connected, Reason: None` + `exiting connected standby`(**Reason: None = 无外部唤醒源，是系统主动**)。
+  - **关键**：禁用 Wake-on-LAN **管不到第 2 种**。第 2 种由 `CONNECTIVITYINSTANDBY`(待机网络连接性)控制，而该设置在企业机器上**常被安全软件锁死**(`Access denied`，见上文)。所以"睡眠中被网络激活 → 触发无人值守超时 → 提前休眠"这条链，**靠禁用网卡唤醒堵不住**。
+  - **唯一可靠的根治**：**物理断网(睡前开飞行模式 / 关 Wi-Fi)**。网卡物理关闭后 S0 无法自我上线，从源头断绝。这也是为什么飞行模式是绕过"安全软件锁 + S0 设计行为"的终极手段。
 
 ---
 
@@ -31,17 +55,20 @@ allowed-tools: Bash, Read, Write, AskUserQuestion
 1. **确认问题与环境** → 确认是"盖盖子发烫掉电"，确认 Windows 笔记本
 2. **检查睡眠能力** → `powercfg /a`，判断是否 S0 现代待机机型
 3. **生成诊断报告** → 运行 `collect_reports.bat`(sleepstudy + diag + batteryreport)
-4. **判定 A 类还是 B 类** ⭐ → 看 sleepstudy 最新合盖会话的 **State 列**：
-   - **State = Active**（合盖却满载运行）→ **B 类：程序阻止入睡** → 转步骤 5B
-   - **State = Sleep 但 SW/HW < 90%**（睡了没睡熟）→ **A 类：降不到低功耗** → 转步骤 5A
+4. **先分诊 A / B / C 类** ⭐ → 先看**电量是否大幅下降**：
+   - **电量几乎没掉(如 70%→71%)但用户觉得"提前休眠了"** → **C 类(健康，非故障)**：用事件日志时钟跳变确认是真休眠 + 解释无人值守超时机制(见"关键机制")，**无需修复**，仅向用户解释。
+   - **电量大幅下降 + 发烫** → 看 sleepstudy 最新合盖会话的 **State 列**：
+     - **State = Active**（合盖却满载运行）→ **B 类：程序阻止入睡** → 转步骤 5B
+     - **State = Sleep 但 SW/HW < 90%**（睡了没睡熟）→ **A 类：降不到低功耗** → 转步骤 5A
 5A. **(A类) 定位元凶组件 + 查音频进程** → sleepstudy 组件活跃排名 + `show_audio_processes.bat`
 5B. **(B类) 抓阻止睡眠的进程** → `show_sleep_blockers.bat`(`powercfg /requests`) + sleepstudy 该 Active 会话的进程 CPU 排名
 6. **应用修复**：
    - A 类 → `fix_lid_overheat.bat`(启用休眠 + 待机后 30 分钟兜底)
    - B 类 → `set_force_sleep.bat`(空闲超时强制睡眠，可选 requestsoverride 屏蔽程序) + 退出元凶程序
-   - 两类都建议同时装上，互为补充
-7. **生成排查报告** → 输出 Markdown 报告，含证据、根因(注明 A/B 类)、解决方案
-8. **验证** → 复跑 sleepstudy，确认最新会话 State=Sleep 且低功耗占比 >90%
+   - C 类 → 无需修复；若用户坚持"N 小时内不提前休眠"，可拉长 UNATTENDSLEEP(见命令速查 F3，但通常不建议)
+   - A/B 两类都建议同时装上，互为补充
+7. **生成排查报告** → 输出 Markdown 报告，含证据、根因(注明 A/B/C 类)、解决方案
+8. **验证** → 复跑 sleepstudy，确认最新会话 State=Sleep 且低功耗占比 >90%(C 类无需此步)
 
 ---
 
@@ -61,12 +88,15 @@ allowed-tools: Bash, Read, Write, AskUserQuestion
   powercfg /change standby-timeout-dc 10      :: 电池10分钟进睡眠
   powercfg /change hibernate-timeout-dc 960   :: 电池睡16小时(960分)后转休眠
   ```
-  `/change` 的单位是**分钟**(不是秒)。验证时 16h=960min=57600s=0x0000e100。注意 `/change` 没有覆盖"待机网络连接性""唤醒定时器"等设置的别名——这些被锁时只能改驱动层(见 `disable_nic_wake.bat`)。
-- **`CONNECTIVITYINSTANDBY`(待机网络连接性)可能被安全软件彻底锁死，无解** ⭐：实测在蚂蚁公司机器上，`powercfg /setdcvalueindex SCHEME_CURRENT SUB_NONE CONNECTIVITYINSTANDBY 0` 始终 `Access is denied`，**即使用户在安全软件弹窗中手动点了"允许"也无法写入**(双重保护：企业安全软件 + Windows 隐藏属性)，且它**没有 `/change` 别名**可绕过。遇到此情况**不要反复重试**——直接放弃该设置，改用下面两条等效手段：
-  1. **禁用网卡唤醒**(可成功，不受锁限制)：`Disable-NetAdapterPowerManagement -Name <NIC> -WakeOnMagicPacket -WakeOnPattern`，见 `disable_nic_wake.bat`。这堵住了网络"激活系统"的主要途径，比 CONNECTIVITYINSTANDBY 更直接有效。
-  2. **睡前开飞行模式 / 关 Wi-Fi**：物理断网，安全软件管不着，100% 有效。这是"彻底避免网络激活"的最可靠手段。
-  > 关键认知：**S0 现代待机设计上无法 100% 保证音频/网络零激活**(连接待机的"连接"即指允许网络活动)。软件层只能降低风险。真正的兜底是"关键电量动作=休眠"(`SUB_BATTERY BATACTIONCRIT`=2)，即使被异常耗电也会在电量见底前强制休眠、不会被烤干。
-- **后台 `-WindowStyle Hidden` 提权运行会吞掉安全软件弹窗**：隐藏窗口时，企业安全软件的授权弹窗用户看不到、无法点"允许"，命令直接返回 `Access is denied`。**涉及可能触发安全软件的特权命令，要用可见窗口提权**(`Start-Process -Verb RunAs`，不加 `-WindowStyle Hidden`)，让用户能看到并点允许。
+  `/change` 的单位是**分钟**(不是秒)。验证时 16h=960min=57600s=0x0000e100。注意 `/change` 没有覆盖"待机网络连接性""唤醒定时器"等设置的别名——这些要靠下面的"可见窗口放行"或改驱动层(见 `disable_nic_wake.bat`)。
+- **`CONNECTIVITYINSTANDBY`(待机网络连接性)的 `Access is denied` 不是"锁死"，而是安全软件实时拦截，可被用户放行** ⭐(经实测修正)：早先以为它被企业彻底锁死无解，**是错的**。真相：
+  - **不是组策略硬锁**——GPO 注册表项(`HKLM\SOFTWARE\Policies\Microsoft\Power\PowerSettings\...`)查不到，证明无 GPO 锁。
+  - 真相是 **AspectService 这类安全软件对"修改电源/睡眠设置"做实时拦截并弹窗**：后台/隐藏窗口跑 → 弹窗看不到 → 默认拒绝 → `Access is denied`；**可见窗口 + 用户手动点"允许"** → 放行 → **设置成功**。
+  - 实测：可见窗口下 `powercfg /setdcvalueindex SCHEME_CURRENT SUB_NONE CONNECTIVITYINSTANDBY 0` 成功把电池侧改为"禁用"(0x0)；同一会话里 AC 侧偶尔仍被拒，是因为那一下没弹/没点允许，**重试并确保点允许即可**。
+  - **方法论**：在受安全软件管控的机器上改电源设置，**一律用可见窗口提权 + 逐条执行 + 让用户盯着弹窗点允许**；某条被拒就单独重试那一条，不要因一次 `Access is denied` 就断定"无解"。
+  - 兜底/替代(若用户不想反复点允许)：①禁用网卡唤醒(`disable_nic_wake.bat`)②睡前飞行模式。
+  > 关键认知：**S0 现代待机设计上默认会周期性自我联网**(连接待机的"连接"即指此)。`CONNECTIVITYINSTANDBY=禁用` 正是关掉这个"自我联网保活"的总开关，能从源头消除"自我上线→触发无人值守超时→提前休眠"的链条，并更省电。耗电终极兜底仍是"关键电量动作=休眠"(`SUB_BATTERY BATACTIONCRIT`=2)。
+- **后台 `-WindowStyle Hidden` 提权运行会吞掉安全软件弹窗** ⭐：隐藏窗口时，企业安全软件的授权弹窗用户看不到、无法点"允许"，命令直接返回 `Access is denied`。**涉及可能触发安全软件的特权命令(改电源设置、写注册表等)，必须用可见窗口提权**(`Start-Process -Verb RunAs`，**不加** `-WindowStyle Hidden`)，并提示用户盯着屏幕点允许。这是本 skill 多次 `Access denied` 的真正原因。
 - **解析报告**：用 PowerShell 提取表格文本：
   ```bash
   PS="/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
@@ -270,6 +300,7 @@ Microsoft.LockApp (锁屏)                                       1668 ...
 - `docs/example-report.md` — A 类完整排查报告样例
 - `docs/example-sleepstudy-analysis.md` — A 类 sleepstudy 实锤分析样例(音频总线元凶)
 - `docs/example-report-B-blocker.md` — B 类排查报告样例(钉钉 tblive.exe 阻止睡眠)
+- `docs/example-report-C-early-hibernate.md` — C 类报告样例(8 小时提前休眠、实为健康省电、无人值守超时机制)
 
 生成新报告时，参照对应类别的样例结构填入本次实测数据。
 
@@ -328,14 +359,30 @@ powercfg /change hibernate-timeout-dc 960                              :: 电池
 powercfg /change hibernate-timeout-ac 960
 powercfg /requestsoverride PROCESS tblive.exe SYSTEM EXECUTION DISPLAY AWAYMODE  :: 永久屏蔽某进程唤醒请求
 powercfg /requestsoverride                                             :: 查看已有覆盖
+:: 关闭"待机自我联网保活"总开关(从源头消除提前休眠诱因) —— 必须可见窗口提权+点允许
+powercfg /attributes SUB_NONE f15576e8-98b7-4186-b944-eafa664402d9 -ATTRIB_HIDE     :: 先解除隐藏
+powercfg /setdcvalueindex SCHEME_CURRENT SUB_NONE f15576e8-98b7-4186-b944-eafa664402d9 0  :: 电池禁用(实测可成功)
+powercfg /setacvalueindex SCHEME_CURRENT SUB_NONE f15576e8-98b7-4186-b944-eafa664402d9 0  :: AC禁用(被拒就重试+点允许)
 :: 禁用网卡唤醒(减少网络驱动的待机耗电)
 powershell -Command "Get-NetAdapter -Physical | ForEach-Object { Disable-NetAdapterPowerManagement -Name $_.Name -WakeOnMagicPacket -WakeOnPattern }"
 for /f "delims=" %D in ('powercfg /devicequery wake_armed') do powercfg /devicedisablewake "%D"
 powercfg /setactive SCHEME_CURRENT
-::   注1：CONNECTIVITYINSTANDBY(待机网络连接性)常被企业安全软件锁死, setvalueindex 必 Access denied
-::        且无 /change 别名 → 放弃它, 用上面的禁用网卡唤醒 + 飞行模式替代
+::   注1：CONNECTIVITYINSTANDBY 的 Access denied 不是锁死, 是安全软件实时拦截 → 可见窗口+手动点允许即可成功
+::        (后台 -WindowStyle Hidden 会吞弹窗导致必拒)；被拒就单独重试那一条
 ::   注2：关键电量动作=休眠 是耗电兜底(powercfg /q SCHEME_CURRENT SUB_BATTERY BATACTIONCRIT, 2=休眠)
-::   注3：最彻底断网：睡前开飞行模式 / 关 Wi-Fi。S0 待机无法 100% 保证音频/网络零激活。
+::   注3：最彻底断网：睡前开飞行模式 / 关 Wi-Fi。
+
+:: F3. C类(提前休眠)诊断与可选调整 [管理员]
+::   判断是否真休眠: 看恢复时事件日志有无时钟大跳变
+powershell -NoProfile -Command "Get-WinEvent -FilterHashtable @{LogName='System'; ProviderName='Microsoft-Windows-Kernel-General'} -MaxEvents 20 | Where-Object {$_.Message -match '系统时间已从|time.*changed'} | Select TimeCreated,@{N='M';E={($_.Message -split [char]10)[0]}}"
+::   查无人值守睡眠超时(默认0x78=120秒); 它被网络/定时器等"非用户"唤醒后触发, 与HIBERNATEIDLE独立
+powercfg /attributes SUB_SLEEP 7bc4a2f9-d8fc-4469-b07b-33eb785aaca0 -ATTRIB_HIDE   :: 先解除隐藏
+powercfg /q SCHEME_CURRENT SUB_SLEEP 7bc4a2f9-d8fc-4469-b07b-33eb785aaca0          :: 看当前值
+::   (可选,通常不建议)把无人值守超时也拉到16小时, 让N小时内不提前休眠:
+powercfg /setdcvalueindex SCHEME_CURRENT SUB_SLEEP 7bc4a2f9-d8fc-4469-b07b-33eb785aaca0 57600
+powercfg /setacvalueindex SCHEME_CURRENT SUB_SLEEP 7bc4a2f9-d8fc-4469-b07b-33eb785aaca0 57600
+powercfg /setactive SCHEME_CURRENT
+::   注：提前休眠若电量几乎不掉(如70%→71%)是健康省电, 一般无需调整, 仅向用户解释即可。
 
 :: G. Git Bash/cygwin 写法
 ::   export MSYS_NO_PATHCONV=1; PC="/c/Windows/System32/powercfg.exe"; "$PC" /a
@@ -353,15 +400,18 @@ powercfg /setactive SCHEME_CURRENT
 | `scripts/fix_lid_overheat.bat` | 启用休眠 + 待机后30分钟兜底(AC项可选,默认No) | A 类修复 | 管理员(自动提权) | 双击 |
 | `scripts/set_force_sleep.bat` | 空闲10/30分进睡眠 + 睡16小时转休眠(均用 /change 可靠设置)+ 可选 requestsoverride | A+B 类修复 | 管理员(自动提权) | 双击 |
 | `scripts/disable_nic_wake.bat` | 禁用网卡的魔术包/模式匹配唤醒 + 解除 wake_armed 设备 | B 类/省电 | 管理员(自动提权) | 双击 |
+| `scripts/disable_standby_network.bat` | 关闭"待机自我联网"(CONNECTIVITYINSTANDBY=禁用)，从源头消除自我唤醒→提前休眠链；**可见窗口**+被拒自动重试，需手动点安全软件"允许" | B/C 类/省电 | 管理员(自动提权,可见窗口) | 双击 |
 
-所有 bat 内容均为纯英文(避免 CMD 中文乱码)；提权用 `fltmc` 检测 + `__elevated__` 防循环标记。
+所有 bat 内容均为纯英文(避免 CMD 中文乱码)；提权用 `fltmc` 检测 + `__elevated__` 防循环标记。其中 `disable_standby_network.bat` **故意不隐藏窗口**，以便用户看到并批准安全软件的拦截弹窗。
 
-## 示例报告(docs/)
+## 示例报告 / 知识库(docs/)
 
 | 文件 | 内容 |
 |------|------|
+| **`docs/FINDINGS-comprehensive-analysis.md`** | ⭐ **综合分析报告(必读)**：汇总全部 4 类机制(A/B/C + 网络唤醒澄清)、CONNECTIVITYINSTANDBY 真相、跨轮次方法论与踩坑、本机最终稳态配置。排查前先读这份建立全局认识。 |
 | `docs/example-report.md` | A 类完整排查报告样例：结论先行 / 关键证据 / 根因 / 解决方案 / 行动清单 / 命令速查手册 |
 | `docs/example-sleepstudy-analysis.md` | A 类 sleepstudy 实锤分析样例：以「音频总线 69% 活跃 + Problem Device」为元凶的完整定位过程 |
 | `docs/example-report-B-blocker.md` | B 类排查报告样例：合盖后 State=Active、钉钉 tblive.exe 阻止入睡的完整定位与修复 |
+| `docs/example-report-C-early-hibernate.md` | C 类报告样例：8 小时提前休眠(非故障)，时钟跳变证明真休眠、无人值守超时(2分钟)机制、电量零损耗 |
 
-生成步骤 7 的报告时，参照对应类别(A/B)的样例结构填入本次实测数据即可。
+生成步骤 7 的报告时，参照对应类别(A/B/C)的样例结构填入本次实测数据即可；方法论与全局背景见 `FINDINGS-comprehensive-analysis.md`。
