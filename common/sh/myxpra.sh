@@ -206,7 +206,7 @@ DBG " shift $(($OPTIND -1))"
 DBG "commnd:${command}"
 #set -vx
 
-[[ $(uname) =~ CYGWIN ]] && export XPRACMD="xpra_cmd.exe" || export XPRACMD="xpra"
+[[ $(uname) =~ CYGWIN || $(uname -r) =~ WSL ]] && export XPRACMD="xpra_cmd.exe" || export XPRACMD="xpra"
 
 case "${command}" in
 ###########################################################################################################
