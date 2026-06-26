@@ -156,6 +156,8 @@ export PATH=${HOME}/go/bin:/usr/local/go/bin:$PATH
 export PATH=$PATH:$MYHOME/.local/bin
 ##for mcp
 export PATH=$PATH:$MYHOME/.utoo-proxy
+# for WSL
+export PATH="$PATH:/mnt/c/Windows/System32:/mnt/c/Windows"
 
 ##expand environment variable when press TAB
 [[ -n $BASH_VERSION ]] && shopt -s direxpand
@@ -173,7 +175,7 @@ export PYENV_ROOT="$HOME/.pyenv"
 
 [[ -f /etc/os-release ]] && . /etc/os-release
 [[ -f $MYHOME/.bashrc.ant ]] && . $MYHOME/.bashrc.ant
-[[ $ID == "ubuntu" ]] && unalias tmux
+[[ $ID == "ubuntu" ]] && unalias tmux 2>/dev/null
 
 #################
 ## Welcome ##

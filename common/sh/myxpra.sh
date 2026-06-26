@@ -211,7 +211,9 @@ DBG "commnd:${command}"
 case "${command}" in
 ###########################################################################################################
 ("attach")
-	CMD="${XPRACMD} attach  --bell=no --speaker=off -d notify,dbus tcp/zz:love521@${apphost}:${appport}/ &"
+	#CMD="${XPRACMD} attach  --bell=no --speaker=off -d notify,dbus tcp/zz:love521@${apphost}:${appport}/ &"
+	#now, there is on password, 2026/06/26
+	CMD="${XPRACMD} attach  --bell=no --speaker=off -d notify,dbus tcp://${apphost}:${appport}/ &"
 	LOG "${CMD}"
 	eval "${CMD}"
 	;;
@@ -316,6 +318,7 @@ case "${command}" in
   --daemon=yes --tcp-auth=none --html=on \
   --input-method=keep"
   #--dpi=144 \
+#/usr/bin/xpra start :103 --bind-tcp=0.0.0.0:6001 --start=xterm --start=fcitx5 -d --replace --start=cursor --env=GTK_IM_MODULE=fcitx5 --env=QT_IM_MODULE=fcitx5 --env=XMODIFIERS=@im=fcitx --daemon=yes --tcp-auth=none --html=on --dpi=96 --input-method=keep
 		;;
 	(*)
 		ERR "Unknown app: ${app}"
