@@ -31,6 +31,7 @@ function MSG {
 ############################################## 
 
 typeset DPI="--dpi=96"
+typeset DPI="--dpi=120"
 typeset g_appname
 typeset arywineps=(
 wineserver
@@ -308,10 +309,11 @@ case "${command}" in
 	("cursor")
 		outfile=/home/zhaozhan/wx/vm/wx.sh
 		## by claude code
-		CMD="xpra start :101 ${DPI} --bind-tcp=0.0.0.0:6001 \
+		#CMD="xpra start :101 ${DPI} --bind-tcp=0.0.0.0:6001 \
+		CMD="xpra start ${DPI} --bind-tcp=0.0.0.0:6001 \
   --start=xterm \
   --start=\"fcitx5 -d --replace\" \
-  --start=cursor \
+  --start=gedit \
   --env=GTK_IM_MODULE=fcitx5 \
   --env=QT_IM_MODULE=fcitx5 \
   --env=XMODIFIERS=@im=fcitx \
