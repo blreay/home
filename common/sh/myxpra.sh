@@ -321,6 +321,8 @@ case "${command}" in
   --input-method=keep"
   #--dpi=144 \
 #/usr/bin/xpra start :103 --bind-tcp=0.0.0.0:6001 --start=xterm --start=fcitx5 -d --replace --start=cursor --env=GTK_IM_MODULE=fcitx5 --env=QT_IM_MODULE=fcitx5 --env=XMODIFIERS=@im=fcitx --daemon=yes --tcp-auth=none --html=on --dpi=96 --input-method=keep
+## cloudide command line reference
+#/usr/bin/xpra start :100 --bind-tcp=0.0.0.0:14500 --html=on --daemon=yes --start=xterm --start=fcitx5 -d --replace --env=GTK_IM_MODULE=fcitx5 --env=QT_IM_MODULE=fcitx5 --env=XMODIFIERS=@im=fcitx --dpi=96 --input-method=keep
 		;;
 	(*)
 		ERR "Unknown app: ${app}"

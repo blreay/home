@@ -54,6 +54,12 @@ printf("%04d%02d%02d %02d:%02d:%02d.%03d\n", $year+1900, $mon+1, $mday+1, $hour,
 EOF
 }
 
+function my_sync_skill {
+  for i in $HOME/skills/*; do ln -svnf $i $HOME/.codefuse/engine/cc/skills/; done
+  mkdir -p $HOME/.claude/skills
+  for i in $HOME/skills/*; do ln -svnf $i $HOME/.claude/skills/; done
+}
+
 OS=$(uname -s)
 [[ $OS == CYGWIN* ]] && OS=win
 [[ -z $USER ]] && export USER=$(id -un 2>/dev/null)
