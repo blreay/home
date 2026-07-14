@@ -116,7 +116,7 @@ export vimexe MYHOME
 #alias vim="TERM=xterm-256color $vimexe -X --cmd \"set runtimepath+=$MYHOME/.vim/bundle/Vundle.vim\" -u $MYHOME/.vimrc"
 #alias s=set_vimrc
 #alias ll='ls -alrt'
-alias ll='[[ $(type lsd) ]] && lsd -alrt || ls -alrt'
+function ll() { command -v lsd >/dev/null 2>&1 && lsd -alrt "$@" || ls -alrt "$@"; }
 alias rm="$NFS/common/sh/myrm.sh"
 alias CD='cd $(pwd -P)'
 alias git_proxy="git config --global http.proxy http://cn-proxy.jp.oracle.com:80"
