@@ -55,6 +55,7 @@ EOF
 }
 
 function my_sync_skill {
+  mkdir -p $HOME/.codefuse/engine/cc/skills
   for i in $HOME/skills/*; do ln -svnf $i $HOME/.codefuse/engine/cc/skills/; done
   mkdir -p $HOME/.claude/skills
   for i in $HOME/skills/*; do ln -svnf $i $HOME/.claude/skills/; done
