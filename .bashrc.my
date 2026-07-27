@@ -102,6 +102,10 @@ export SHR=$NFS/share
 export GIT_SSH_COMMAND="ssh -x "
 export LESSCHARSET=utf-8 #make sure git log can show Chinese correctly
 
+## agent-browser: 使用手动下载的 Chrome for Testing(谷歌 CDN 在国内不稳定,改用 npmmirror 下载)
+[ -x "$HOME/.local/chrome-for-testing/chrome-linux64/chrome" ] && \
+    export AGENT_BROWSER_EXECUTABLE_PATH="$HOME/.local/chrome-for-testing/chrome-linux64/chrome"
+
 ## Can't set VIMRUNTIME,otherwise :help will not work
 #export VIMRUNTIME=$NFS/.vim
 ## in order to support vim80 and don't copy whole vim80 to ~/.vim
