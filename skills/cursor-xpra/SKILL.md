@@ -1,6 +1,6 @@
 ---
 name: cursor-xpra
-description: Use when installing Cursor IDE on a headless Linux server/container and accessing it through xpra remote display. Covers download, extract (no FUSE), wrapper script (avoid AppRun recursion), /dev/shm crash fix, default browser config, fcitx5 Chinese input, and crash auto-restart guardian. Use on a fresh dev machine to set up Cursor remote access from scratch.
+description: Use when installing Cursor IDE on a headless Linux server/container and accessing it through xpra remote display. Covers download, extract (no FUSE), wrapper script (avoid AppRun recursion), /dev/shm crash fix, default browser config, fcitx5 Chinese input, crash auto-restart guardian, xpra Start menu fix, and Cursor Agent CLI install. Use on a fresh dev machine to set up Cursor remote access from scratch.
 ---
 
 # Cursor on Headless Linux via Xpra
@@ -9,7 +9,8 @@ description: Use when installing Cursor IDE on a headless Linux server/container
 
 One-shot guide to install Cursor IDE on a headless Linux server/container and access it
 remotely through xpra (browser or native client). Covers every pitfall discovered: FUSE,
-AppRun recursion, `/dev/shm` renderer crashes, default browser, Chinese input, and auto-restart.
+AppRun recursion, `/dev/shm` renderer crashes, default browser, Chinese input, auto-restart,
+and xpra Start menu empty on minimal installs. Also covers Cursor Agent CLI (`agent`) install.
 
 **Prerequisites:** xpra already installed (see xpra-install skill). Ubuntu 24.04+ x86_64.
 
@@ -124,6 +125,7 @@ DISPLAY=:100 xdg-settings get default-web-browser   # firefox.desktop
 | Click Login opens transfer/download dialog instead of Firefox | No default browser configured | Step 1 "Dependencies": `xdg-settings` + `export BROWSER` in wrapper |
 | Chinese input dead in Cursor after adding `--disable-software-rasterizer` | That flag kills fcitx5 candidate window rendering | Remove it — wrapper above does NOT include it |
 | Chinese input dead with `--input-method=fcitx5` in xpra | xpra sets `GTK_IM_MODULE=xim` | xpra must use `--env=GTK_IM_MODULE=fcitx5 --input-method=keep` |
+| **Xpra Start menu is empty (no apps listed)** | `/etc/xdg/menus/` missing on minimal/container installs | `sudo apt install -y gnome-menus && sudo ln -sf gnome-applications.menu applications.menu` (Step 4) |
 
 ### The /dev/shm Crash (Most Critical Container Bug)
 
@@ -172,7 +174,77 @@ xpra stop :100               # stop session
 xpra control :100 start cursor  # re-launch cursor in existing session
 ```
 
-## Step 4: Auto-Restart Guardian
+## Step 4: Fix Xpra Start Menu Empty on Minimal Installs
+
+On minimal/container Ubuntu installs, the xpra HTML5 client's **Start menu** (top-left ⬤ → Start)
+is empty — no entries for xterm, Firefox, Cursor, etc. On full desktop installs, it works fine.
+
+**Root cause:** xpra reads XDG menu definitions from `/etc/xdg/menus/` to build the Start menu
+hierarchy. Minimal installs lack this directory entirely. The xpra server log confirms:
+
+```
+Warning: failed to parse menu data
+ '/etc/xdg/menus' is missing
+```
+
+After fixing, the log should show:
+
+```
+loaded 54 start menu entries from 6 sub-menus in 0.5 seconds
+```
+
+### Fix
+
+```bash
+# 1. Install gnome-menus (provides /etc/xdg/menus/gnome-applications.menu)
+sudo apt install -y gnome-menus
+
+# 2. xpra looks for "applications.menu" but the package installs "gnome-applications.menu"
+#    Create a symlink:
+sudo ln -sf /etc/xdg/menus/gnome-applications.menu /etc/xdg/menus/applications.menu
+
+# 3. (Optional) Add .desktop entries for apps you want in the menu
+#    Already present on most systems: /usr/share/applications/cursor.desktop, firefox.desktop, etc.
+#    If Firefox.desktop is missing:
+sudo tee /usr/share/applications/firefox.desktop > /dev/null <<'EOF'
+[Desktop Entry]
+Name=Firefox
+Comment=Browse the Web
+Exec=/usr/bin/firefox %u
+Icon=firefox
+Type=Application
+Categories=Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;
+StartupNotify=true
+StartupWMClass=Firefox
+EOF
+
+# 4. Restart xpra session to pick up the menu changes
+xpra stop :100
+sleep 2
+xpra start :100 \
+  --bind-tcp=0.0.0.0:6001 \
+  --start=xterm \
+  --start="fcitx5 -d --replace" \
+  --start=cursor \
+  --env=GTK_IM_MODULE=fcitx5 \
+  --env=QT_IM_MODULE=fcitx5 \
+  --env=XMODIFIERS=@im=fcitx \
+  --daemon=yes --tcp-auth=none --html=on \
+  --dpi=96 \
+  --input-method=keep
+```
+
+### Troubleshooting the Start Menu
+
+| Check | Command |
+|---|---|
+| Menu definitions present? | `ls /etc/xdg/menus/` |
+| .desktop files available? | `ls /usr/share/applications/*.desktop` |
+| xpra loaded menu entries? | `grep "start menu entries" /tmp/xpra/100/server.log` |
+| Menu parse still failing? | `grep -i "menu\|parse" /tmp/xpra/100/server.log` |
+
+## Step 5: Auto-Restart Guardian
 
 Xvfb (X server) can crash after hours of use (`xterm: fatal IO error 11` →
 `X connection error received`), taking down cursor + fcitx5 + xpra.
@@ -280,7 +352,7 @@ echo '/usr/local/bin/xpra-guardian.sh start >/dev/null 2>&1 || true' >> ~/.bashr
 
 **Recovery time:** ~55 seconds from crash to full recovery. Logs at `/usr/local/var/xpra-guardian.log`.
 
-## Step 5: Verify Everything
+## Step 6: Verify Everything
 
 ```bash
 # 1. Cursor binary works
@@ -306,7 +378,13 @@ xdg-settings get default-web-browser  # firefox.desktop
 # 7. Guardian running
 xpra-guardian.sh status
 
-# 8. Browser access
+# 8. Start menu entries loaded (should show "loaded N start menu entries")
+grep "start menu entries" /tmp/xpra/100/server.log
+
+# 9. Cursor Agent CLI installed
+agent --version
+
+# 10. Browser access
 echo "Open http://$(hostname -I | awk '{print $1}'):6001/"
 ```
 
@@ -323,6 +401,88 @@ echo "Open http://$(hostname -I | awk '{print $1}'):6001/"
 | Xpra server log? | `tail -f /tmp/xpra/100/server.log` |
 | Fcitx5 running? | `ps -ef \| grep fcitx5` |
 | Fcitx5 diagnostics? | `DISPLAY=:100 fcitx5-diagnose 2>&1 \| less` |
+| Start menu empty? | `ls /etc/xdg/menus/ && grep "start menu entries" /tmp/xpra/100/server.log` |
+| Cursor Agent CLI? | `agent --version && agent about` |
+
+## Step 7: Install Cursor Agent CLI
+
+The Cursor Agent CLI (`agent`) is a **separate standalone binary** from the Cursor IDE GUI.
+It allows running Cursor's AI agent in the terminal, GitHub Actions, and CI/CD — similar to
+Claude Code but powered by Cursor's models.
+
+**Official install method:** shell script installer from `cursor.com/install`.
+
+```bash
+# Install Cursor Agent CLI
+curl -fsSL https://cursor.com/install | bash
+```
+
+This installs:
+- Binary: `~/.local/share/cursor-agent/versions/<version>/cursor-agent`
+- Symlinks: `~/.local/bin/agent` (primary) and `~/.local/bin/cursor-agent` (legacy alias)
+- Requires `~/.local/bin` in `$PATH` (installer will warn if not)
+
+### Post-Install
+
+```bash
+# Verify installation
+agent --version        # e.g. 2026.08.31-4057e58
+agent about            # version, OS, login status
+
+# Update to latest
+agent update
+
+# Login (requires Cursor subscription)
+agent login
+
+# Also add system-wide symlinks for convenience
+sudo ln -sf ~/.local/bin/agent /usr/local/bin/agent
+sudo ln -sf ~/.local/bin/cursor-agent /usr/local/bin/cursor-agent
+```
+
+### Usage Examples
+
+```bash
+# Interactive mode
+agent "find one bug and fix it"
+
+# Non-interactive / script mode (CI/CD)
+agent -p --output-format json "explain this function"
+agent -p --output-format stream-json "refactor the routing module"
+
+# Plan mode (read-only analysis, no edits)
+agent --plan "analyze security issues in the auth flow"
+
+# Ask mode (Q&A, read-only)
+agent --mode ask "how does the Cubemlia routing work?"
+
+# Specify model
+agent --model sonnet-4-thinking "optimize this hot path"
+
+# Resume previous session
+agent --continue
+
+# List available models
+agent models
+
+# Run in an isolated git worktree
+agent -w "fix-bug"
+
+# Self-hosted Cloud Agent worker
+agent worker --pool my-team-pool
+```
+
+### Important Notes
+
+| Note | Detail |
+|---|---|
+| **Separate from Cursor IDE** | `agent` is NOT the same as `cursor` (the IDE). Don't confuse them. |
+| **Binary name** | Primary: `agent`. Legacy alias: `cursor-agent`. Both point to same binary. |
+| **`cursor` = IDE** | `/usr/local/bin/cursor` remains the GUI IDE wrapper (via xpra). |
+| **Authentication** | Must run `agent login` before AI features work. Uses Cursor subscription. |
+| **API key** | Can also use `--api-key <key>` or `CURSOR_API_KEY` env var. |
+| **Headless / CI** | Use `-p` (print mode) with `--output-format json|stream-json` for non-interactive use. |
+| **Update method** | `agent update` — not tied to the IDE AppImage update. |
 
 ## Reference
 
