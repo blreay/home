@@ -67,7 +67,7 @@ start_session() {
         --bind-tcp="0.0.0.0:${PORT}" \
         --start=xterm \
         --start="fcitx5 -d --replace" \
-        --start=cursor \
+        --start=firefox \
         --env=GTK_IM_MODULE=fcitx5 \
         --env=QT_IM_MODULE=fcitx5 \
         --env=XMODIFIERS=@im=fcitx \
