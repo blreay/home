@@ -59,18 +59,27 @@ typeset aryHost=(
 typeset jsonapp=$(cat - <<\EOF
 {
   "app":{
-	  "firefox":    {"host":"host1",  "port":"7901",   "msg":""},
-	  "firefox2":   {"host":"host2",  "port":"31000",  "msg":""},
-	  "gedit":      {"host":"host2",  "port":"31001",  "msg":""},
-	  "wechat":     {"host":"host2",  "port":"7908",   "msg":""},
-	  "cursor":      {"host":"host5",  "port":"6001",  "msg":""}
+	  "firefox":    {"host":"host1",  "port":"7901",  "msg":""},
+	  "firefox2":   {"host":"host2",  "port":"31000", "msg":""},
+	  "gedit":      {"host":"host2",  "port":"31001", "msg":""},
+	  "wechat":     {"host":"host2",  "port":"7908",  "msg":""},
+	  "x3":         {"host":"vm3",    "port":"6001",  "msg":""},
+	  "x4":         {"host":"vm4",    "port":"6001",  "msg":""},
+	  "x5":         {"host":"vm5",    "port":"6001",  "msg":""},
+	  "cursor2":    {"host":"chuyi02","port":"6001",  "msg":""},
+	  "cursor3":    {"host":"chuyi03","port":"6001",  "msg":""}
   },
   "host":{
 	  "host1":"bej301459.cn.oracle.com",
 	  "host2":"bej301712.cn.oracle.com",
 	  "host3":"bej301713.cn.oracle.com",
 	  "host4":"slc09wou.us.oracle.com",
-	  "host5":"qqytesting01.inc.alipay.net"
+	  "host5":"qqytesting01.inc.alipay.net",
+	  "chuyi02":"chuyi02.inc.alipay.net",
+	  "chuyi03":"chuyi03.inc.alipay.net",
+	  "vm3":"6.12.217.105",
+	  "vm4":"6.12.213.61",
+	  "vm5":"$MYVM05"
   }
 }
 EOF
