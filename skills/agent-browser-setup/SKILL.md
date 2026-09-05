@@ -85,10 +85,13 @@ ldd $HOME/.local/chrome-for-testing/chrome-linux64/chrome | grep "not found"
 无输出即依赖齐全。有缺失则安装：
 
 ```bash
-sudo apt-get update && sudo apt-get install -y \
-  libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 \
-  libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2 \
-  libpango-1.0-0 libcairo2
+sudo apt-get update
+# Ubuntu 24.04(noble)+ 起，atk/cups/asound 这 4 个库改用 t64 后缀变体；若仍用旧基名，
+# 会从 focal 源拉旧版并把 t64 变体连同一批 GUI 库降级移除。22.04 及更早去掉 t64 后缀。
+sudo apt-get install -y \
+  libnss3 libatk1.0-0t64 libatk-bridge2.0-0t64 libcups2t64 libdrm2 \
+  libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 \
+  libasound2t64 libpango-1.0-0 libcairo2
 ```
 
 ### 第四步：指定浏览器路径并持久化

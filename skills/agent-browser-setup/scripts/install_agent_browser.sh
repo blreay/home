@@ -60,11 +60,28 @@ if [ -n "$MISSING" ]; then
   echo "  缺失依赖："
   echo "$MISSING" | sed 's/^/    /'
   echo "  安装系统依赖 ..."
+
+  # Ubuntu 23.10/24.04(noble)+ 做了 64-bit time_t 迁移，下面 4 个库改用 t64 后缀变体
+  # （libasound2 → libasound2t64 等）。若仍按旧基名安装，noble 上会从 focal 源拉旧
+  # 版并把 t64 变体连同一批 GUI 库（libgtk-3、libwebkit2gtk 等）降级移除。24.04+ 用
+  # t64 名，旧版本/非 Ubuntu 用基名。其余库（libnss3、libdrm2 等）名未变。
+  # 注意：VERSION_ID 形如 "24.04"，取主版本号比较；左侧 || 的失败被 set -e 豁免。
+  APT_PKGS="libnss3 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libpango-1.0-0 libcairo2"
+  USE_T64=0
+  if [ -r /etc/os-release ]; then
+    . /etc/os-release
+    case "$ID" in
+      ubuntu) [ "${VERSION_ID%%.*}" -ge 24 ] 2>/dev/null && USE_T64=1 ;;
+    esac
+  fi
+  if [ "$USE_T64" = 1 ]; then
+    APT_PKGS="$APT_PKGS libatk1.0-0t64 libatk-bridge2.0-0t64 libcups2t64 libasound2t64"
+  else
+    APT_PKGS="$APT_PKGS libatk1.0-0 libatk-bridge2.0-0 libcups2 libasound2"
+  fi
+  echo "  安装: $APT_PKGS"
   sudo apt-get update
-  sudo apt-get install -y \
-    libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 \
-    libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2 \
-    libpango-1.0-0 libcairo2
+  sudo apt-get install -y $APT_PKGS
 else
   echo "  依赖齐全。"
 fi
