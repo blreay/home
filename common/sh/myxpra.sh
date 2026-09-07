@@ -315,7 +315,7 @@ case "${command}" in
 		#CMD="${XPRACMD} start ${DPI} --start-child=\"${outfile}\" --bind-tcp=0.0.0.0:${appport} −−notifications=yes --input-method=fcitx --start=\"fcitx -r\""
 		;;
 ###################################### 2026/06/01 #########################
-	("cursor")
+	(cursor*)
 		outfile=/home/zhaozhan/wx/vm/wx.sh
 		## by claude code
 		#CMD="xpra start :101 ${DPI} --bind-tcp=0.0.0.0:6001 \
@@ -332,6 +332,21 @@ case "${command}" in
 #/usr/bin/xpra start :103 --bind-tcp=0.0.0.0:6001 --start=xterm --start=fcitx5 -d --replace --start=cursor --env=GTK_IM_MODULE=fcitx5 --env=QT_IM_MODULE=fcitx5 --env=XMODIFIERS=@im=fcitx --daemon=yes --tcp-auth=none --html=on --dpi=96 --input-method=keep
 ## cloudide command line reference
 #/usr/bin/xpra start :100 --bind-tcp=0.0.0.0:14500 --html=on --daemon=yes --start=xterm --start=fcitx5 -d --replace --env=GTK_IM_MODULE=fcitx5 --env=QT_IM_MODULE=fcitx5 --env=XMODIFIERS=@im=fcitx --dpi=96 --input-method=keep
+		;;
+###################################### 2026/09/07 #########################
+	(x*)
+		## by claude code
+    echo "start on cloud ide"
+    CMD="xpra start :100 \
+    --bind-tcp=0.0.0.0:6001 \
+    --start=xterm \
+    --start=\"fcitx5 -d --replace\" \
+    --env=GTK_IM_MODULE=fcitx5 \
+    --env=QT_IM_MODULE=fcitx5 \
+    --env=XMODIFIERS=@im=fcitx \
+    --daemon=yes --tcp-auth=none --html=on \
+    --dpi=96 \
+    --input-method=keep"
 		;;
 	(*)
 		ERR "Unknown app: ${app}"
