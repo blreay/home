@@ -1,6 +1,6 @@
 ---
 name: cursor-xpra
-description: Use when installing Cursor IDE on a headless Linux server/container and accessing it through xpra remote display. Covers download, extract (no FUSE), wrapper script (avoid AppRun recursion), /dev/shm crash fix, default browser config, fcitx5 Chinese input, crash auto-restart guardian, xpra Start menu fix, and Cursor Agent CLI install. Use on a fresh dev machine to set up Cursor remote access from scratch.
+description: Use when installing Cursor IDE on a headless Linux server/container and accessing it through xpra remote display. Covers download, extract (no FUSE), wrapper script (avoid AppRun recursion), /dev/shm crash fix, default browser config, fcitx5 Chinese input, crash auto-restart guardian, xpra Start menu fix, xterm font/size/colors tuning via Xresources (incl. auto-load on xpra start), and Cursor Agent CLI install. Use on a fresh dev machine to set up Cursor remote access from scratch.
 ---
 
 # Cursor on Headless Linux via Xpra
@@ -150,6 +150,7 @@ All-in-one xpra launch command with Chinese input:
 ```bash
 xpra start :100 \
   --bind-tcp=0.0.0.0:6001 \
+  --start="xrdb -merge $HOME/.Xresources" \   # auto-load xterm font/colors (before --start=xterm)
   --start=xterm \
   --start="fcitx5 -d --replace" \
   --start=cursor \
@@ -173,6 +174,48 @@ xpra list                    # check sessions
 xpra stop :100               # stop session
 xpra control :100 start cursor  # re-launch cursor in existing session
 ```
+
+## Step 3.5: Configure xterm Font, Size & Colors
+
+xterm (launched by xpra alongside Cursor) has **no settings menu** — configure
+font/size/colors through `~/.Xresources`. The key pitfall: **never set a CJK font as
+xterm's main `faceName`** — Latin glyphs get stretched into wide cells (looks like
+spaces between every character, ASCII looks double-width). Use a Latin monospace as
+`faceName`, CJK only via `faceNameDoublesize`. Full background + the width-ratio
+verification are in the **xpra-install skill → "xterm Font, Size & Colors"**; the
+ready-to-use config:
+
+```bash
+cat > ~/.Xresources <<'EOF'
+XTerm*renderFont: true
+! Main font: Latin monospace (do NOT set CJK here — Latin would get stretched)
+XTerm*faceName: DejaVu Sans Mono
+! CJK / double-width chars go through a separate CJK font
+XTerm*faceNameDoublesize: Noto Sans Mono CJK SC
+XTerm*faceSize: 14
+XTerm*faceSizeDPI: 96
+XTerm*locale: true
+XTerm*utf8: 2
+XTerm*utf8Title: true
+XTerm*charClass: 33:48,35:48,37:48,43:48,45-47:48,58:48,61:48,63:48,95:48,126:48
+! Colors: pure black background, white foreground + cursor
+XTerm*background: #000000
+XTerm*foreground: #FFFFFF
+XTerm*cursorColor: #FFFFFF
+EOF
+
+# Load into the running session (new windows pick it up, existing windows won't change)
+DISPLAY=:100 xrdb -merge ~/.Xresources
+# Verify, then open a new window:
+DISPLAY=:100 xterm &
+```
+
+**Auto-load on every xpra start:** xpra does NOT read `~/.Xresources` automatically —
+add a `--start="xrdb -merge $HOME/.Xresources"` line **before** `--start=xterm`. This is
+already in the Step 3 / Step 4 commands above and in the guardian's `start_session()`.
+
+> The guardian script relaunches xpra on crash; its `start_session()` also runs
+> `xrdb -merge` first, so font/colors survive unattended restarts.
 
 ## Step 4: Fix Xpra Start Menu Empty on Minimal Installs
 
@@ -224,6 +267,7 @@ xpra stop :100
 sleep 2
 xpra start :100 \
   --bind-tcp=0.0.0.0:6001 \
+  --start="xrdb -merge $HOME/.Xresources" \   # auto-load xterm font/colors
   --start=xterm \
   --start="fcitx5 -d --replace" \
   --start=cursor \
@@ -264,7 +308,9 @@ log() { echo "$(date +'%Y-%m-%d %H:%M:%S') [guardian] $1"; }
 start_session() {
     log "Starting xpra session on :${DISPLAY_NUM}..."
     /usr/bin/xpra start ":${DISPLAY_NUM}" \
-        --bind-tcp="0.0.0.0:${PORT}" --start=xterm \
+        --bind-tcp="0.0.0.0:${PORT}" \
+        --start="xrdb -merge $HOME/.Xresources" \
+        --start=xterm \
         --start="fcitx5 -d --replace" --start=cursor \
         --env=GTK_IM_MODULE=fcitx5 --env=QT_IM_MODULE=fcitx5 \
         --env=XMODIFIERS=@im=fcitx --daemon=yes --tcp-auth=none --html=on \
