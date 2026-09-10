@@ -1,0 +1,1257 @@
+{
+  "uid": "gpu-monitor",
+  "title": "GPU Monitor (DCGM + nvidia-smi)",
+  "tags": [
+    "gpu",
+    "dcgm",
+    "nvidia-smi",
+    "4090"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "refresh": "10s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "label": "Data source",
+        "type": "datasource",
+        "query": "prometheus",
+        "refresh": 1,
+        "current": {},
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "options": []
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": "grow-Overview",
+      "type": "row",
+      "title": "Overview",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [],
+      "collapsed": false
+    },
+    {
+      "id": 1,
+      "type": "gauge",
+      "title": "GPU \u5229\u7528\u7387",
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "thresholds"
+          },
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 95
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "avg(DCGM_FI_DEV_GPU_UTIL)",
+          "legendFormat": "",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": 2,
+      "type": "gauge",
+      "title": "\u663e\u5b58\u5360\u7528",
+      "gridPos": {
+        "x": 4,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "color": {
+            "mode": "thresholds"
+          },
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.7
+              },
+              {
+                "color": "red",
+                "value": 0.9
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(nvidia_smi_gpu_memory_used_bytes) / sum(nvidia_smi_gpu_memory_total_bytes)",
+          "legendFormat": "",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": 3,
+      "type": "gauge",
+      "title": "GPU \u6e29\u5ea6",
+      "gridPos": {
+        "x": 8,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "color": {
+            "mode": "thresholds"
+          },
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 75
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "avg(DCGM_FI_DEV_GPU_TEMP)",
+          "legendFormat": "",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": 4,
+      "type": "gauge",
+      "title": "\u529f\u8017",
+      "gridPos": {
+        "x": 12,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt",
+          "color": {
+            "mode": "thresholds"
+          },
+          "min": 0,
+          "max": 450,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 330
+              },
+              {
+                "color": "red",
+                "value": 430
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "avg(DCGM_FI_DEV_POWER_USAGE)",
+          "legendFormat": "",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "P-State",
+      "gridPos": {
+        "x": 16,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "avg(nvidia_smi_gpu_pstate)",
+          "legendFormat": "",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "\u786c\u4ef6\u5065\u5eb7 (remapped rows)",
+      "gridPos": {
+        "x": 20,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0.5
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(max(DCGM_FI_DEV_CORRECTABLE_REMAPPED_ROWS), max(DCGM_FI_DEV_UNCORRECTABLE_REMAPPED_ROWS), max(DCGM_FI_DEV_ROW_REMAP_FAILURE))",
+          "legendFormat": "",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": "grow-\u663e\u5b58 Memor",
+      "type": "row",
+      "title": "\u663e\u5b58 Memory",
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [],
+      "collapsed": false
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "\u663e\u5b58\u5206\u5e03 (DCGM)",
+      "gridPos": {
+        "x": 0,
+        "y": 6,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "fillOpacity": 15,
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_FB_USED * 1048576",
+          "legendFormat": "used",
+          "format": "time_series"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_FB_FREE * 1048576",
+          "legendFormat": "free",
+          "format": "time_series"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_FB_RESERVED * 1048576",
+          "legendFormat": "reserved",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "\u6309\u8fdb\u7a0b\u663e\u5b58 (nvidia-smi)",
+      "gridPos": {
+        "x": 12,
+        "y": 6,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "fillOpacity": 15,
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (process_name) (nvidia_smi_process_memory_used_bytes)",
+          "legendFormat": "{{process_name}}",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": "grow-\u6027\u80fd Perfo",
+      "type": "row",
+      "title": "\u6027\u80fd Performance",
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [],
+      "collapsed": false
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "GPU / \u663e\u5b58\u5e26\u5bbd\u5229\u7528\u7387",
+      "gridPos": {
+        "x": 0,
+        "y": 15,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "fillOpacity": 15
+          },
+          "max": 100
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_GPU_UTIL",
+          "legendFormat": "compute",
+          "format": "time_series"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_MEM_COPY_UTIL",
+          "legendFormat": "memory copy",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "\u65f6\u949f (SM / Memory)",
+      "gridPos": {
+        "x": 8,
+        "y": 15,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "MHz",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_SM_CLOCK",
+          "legendFormat": "SM clock",
+          "format": "time_series"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_MEM_CLOCK",
+          "legendFormat": "memory clock",
+          "format": "time_series"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "nvidia_smi_gpu_max_sm_clock_mhz",
+          "legendFormat": "SM max",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "\u5a92\u4f53\u5f15\u64ce (Dec/Enc)",
+      "gridPos": {
+        "x": 16,
+        "y": 15,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "fillOpacity": 15
+          },
+          "max": 100
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_DEC_UTIL",
+          "legendFormat": "decode",
+          "format": "time_series"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_ENC_UTIL",
+          "legendFormat": "encode",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": "grow-\u529f\u8017\u4e0e\u6e29\u5ea6 Po",
+      "type": "row",
+      "title": "\u529f\u8017\u4e0e\u6e29\u5ea6 Power & Thermals",
+      "gridPos": {
+        "x": 0,
+        "y": 23,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [],
+      "collapsed": false
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "\u6e29\u5ea6",
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_GPU_TEMP",
+          "legendFormat": "GPU",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "\u529f\u8017",
+      "gridPos": {
+        "x": 8,
+        "y": 24,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_POWER_USAGE",
+          "legendFormat": "draw",
+          "format": "time_series"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "nvidia_smi_gpu_power_limit_watts",
+          "legendFormat": "limit",
+          "format": "time_series"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "nvidia_smi_gpu_power_default_limit_watts",
+          "legendFormat": "default",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "\u98ce\u6247\u8f6c\u901f",
+      "gridPos": {
+        "x": 16,
+        "y": 24,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "fillOpacity": 15
+          },
+          "max": 100
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "nvidia_smi_gpu_fan_speed_percent",
+          "legendFormat": "fan",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": "grow-\u964d\u9891\u539f\u56e0 Thr",
+      "type": "row",
+      "title": "\u964d\u9891\u539f\u56e0 Throttling",
+      "gridPos": {
+        "x": 0,
+        "y": 32,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [],
+      "collapsed": false
+    },
+    {
+      "id": 15,
+      "type": "timeseries",
+      "title": "\u964d\u9891\u6807\u5fd7 (1=\u6b63\u5728\u964d\u9891)",
+      "gridPos": {
+        "x": 0,
+        "y": 33,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "fillOpacity": 15
+          },
+          "max": 1
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "nvidia_smi_gpu_throttled_gpu_idle",
+          "legendFormat": "gpu_idle",
+          "format": "time_series"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "nvidia_smi_gpu_throttled_sw_power_cap",
+          "legendFormat": "sw_power_cap",
+          "format": "time_series"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "nvidia_smi_gpu_throttled_hw_power_brake_slowdown",
+          "legendFormat": "hw_power_brake_slowdown",
+          "format": "time_series"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "nvidia_smi_gpu_throttled_hw_thermal_slowdown",
+          "legendFormat": "hw_thermal_slowdown",
+          "format": "time_series"
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "nvidia_smi_gpu_throttled_sw_thermal_slowdown",
+          "legendFormat": "sw_thermal_slowdown",
+          "format": "time_series"
+        },
+        {
+          "refId": "F",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "nvidia_smi_gpu_throttled_sync_boost",
+          "legendFormat": "sync_boost",
+          "format": "time_series"
+        },
+        {
+          "refId": "G",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "nvidia_smi_gpu_throttled_applications_clocks_setting",
+          "legendFormat": "applications_clocks_setting",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": "grow-\u786c\u4ef6\u5065\u5eb7 Har",
+      "type": "row",
+      "title": "\u786c\u4ef6\u5065\u5eb7 Hardware Health",
+      "gridPos": {
+        "x": 0,
+        "y": 41,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [],
+      "collapsed": false
+    },
+    {
+      "id": 16,
+      "type": "timeseries",
+      "title": "\u663e\u5b58 remapped rows",
+      "gridPos": {
+        "x": 0,
+        "y": 42,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_CORRECTABLE_REMAPPED_ROWS",
+          "legendFormat": "correctable",
+          "format": "time_series"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_UNCORRECTABLE_REMAPPED_ROWS",
+          "legendFormat": "uncorrectable",
+          "format": "time_series"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_ROW_REMAP_FAILURE",
+          "legendFormat": "remap failure",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": 17,
+      "type": "timeseries",
+      "title": "ECC \u9519\u8bef (4090 \u672a\u5f00\u542f ECC \u65f6\u65e0\u6570\u636e)",
+      "gridPos": {
+        "x": 12,
+        "y": 42,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "nvidia_smi_gpu_ecc_corrected_volatile_total",
+          "legendFormat": "corrected",
+          "format": "time_series"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "nvidia_smi_gpu_ecc_uncorrected_volatile_total",
+          "legendFormat": "uncorrected",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": 18,
+      "type": "timeseries",
+      "title": "PCIe replay counter",
+      "gridPos": {
+        "x": 0,
+        "y": 50,
+        "w": 24,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_PCIE_REPLAY_COUNTER",
+          "legendFormat": "replays",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": "grow-\u80fd\u8017 Energ",
+      "type": "row",
+      "title": "\u80fd\u8017 Energy",
+      "gridPos": {
+        "x": 0,
+        "y": 54,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [],
+      "collapsed": false
+    },
+    {
+      "id": 19,
+      "type": "stat",
+      "title": "\u7d2f\u8ba1\u80fd\u8017 (\u81ea\u9a71\u52a8\u52a0\u8f7d)",
+      "gridPos": {
+        "x": 0,
+        "y": 55,
+        "w": 8,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kWh",
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_TOTAL_ENERGY_CONSUMPTION / 3.6e9",
+          "legendFormat": "",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    },
+    {
+      "id": 20,
+      "type": "timeseries",
+      "title": "\u5b9e\u65f6\u529f\u7387 (\u80fd\u8017\u8ba1\u6570\u5668\u5fae\u5206 vs power.draw)",
+      "gridPos": {
+        "x": 8,
+        "y": 55,
+        "w": 16,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "rate(DCGM_FI_DEV_TOTAL_ENERGY_CONSUMPTION[5m]) / 1000",
+          "legendFormat": "from energy counter",
+          "format": "time_series"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "DCGM_FI_DEV_POWER_USAGE",
+          "legendFormat": "nvidia-smi power.draw",
+          "format": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null
+    }
+  ]
+}

@@ -1,0 +1,304 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    folder: LLM-Alerts
+    name: llm-gpu-alerts
+    interval: 30s
+    contact_point_names:
+      - default
+    rules:
+      # 1. GPU 温度过高
+      - uid: llm-gpu-temp-high
+        title: "GPU 温度过高 (>85°C)"
+        condition: B
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: vllm-prom
+            model:
+              refId: A
+              datasource:
+                type: prometheus
+                uid: vllm-prom
+              editorMode: code
+              expr: max(DCGM_FI_DEV_GPU_TEMP)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              queryType: instant
+          - refId: B
+            queryType: ''
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              conditions:
+                - evaluator:
+                    params: [85]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: classic_conditions
+        for: 2m
+        noDataState: OK
+        execErrState: Alerting
+        isPaused: false
+        labels:
+          severity: warning
+          category: gpu
+        annotations:
+          summary: "GPU 温度高于 85°C"
+          description: 'RTX 4090 温度 {{ printf "%.0f" $values.B0.Value }}°C，已持续超过 2 分钟，请检查散热或降负载。'
+
+      # 2. 显存占用过高
+      - uid: llm-gpu-memory-high
+        title: "显存占用过高 (>96%)"
+        condition: B
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: vllm-prom
+            model:
+              refId: A
+              datasource:
+                type: prometheus
+                uid: vllm-prom
+              editorMode: code
+              expr: sum(nvidia_smi_gpu_memory_used_bytes) / sum(nvidia_smi_gpu_memory_total_bytes)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              queryType: instant
+          - refId: B
+            queryType: ''
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              conditions:
+                - evaluator:
+                    params: [0.96]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: classic_conditions
+        for: 5m
+        noDataState: OK
+        execErrState: Alerting
+        isPaused: false
+        labels:
+          severity: warning
+          category: gpu
+        annotations:
+          summary: "GPU 显存占用超过 96%"
+          description: '显存占用 {{ printf "%.2f" $values.B0.Value }}（阈值 0.96），已持续超过 5 分钟，接近 OOM 风险区。'
+
+      # 3. 显存出现 remapped rows（硬件坏块）
+      - uid: llm-gpu-remapped-rows
+        title: "显存出现 remapped rows (硬件预警)"
+        condition: B
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: vllm-prom
+            model:
+              refId: A
+              datasource:
+                type: prometheus
+                uid: vllm-prom
+              editorMode: code
+              expr: max(DCGM_FI_DEV_CORRECTABLE_REMAPPED_ROWS) + max(DCGM_FI_DEV_UNCORRECTABLE_REMAPPED_ROWS) + max(DCGM_FI_DEV_ROW_REMAP_FAILURE)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              queryType: instant
+          - refId: B
+            queryType: ''
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: classic_conditions
+        for: 1m
+        noDataState: OK
+        execErrState: Alerting
+        isPaused: false
+        labels:
+          severity: critical
+          category: gpu-hardware
+        annotations:
+          summary: "GPU 显存出现 remapped rows"
+          description: '检测到显存重映射行数 {{ printf "%.0f" $values.B0.Value }}（正常应为 0），可能存在显存硬件损坏，建议尽快安排换卡/保修检查。'
+
+      # 4. vLLM 显存 OOM（KV cache 耗尽导致抢占/排队）
+      - uid: llm-vllm-oom-pressure
+        title: "vLLM 显存 OOM (KV cache 压力)"
+        condition: B
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: vllm-prom
+            model:
+              refId: A
+              datasource:
+                type: prometheus
+                uid: vllm-prom
+              editorMode: code
+              expr: increase(vllm:num_preemptions_total[5m]) > 0 or (vllm:num_requests_waiting_by_reason{reason="capacity"} > 0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              queryType: instant
+          - refId: B
+            queryType: ''
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: classic_conditions
+        for: 1m
+        noDataState: OK
+        execErrState: Alerting
+        isPaused: false
+        labels:
+          severity: critical
+          category: vllm
+        annotations:
+          summary: "vLLM 显存 OOM：KV cache 不足"
+          description: "近 5 分钟出现请求抢占 (preemption) 或 capacity 排队，说明 KV cache 显存耗尽。建议减小 max_model_len、降低并发，或扩容显存。"
+
+      # 5. vLLM 服务不可用 —— 硬 CUDA OOM 崩溃后的最终表现
+      - uid: llm-vllm-target-down
+        title: "vLLM 服务不可用 (疑似 CUDA OOM 崩溃)"
+        condition: B
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: vllm-prom
+            model:
+              refId: A
+              datasource:
+                type: prometheus
+                uid: vllm-prom
+              editorMode: code
+              expr: 1 - up{job="vllm-qwen"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              queryType: instant
+          - refId: B
+            queryType: ''
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: classic_conditions
+        for: 1m
+        noDataState: Alerting
+        execErrState: Alerting
+        isPaused: false
+        labels:
+          severity: critical
+          category: vllm
+        annotations:
+          summary: "vLLM 服务不可用"
+          description: "vllm-qwen 抓取目标已断开超过 1 分钟（常见于 CUDA OOM 崩溃）。请检查 docker logs qwen-vllm 与 nvidia-smi。"

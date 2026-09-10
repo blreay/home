@@ -1,0 +1,3 @@
+interface:
+  display_name: "vLLM Monitoring Stack"
+  short_description: "Deploy Prometheus+Grafana+GPU monitoring for vLLM"

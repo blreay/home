@@ -1,0 +1,3 @@
+interface:
+  display_name: "LiteLLM Monitoring"
+  short_description: "Add LiteLLM proxy metrics to an existing Grafana+Prometheus stack"
