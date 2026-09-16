@@ -216,16 +216,21 @@ function main {
             ${cmd} send-keys -t ${session}:${cmd_win_name}.0 'ipconfig' C-m
 #EOF
         else
-            #${cmd} new -d -n bash -s ${session} "${loopbash}"
-            ${cmd} new -d -s ${session} "${loopbash}"
-            for((i=1;i<9;i++)); do
-                #${cmd} neww -d -n bash -t ${session} "${loopbash}"
-                ${cmd} neww -d -t ${session} "${loopbash}"
-            done
-            ${cmd} neww -d -n "my" -t ${session} "${loopbash}"
+#            ${cmd} new -d -s ${session} "${loopbash}"
+#            for((i=1;i<9;i++)); do
+#                #${cmd} neww -d -n bash -t ${session} "${loopbash}"
+#                ${cmd} neww -d -t ${session} "${loopbash}"
+#            done
+#            ${cmd} neww -d -n "my" -t ${session} "${loopbash}"
+#
+            # session already exists: do NOT add windows on every attach
+            # (old code added 9 windows per run, bloating the session)
+            ${cmd} list-windows -t ${session} -F '#{window_name}' | grep -qx my || ${cmd} neww -d -n "my" -t ${session} "${loopbash}"
         fi
     fi
 
+    # attach without -d: do not detach other clients (that was kicking
+    # the user's other terminal immediately, causing the attach loop)
     [[ ${g_detach} -eq 0 ]] && ${cmd} att -t ${session} -d
 }
 
