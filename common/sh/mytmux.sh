@@ -121,18 +121,29 @@ function send_cmd {
         done
     done
 }
+function do_reset {
+    typeset session=$1
+    typeset cmd="$2"
+    echo "session=$session cmd=$cmd"
+    reset
+    stty sane
+    ${TMUX_EXE} refresh-client
+    ${TMUX_EXE} source-file ~/.tmux.conf
+}
 
 function main {
     ##########################
     typeset sendcmd=""
     typeset g_detach=0
     typeset g_force=0
+    typeset g_reset=0
     unset OPTIND
-    while getopts :dfc: ch; do
+    while getopts :dfrc: ch; do
         case $ch in
         c) sendcmd="$OPTARG"; echo "sendcmd=$sendcmd";;
         d) g_detach=1; echo "only create session, don't attach";;
         f) g_force=1; echo "force mode";;
+        r) g_reset=1; echo "reset mode";;
         ?) echo "unknown option" && return 1;;
         esac
     done
@@ -167,6 +178,11 @@ function main {
     ## send cmd mode
     if [[ -n "${sendcmd}" ]]; then
         send_cmd ${session} "${sendcmd}"
+        return 0
+    fi
+    ## send cmd mode
+    if [[ ${g_reset} -eq 1 ]]; then
+        do_reset ${session} "${sendcmd}"
         return 0
     fi
 
