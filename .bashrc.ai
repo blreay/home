@@ -1,0 +1,17 @@
+# For my test box
+
+export PATH=/usr/local/cuda/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+
+export AI=/data/git/ai-lab/qwen
+export AI2=/data/git/ai-lab/qwen_uncensored
+export MAWQ=/data/models/Qwen3.8-27B-AWQ-INT4
+export MGGUF=/data/modelscope_qwen3.8_27b_uncensored2
+export MH3=/data/modelscope
+
+alias h3='docker exec -it comfyui-h3 bash'
+alias vim=lvim
+alias codex2='codex --dangerously-bypass-approvals-and-sandbox'
+export LANG=zh_CN.UTF-8
+export LOCAL_VLLM_API_KEY=sk-vllm-aaa-bbb
+
