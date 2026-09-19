@@ -1,114 +1,74 @@
 {
-  "uid": "vllm-qwen-monitor",
-  "title": "Qwen vLLM Monitor",
-  "tags": [
-    "vllm",
-    "qwen",
-    "llm"
-  ],
-  "timezone": "browser",
-  "schemaVersion": 39,
-  "version": 3,
-  "editable": true,
-  "refresh": "10s",
-  "time": {
-    "from": "now-1h",
-    "to": "now"
-  },
-  "templating": {
-    "list": [
-      {
-        "name": "datasource",
-        "label": "Data source",
-        "type": "datasource",
-        "query": "prometheus",
-        "refresh": 1,
-        "current": {},
-        "hide": 0,
-        "includeAll": false,
-        "multi": false,
-        "options": []
-      }
-    ]
-  },
   "annotations": {
     "list": []
   },
+  "editable": true,
+  "id": 2,
   "panels": [
     {
-      "id": "row-Overview",
-      "type": "row",
-      "title": "Overview",
+      "collapsed": false,
       "gridPos": {
-        "x": 0,
-        "y": 0,
+        "h": 1,
         "w": 24,
-        "h": 1
+        "x": 0,
+        "y": 0
       },
+      "id": "row-Overview",
       "panels": [],
-      "collapsed": false
+      "title": "Overview",
+      "type": "row"
     },
     {
-      "id": 1,
-      "type": "timeseries",
-      "title": "Running requests",
-      "gridPos": {
-        "x": 0,
-        "y": 4,
-        "w": 8,
-        "h": 5
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
-          "custom": {},
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "custom": {},
+          "unit": "short"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 0,
+        "y": 4
+      },
+      "id": 1,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "sum(vllm:num_requests_running{job=\"vllm-qwen\"})",
+          "format": "time_series",
           "legendFormat": "",
-          "format": "time_series"
+          "refId": "A"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Running requests",
+      "type": "timeseries"
     },
     {
-      "id": 2,
-      "type": "timeseries",
-      "title": "Waiting requests",
-      "gridPos": {
-        "x": 8,
-        "y": 4,
-        "w": 8,
-        "h": 5
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
-          "custom": {},
           "color": {
             "mode": "thresholds"
           },
+          "custom": {},
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -125,49 +85,49 @@
                 "value": 8
               }
             ]
-          }
+          },
+          "unit": "short"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 8,
+        "y": 4
+      },
+      "id": 2,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "sum(vllm:num_requests_waiting{job=\"vllm-qwen\"})",
+          "format": "time_series",
           "legendFormat": "",
-          "format": "time_series"
+          "refId": "A"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Waiting requests",
+      "type": "timeseries"
     },
     {
-      "id": 3,
-      "type": "gauge",
-      "title": "KV cache usage",
-      "gridPos": {
-        "x": 16,
-        "y": 4,
-        "w": 8,
-        "h": 5
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "percentunit",
-          "custom": {},
           "color": {
             "mode": "thresholds"
           },
-          "min": 0,
+          "custom": {},
           "max": 1,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -184,129 +144,129 @@
                 "value": 0.8
               }
             ]
-          }
+          },
+          "unit": "percentunit"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 16,
+        "y": 4
+      },
+      "id": 3,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "sum(vllm:kv_cache_usage_perc{job=\"vllm-qwen\"})",
+          "format": "time_series",
           "legendFormat": "",
-          "format": "time_series"
+          "refId": "A"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "KV cache usage",
+      "type": "gauge"
     },
     {
-      "id": 4,
-      "type": "timeseries",
-      "title": "Generation throughput (tok/s)",
-      "gridPos": {
-        "x": 0,
-        "y": 9,
-        "w": 8,
-        "h": 5
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
-          "custom": {},
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "custom": {},
+          "unit": "short"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 0,
+        "y": 9
+      },
+      "id": 4,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "sum(rate(vllm:generation_tokens_total{job=\"vllm-qwen\"}[1m]))",
+          "format": "time_series",
           "legendFormat": "",
-          "format": "time_series"
+          "refId": "A"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Generation throughput (tok/s)",
+      "type": "timeseries"
     },
     {
-      "id": 5,
-      "type": "timeseries",
-      "title": "Prompt throughput (tok/s)",
-      "gridPos": {
-        "x": 8,
-        "y": 9,
-        "w": 8,
-        "h": 5
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
-          "custom": {},
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "custom": {},
+          "unit": "short"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 8,
+        "y": 9
+      },
+      "id": 5,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "sum(rate(vllm:prompt_tokens_total{job=\"vllm-qwen\"}[1m]))",
+          "format": "time_series",
           "legendFormat": "",
-          "format": "time_series"
+          "refId": "A"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Prompt throughput (tok/s)",
+      "type": "timeseries"
     },
     {
-      "id": 6,
-      "type": "gauge",
-      "title": "Prefix cache hit rate",
-      "gridPos": {
-        "x": 16,
-        "y": 9,
-        "w": 8,
-        "h": 5
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "percentunit",
-          "custom": {},
           "color": {
             "mode": "thresholds"
           },
-          "min": 0,
+          "custom": {},
           "max": 1,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -323,504 +283,504 @@
                 "value": 0.7
               }
             ]
-          }
+          },
+          "unit": "percentunit"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 16,
+        "y": 9
+      },
+      "id": 6,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "sum(rate(vllm:prefix_cache_hits_total{job=\"vllm-qwen\"}[5m])) / sum(rate(vllm:prefix_cache_queries_total{job=\"vllm-qwen\"}[5m]))",
+          "format": "time_series",
           "legendFormat": "",
-          "format": "time_series"
+          "refId": "A"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Prefix cache hit rate",
+      "type": "gauge"
     },
     {
-      "id": "row-Latency",
-      "type": "row",
-      "title": "Latency",
+      "collapsed": false,
       "gridPos": {
-        "x": 0,
-        "y": 12,
+        "h": 1,
         "w": 24,
-        "h": 1
+        "x": 0,
+        "y": 12
       },
+      "id": "row-Latency",
       "panels": [],
-      "collapsed": false
+      "title": "Latency",
+      "type": "row"
     },
     {
-      "id": 7,
-      "type": "timeseries",
-      "title": "Time to first token (s)",
-      "gridPos": {
-        "x": 0,
-        "y": 16,
-        "w": 12,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
-          }
+            "spanNulls": true
+          },
+          "unit": "s"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 7,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.5, sum by (le) (rate(vllm:time_to_first_token_seconds_bucket{job=\"vllm-qwen\"}[15m])))",
+          "format": "time_series",
           "legendFormat": "p50",
-          "format": "time_series"
+          "refId": "A"
         },
         {
-          "refId": "B",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:time_to_first_token_seconds_bucket{job=\"vllm-qwen\"}[15m])))",
+          "format": "time_series",
           "legendFormat": "p95",
-          "format": "time_series"
+          "refId": "B"
         },
         {
-          "refId": "C",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.99, sum by (le) (rate(vllm:time_to_first_token_seconds_bucket{job=\"vllm-qwen\"}[15m])))",
+          "format": "time_series",
           "legendFormat": "p99",
-          "format": "time_series"
+          "refId": "C"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Time to first token (s)",
+      "type": "timeseries"
     },
     {
-      "id": 8,
-      "type": "timeseries",
-      "title": "Time per output token (s)",
-      "gridPos": {
-        "x": 12,
-        "y": 16,
-        "w": 12,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
-          }
+            "spanNulls": true
+          },
+          "unit": "s"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 8,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.5, sum by (le) (rate(vllm:request_time_per_output_token_seconds_bucket{job=\"vllm-qwen\"}[15m])))",
+          "format": "time_series",
           "legendFormat": "p50",
-          "format": "time_series"
+          "refId": "A"
         },
         {
-          "refId": "B",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:request_time_per_output_token_seconds_bucket{job=\"vllm-qwen\"}[15m])))",
+          "format": "time_series",
           "legendFormat": "p95",
-          "format": "time_series"
+          "refId": "B"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Time per output token (s)",
+      "type": "timeseries"
     },
     {
-      "id": 9,
-      "type": "timeseries",
-      "title": "E2E request latency (s)",
-      "gridPos": {
-        "x": 0,
-        "y": 24,
-        "w": 12,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
-          }
+            "spanNulls": true
+          },
+          "unit": "s"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 9,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.5, sum by (le) (rate(vllm:e2e_request_latency_seconds_bucket{job=\"vllm-qwen\"}[15m])))",
+          "format": "time_series",
           "legendFormat": "p50",
-          "format": "time_series"
+          "refId": "A"
         },
         {
-          "refId": "B",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:e2e_request_latency_seconds_bucket{job=\"vllm-qwen\"}[15m])))",
+          "format": "time_series",
           "legendFormat": "p95",
-          "format": "time_series"
+          "refId": "B"
         },
         {
-          "refId": "C",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.99, sum by (le) (rate(vllm:e2e_request_latency_seconds_bucket{job=\"vllm-qwen\"}[15m])))",
+          "format": "time_series",
           "legendFormat": "p99",
-          "format": "time_series"
+          "refId": "C"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "E2E request latency (s)",
+      "type": "timeseries"
     },
     {
-      "id": 10,
-      "type": "timeseries",
-      "title": "Queue wait time (s)",
-      "gridPos": {
-        "x": 12,
-        "y": 24,
-        "w": 12,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
-          }
+            "spanNulls": true
+          },
+          "unit": "s"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "id": 10,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.5, sum by (le) (rate(vllm:request_queue_time_seconds_bucket{job=\"vllm-qwen\"}[15m])))",
+          "format": "time_series",
           "legendFormat": "p50",
-          "format": "time_series"
+          "refId": "A"
         },
         {
-          "refId": "B",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:request_queue_time_seconds_bucket{job=\"vllm-qwen\"}[15m])))",
+          "format": "time_series",
           "legendFormat": "p95",
-          "format": "time_series"
+          "refId": "B"
         },
         {
-          "refId": "C",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.99, sum by (le) (rate(vllm:request_queue_time_seconds_bucket{job=\"vllm-qwen\"}[15m])))",
+          "format": "time_series",
           "legendFormat": "p99",
-          "format": "time_series"
+          "refId": "C"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Queue wait time (s)",
+      "type": "timeseries"
     },
     {
-      "id": 11,
-      "type": "timeseries",
-      "title": "Prefill time (s)",
-      "gridPos": {
-        "x": 0,
-        "y": 32,
-        "w": 12,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
-          }
+            "spanNulls": true
+          },
+          "unit": "s"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "id": 11,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.5, sum by (le) (rate(vllm:request_prefill_time_seconds_bucket{job=\"vllm-qwen\"}[15m])))",
+          "format": "time_series",
           "legendFormat": "p50",
-          "format": "time_series"
+          "refId": "A"
         },
         {
-          "refId": "B",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:request_prefill_time_seconds_bucket{job=\"vllm-qwen\"}[15m])))",
+          "format": "time_series",
           "legendFormat": "p95",
-          "format": "time_series"
+          "refId": "B"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Prefill time (s)",
+      "type": "timeseries"
     },
     {
-      "id": 12,
-      "type": "timeseries",
-      "title": "Decode time (s)",
-      "gridPos": {
-        "x": 12,
-        "y": 32,
-        "w": 12,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
-          }
+            "spanNulls": true
+          },
+          "unit": "s"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 32
+      },
+      "id": 12,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.5, sum by (le) (rate(vllm:request_decode_time_seconds_bucket{job=\"vllm-qwen\"}[15m])))",
+          "format": "time_series",
           "legendFormat": "p50",
-          "format": "time_series"
+          "refId": "A"
         },
         {
-          "refId": "B",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:request_decode_time_seconds_bucket{job=\"vllm-qwen\"}[15m])))",
+          "format": "time_series",
           "legendFormat": "p95",
-          "format": "time_series"
+          "refId": "B"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Decode time (s)",
+      "type": "timeseries"
     },
     {
-      "id": "row-Requests",
-      "type": "row",
-      "title": "Requests",
+      "collapsed": false,
       "gridPos": {
-        "x": 0,
-        "y": 40,
+        "h": 1,
         "w": 24,
-        "h": 1
+        "x": 0,
+        "y": 40
       },
+      "id": "row-Requests",
       "panels": [],
-      "collapsed": false
+      "title": "Requests",
+      "type": "row"
     },
     {
-      "id": 13,
-      "type": "timeseries",
-      "title": "Request rate by finish reason (req/s)",
-      "gridPos": {
-        "x": 0,
-        "y": 44,
-        "w": 12,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "reqps",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
-          }
+            "spanNulls": true
+          },
+          "unit": "reqps"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 44
+      },
+      "id": 13,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "sum by (finished_reason) (rate(vllm:request_success_total{job=\"vllm-qwen\"}[1m]))",
+          "format": "time_series",
           "legendFormat": "{{finished_reason}}",
-          "format": "time_series"
+          "refId": "A"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Request rate by finish reason (req/s)",
+      "type": "timeseries"
     },
     {
-      "id": 14,
-      "type": "stat",
-      "title": "Request success rate (req/s)",
-      "gridPos": {
-        "x": 12,
-        "y": 44,
-        "w": 6,
-        "h": 4
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
-          "custom": {},
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "custom": {},
+          "unit": "short"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 44
+      },
+      "id": 14,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "sum(rate(vllm:request_success_total{job=\"vllm-qwen\"}[5m]))",
+          "format": "time_series",
           "legendFormat": "",
-          "format": "time_series"
+          "refId": "A"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Request success rate (req/s)",
+      "type": "stat"
     },
     {
-      "id": 15,
-      "type": "stat",
-      "title": "Preemptions (total)",
-      "gridPos": {
-        "x": 18,
-        "y": 44,
-        "w": 6,
-        "h": 4
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
-          "custom": {},
           "color": {
             "mode": "thresholds"
           },
+          "custom": {},
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -833,545 +793,649 @@
                 "value": 1
               }
             ]
-          }
+          },
+          "unit": "short"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 44
+      },
+      "id": 15,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "sum(vllm:num_preemptions_total{job=\"vllm-qwen\"})",
+          "format": "time_series",
           "legendFormat": "",
-          "format": "time_series"
+          "refId": "A"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Preemptions (total)",
+      "type": "stat"
     },
     {
-      "id": "row-Context ",
-      "type": "row",
-      "title": "Context & Cache",
+      "collapsed": false,
       "gridPos": {
-        "x": 0,
-        "y": 52,
+        "h": 1,
         "w": 24,
-        "h": 1
+        "x": 0,
+        "y": 52
       },
+      "id": "row-Context ",
       "panels": [],
-      "collapsed": false
+      "title": "Context & Cache",
+      "type": "row"
     },
     {
-      "id": 16,
-      "type": "timeseries",
-      "title": "KV cache usage trend",
-      "gridPos": {
-        "x": 0,
-        "y": 56,
-        "w": 12,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "percentunit",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
+            "spanNulls": true
           },
-          "max": 1
+          "max": 1,
+          "unit": "percentunit"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 56
+      },
+      "id": 16,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "sum(vllm:kv_cache_usage_perc{job=\"vllm-qwen\"})",
+          "format": "time_series",
           "legendFormat": "kv_cache_usage_perc",
-          "format": "time_series"
+          "refId": "A"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "KV cache usage trend",
+      "type": "timeseries"
     },
     {
-      "id": 17,
-      "type": "timeseries",
-      "title": "Prefix cache: queries vs hits (rate, 5m)",
-      "gridPos": {
-        "x": 12,
-        "y": 56,
-        "w": 12,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
-          }
+            "spanNulls": true
+          },
+          "unit": "short"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 56
+      },
+      "id": 17,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "sum(rate(vllm:prefix_cache_queries_total{job=\"vllm-qwen\"}[5m]))",
+          "format": "time_series",
           "legendFormat": "queries",
-          "format": "time_series"
+          "refId": "A"
         },
         {
-          "refId": "B",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "sum(rate(vllm:prefix_cache_hits_total{job=\"vllm-qwen\"}[5m]))",
+          "format": "time_series",
           "legendFormat": "hits",
-          "format": "time_series"
+          "refId": "B"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Prefix cache: queries vs hits (rate, 5m)",
+      "type": "timeseries"
     },
     {
-      "id": 18,
-      "type": "timeseries",
-      "title": "Prompt tokens by source (last 1h)",
-      "gridPos": {
-        "x": 0,
-        "y": 64,
-        "w": 24,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
             "spanNulls": true,
-            "fillOpacity": 15,
             "stacking": {
               "mode": "normal"
             }
-          }
+          },
+          "unit": "short"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 64
+      },
+      "id": 18,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "sum by (source) (increase(vllm:prompt_tokens_by_source_total{job=\"vllm-qwen\"}[1h]))",
+          "format": "time_series",
           "legendFormat": "{{source}}",
-          "format": "time_series"
+          "refId": "A"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Prompt tokens by source (last 1h)",
+      "type": "timeseries"
     },
     {
-      "id": "row-GPU",
-      "type": "row",
-      "title": "GPU",
-      "gridPos": {
-        "x": 0,
-        "y": 72,
-        "w": 24,
-        "h": 1
-      },
-      "panels": [],
-      "collapsed": false
-    },
-    {
-      "id": 20,
-      "type": "timeseries",
-      "title": "GPU utilization (%)",
-      "gridPos": {
-        "x": 0,
-        "y": 73,
-        "w": 8,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "percent",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
-          }
+            "spanNulls": true
+          },
+          "unit": "short"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 72
+      },
+      "id": 27,
       "options": {},
       "targets": [
         {
-          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(vllm:request_prompt_tokens_bucket{job=\"vllm-qwen\"}[30m])))",
+          "format": "time_series",
+          "legendFormat": "p50",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:request_prompt_tokens_bucket{job=\"vllm-qwen\"}[30m])))",
+          "format": "time_series",
+          "legendFormat": "p95",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(vllm:request_prompt_tokens_bucket{job=\"vllm-qwen\"}[30m])))",
+          "format": "time_series",
+          "legendFormat": "p99",
+          "refId": "C"
+        }
+      ],
+      "timeFrom": null,
+      "timeTo": null,
+      "title": "Context size per request (tokens, 30m)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 80
+      },
+      "id": "row-GPU",
+      "panels": [],
+      "title": "GPU",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 81
+      },
+      "id": 20,
+      "options": {},
+      "targets": [
+        {
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "nvidia_smi_gpu_utilization",
+          "format": "time_series",
           "legendFormat": "GPU",
-          "format": "time_series"
+          "refId": "A"
         },
         {
-          "refId": "B",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "nvidia_smi_gpu_memory_utilization",
+          "format": "time_series",
           "legendFormat": "Memory",
-          "format": "time_series"
+          "refId": "B"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "GPU utilization (%)",
+      "type": "timeseries"
     },
     {
-      "id": 21,
-      "type": "timeseries",
-      "title": "GPU memory",
-      "gridPos": {
-        "x": 8,
-        "y": 73,
-        "w": 8,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
-          }
+            "spanNulls": true
+          },
+          "unit": "bytes"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 81
+      },
+      "id": 21,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "nvidia_smi_gpu_memory_used_bytes",
+          "format": "time_series",
           "legendFormat": "used",
-          "format": "time_series"
+          "refId": "A"
         },
         {
-          "refId": "B",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "nvidia_smi_gpu_memory_total_bytes",
+          "format": "time_series",
           "legendFormat": "total",
-          "format": "time_series"
+          "refId": "B"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "GPU memory",
+      "type": "timeseries"
     },
     {
-      "id": 22,
-      "type": "timeseries",
-      "title": "GPU temperature (°C)",
-      "gridPos": {
-        "x": 16,
-        "y": 73,
-        "w": 8,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "celsius",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
-          }
+            "spanNulls": true
+          },
+          "unit": "celsius"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 81
+      },
+      "id": 22,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "nvidia_smi_gpu_temperature_celsius",
+          "format": "time_series",
           "legendFormat": "GPU",
-          "format": "time_series"
+          "refId": "A"
         },
         {
-          "refId": "B",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "nvidia_smi_gpu_memory_temperature_celsius",
+          "format": "time_series",
           "legendFormat": "Memory",
-          "format": "time_series"
+          "refId": "B"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "GPU temperature (\u00b0C)",
+      "type": "timeseries"
     },
     {
-      "id": 23,
-      "type": "timeseries",
-      "title": "GPU power (W)",
-      "gridPos": {
-        "x": 0,
-        "y": 81,
-        "w": 8,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "watt",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
-          }
+            "spanNulls": true
+          },
+          "unit": "watt"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 89
+      },
+      "id": 23,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "nvidia_smi_gpu_power_watts",
+          "format": "time_series",
           "legendFormat": "draw",
-          "format": "time_series"
+          "refId": "A"
         },
         {
-          "refId": "B",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "nvidia_smi_gpu_power_limit_watts",
+          "format": "time_series",
           "legendFormat": "limit",
-          "format": "time_series"
+          "refId": "B"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "GPU power (W)",
+      "type": "timeseries"
     },
     {
-      "id": 24,
-      "type": "timeseries",
-      "title": "Fan speed (%)",
-      "gridPos": {
-        "x": 8,
-        "y": 81,
-        "w": 8,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "percent",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
-          }
+            "spanNulls": true
+          },
+          "unit": "percent"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 89
+      },
+      "id": 24,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "nvidia_smi_gpu_fan_speed_percent",
+          "format": "time_series",
           "legendFormat": "fan",
-          "format": "time_series"
+          "refId": "A"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Fan speed (%)",
+      "type": "timeseries"
     },
     {
-      "id": 25,
-      "type": "timeseries",
-      "title": "SM clock (MHz)",
-      "gridPos": {
-        "x": 16,
-        "y": 81,
-        "w": 8,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "MHz",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
-          }
+            "spanNulls": true
+          },
+          "unit": "MHz"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 89
+      },
+      "id": 25,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "nvidia_smi_gpu_sm_clock_mhz",
+          "format": "time_series",
           "legendFormat": "current",
-          "format": "time_series"
+          "refId": "A"
         },
         {
-          "refId": "B",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "nvidia_smi_gpu_max_sm_clock_mhz",
+          "format": "time_series",
           "legendFormat": "max",
-          "format": "time_series"
+          "refId": "B"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "SM clock (MHz)",
+      "type": "timeseries"
     },
     {
-      "id": 26,
-      "type": "timeseries",
-      "title": "Per-process GPU memory",
-      "gridPos": {
-        "x": 0,
-        "y": 89,
-        "w": 24,
-        "h": 8
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes",
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 15,
             "lineWidth": 2,
             "showPoints": "never",
-            "spanNulls": true,
-            "fillOpacity": 15
-          }
+            "spanNulls": true
+          },
+          "unit": "bytes"
         },
         "overrides": []
       },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 97
+      },
+      "id": 26,
       "options": {},
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
           "expr": "sum by (process_name) (nvidia_smi_process_memory_used_bytes)",
+          "format": "time_series",
           "legendFormat": "{{process_name}}",
-          "format": "time_series"
+          "refId": "A"
         }
       ],
       "timeFrom": null,
-      "timeTo": null
+      "timeTo": null,
+      "title": "Per-process GPU memory",
+      "type": "timeseries"
     }
-  ]
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": [
+    "vllm",
+    "qwen",
+    "llm"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "hide": 0,
+        "includeAll": false,
+        "label": "Data source",
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "type": "datasource"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "Qwen vLLM Monitor",
+  "uid": "vllm-qwen-monitor",
+  "version": 5
 }

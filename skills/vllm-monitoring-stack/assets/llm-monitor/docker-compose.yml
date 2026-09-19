@@ -67,6 +67,30 @@ services:
               count: all
               capabilities: [gpu]
 
+  comfyui-exporter:
+    build: ./comfyui-exporter
+    image: comfyui-exporter:1.0
+    container_name: llm-comfyui-exporter
+    restart: unless-stopped
+    environment:
+      - COMFYUI_URL=http://host.docker.internal:18188
+    ports:
+      - "9464:9464"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  llama-slots-exporter:
+    build: ./llama-slots-exporter
+    image: llama-slots-exporter:1.0
+    container_name: llm-llama-slots-exporter
+    restart: unless-stopped
+    environment:
+      - LLAMA_URL=http://host.docker.internal:8000
+    ports:
+      - "9465:9465"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 volumes:
   prometheus-data:
   grafana-data:

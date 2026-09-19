@@ -1,0 +1,91 @@
+{
+  "uid": "comfyui-h3",
+  "title": "ComfyUI · MiniMax-H3",
+  "tags": ["comfyui", "image-gen"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "editable": true,
+  "time": {"from": "now-3h", "to": "now"},
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "状态",
+      "datasource": {"type": "prometheus", "uid": "vllm-prom"},
+      "gridPos": {"h": 4, "w": 4, "x": 0, "y": 0},
+      "targets": [{"refId": "A", "expr": "comfyui_up", "legendFormat": "up"}],
+      "fieldConfig": {"defaults": {"unit": "none", "mappings": [{"type": "value", "options": {"0": {"text": "离线", "color": "red"}, "1": {"text": "在线", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none"}
+    },
+    {
+      "id": 2, "type": "stat", "title": "正在执行",
+      "datasource": {"type": "prometheus", "uid": "vllm-prom"},
+      "gridPos": {"h": 4, "w": 5, "x": 4, "y": 0},
+      "targets": [{"refId": "A", "expr": "comfyui_queue_running", "legendFormat": "running"}],
+      "fieldConfig": {"defaults": {"unit": "none", "decimals": 0, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "blue", "value": 1}]}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "area"}
+    },
+    {
+      "id": 3, "type": "stat", "title": "排队中",
+      "datasource": {"type": "prometheus", "uid": "vllm-prom"},
+      "gridPos": {"h": 4, "w": 5, "x": 9, "y": 0},
+      "targets": [{"refId": "A", "expr": "comfyui_queue_pending", "legendFormat": "pending"}],
+      "fieldConfig": {"defaults": {"unit": "none", "decimals": 0, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 1}, {"color": "red", "value": 4}]}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "area"}
+    },
+    {
+      "id": 4, "type": "stat", "title": "VRAM 空闲 (ComfyUI 视角)",
+      "datasource": {"type": "prometheus", "uid": "vllm-prom"},
+      "gridPos": {"h": 4, "w": 10, "x": 14, "y": 0},
+      "targets": [{"refId": "A", "expr": "sum(comfyui_vram_free_bytes)", "legendFormat": "free"}],
+      "fieldConfig": {"defaults": {"unit": "bytes", "decimals": 1}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "value", "graphMode": "area"}
+    },
+    {
+      "id": 5, "type": "timeseries", "title": "任务队列 (执行中 / 排队)",
+      "datasource": {"type": "prometheus", "uid": "vllm-prom"},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+      "targets": [
+        {"refId": "A", "expr": "comfyui_queue_running", "legendFormat": "执行中"},
+        {"refId": "B", "expr": "comfyui_queue_pending", "legendFormat": "排队"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "none", "decimals": 0, "min": 0, "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 15, "showPoints": "never", "spanNulls": true, "axisLabel": "任务数", "gradientMode": "opacity"}, "color": {"mode": "palette-classic"}}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}}
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "VRAM 占用 (ComfyUI 视角, 动态加载)",
+      "datasource": {"type": "prometheus", "uid": "vllm-prom"},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+      "targets": [
+        {"refId": "A", "expr": "sum by (name) (comfyui_vram_total_bytes) - sum by (name) (comfyui_vram_free_bytes)", "legendFormat": "已用 {{name}}"},
+        {"refId": "B", "expr": "sum by (name) (comfyui_torch_vram_total_bytes) - sum by (name) (comfyui_torch_vram_free_bytes)", "legendFormat": "torch已分配 {{name}}"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "bytes", "min": 0, "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 12, "showPoints": "never", "spanNulls": true, "axisLabel": "显存", "gradientMode": "opacity"}, "color": {"mode": "palette-classic"}}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}}
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "任务完成速率 (个/分钟)",
+      "datasource": {"type": "prometheus", "uid": "vllm-prom"},
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 12},
+      "targets": [{"refId": "A", "expr": "sum(rate(comfyui_prompts_completed_total[10m])) * 60", "legendFormat": "完成/分钟"}],
+      "fieldConfig": {"defaults": {"unit": "none", "decimals": 2, "min": 0, "custom": {"drawStyle": "bars", "lineWidth": 1, "fillOpacity": 50, "showPoints": "never", "axisLabel": "个/分钟"}, "color": {"mode": "palette-classic"}}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}}
+    },
+    {
+      "id": 8, "type": "timeseries", "title": "最近一次任务耗时",
+      "datasource": {"type": "prometheus", "uid": "vllm-prom"},
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 12},
+      "targets": [{"refId": "A", "expr": "comfyui_last_execution_ms", "legendFormat": "耗时"}],
+      "fieldConfig": {"defaults": {"unit": "ms", "min": 0, "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 8, "showPoints": "never", "spanNulls": true, "axisLabel": "ms"}, "color": {"mode": "palette-classic"}}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}}
+    },
+    {
+      "id": 9, "type": "timeseries", "title": "系统内存占用",
+      "datasource": {"type": "prometheus", "uid": "vllm-prom"},
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 12},
+      "targets": [{"refId": "A", "expr": "comfyui_system_ram_total_bytes - comfyui_system_ram_free_bytes", "legendFormat": "已用"}],
+      "fieldConfig": {"defaults": {"unit": "bytes", "min": 0, "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 12, "showPoints": "never", "spanNulls": true, "axisLabel": "内存"}, "color": {"mode": "palette-classic"}}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}}
+    }
+  ]
+}

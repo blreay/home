@@ -21,3 +21,24 @@ scrape_configs:
   - job_name: 'nvidia-smi'
     static_configs:
       - targets: ['nvidia-gpu-exporter:9835']
+  - job_name: 'litellm'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['host.docker.internal:4000']
+        labels:
+          service: litellm
+    bearer_token: CHANGE_ME_LITELLM_MASTER_KEY  # litellm config.yaml 的 master_key
+
+  - job_name: comfyui
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["comfyui-exporter:9464"]
+        labels:
+          service: comfyui
+
+  - job_name: llama-slots
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["llama-slots-exporter:9465"]
+        labels:
+          service: llama-slots

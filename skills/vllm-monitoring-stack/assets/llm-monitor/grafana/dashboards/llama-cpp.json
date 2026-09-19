@@ -1,0 +1,717 @@
+{
+  "uid": "llamacpp-qwen",
+  "title": "llama.cpp · Qwen3.8-27B (qwen-local)",
+  "tags": [
+    "llamacpp",
+    "qwen",
+    "engine"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "editable": true,
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "当前并发请求",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vllm-prom"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 9,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:requests_processing",
+          "legendFormat": "处理中"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "showPoints": "never",
+            "spanNulls": true,
+            "axisLabel": "请求数",
+            "axisPlacement": "auto",
+            "gradientMode": "opacity"
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "排队等待",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vllm-prom"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:requests_deferred",
+          "legendFormat": "deferred"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 4
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Decode 速度 (tok/s)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vllm-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 6
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:predicted_tokens_seconds",
+          "legendFormat": "decode tok/s"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 1,
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "showPoints": "never",
+            "spanNulls": true,
+            "axisLabel": "tok/s",
+            "axisPlacement": "auto",
+            "gradientMode": "opacity"
+          },
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Prefill 速度 (tok/s)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vllm-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 6
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:prompt_tokens_seconds",
+          "legendFormat": "prefill tok/s"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "showPoints": "never",
+            "spanNulls": true,
+            "axisLabel": "tok/s",
+            "axisPlacement": "auto",
+            "gradientMode": "opacity"
+          },
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Token 吞吐",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vllm-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 14
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(llamacpp:tokens_predicted_total[2m]))",
+          "legendFormat": "decode tok/s"
+        },
+        {
+          "refId": "B",
+          "expr": "sum(rate(llamacpp:prompt_tokens_total[2m]))",
+          "legendFormat": "prefill tok/s"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "MTP 投机解码接受率",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vllm-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 14
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(llamacpp:spec_decode_num_accepted_tokens_total[5m])) / clamp_min(sum(rate(llamacpp:spec_decode_num_draft_tokens_total[5m])), 0.001)",
+          "legendFormat": "总接受率"
+        },
+        {
+          "refId": "B",
+          "expr": "sum(rate(llamacpp:spec_decode_num_accepted_tokens_per_pos_total{position=\"0\"}[5m])) / clamp_min(sum(rate(llamacpp:spec_decode_num_drafts_total[5m])), 0.001)",
+          "legendFormat": "位置1"
+        },
+        {
+          "refId": "C",
+          "expr": "sum(rate(llamacpp:spec_decode_num_accepted_tokens_per_pos_total{position=\"1\"}[5m])) / clamp_min(sum(rate(llamacpp:spec_decode_num_drafts_total[5m])), 0.001)",
+          "legendFormat": "位置2"
+        },
+        {
+          "refId": "D",
+          "expr": "sum(rate(llamacpp:spec_decode_num_accepted_tokens_per_pos_total{position=\"2\"}[5m])) / clamp_min(sum(rate(llamacpp:spec_decode_num_drafts_total[5m])), 0.001)",
+          "legendFormat": "位置3"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 8
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "前缀缓存命中率 (prompt cache)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vllm-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 22
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(llamacpp:prompt_tokens_cached_total[10m])) / clamp_min(sum(rate(llamacpp:prompt_tokens_total[10m])), 0.001)",
+          "legendFormat": "命中率"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "平均每 token 解码耗时 (ms)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vllm-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 22
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "1000 * sum(rate(llamacpp:tokens_predicted_seconds_total[5m])) / clamp_min(sum(rate(llamacpp:tokens_predicted_total[5m])), 0.001)",
+          "legendFormat": "ms/token"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 8
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "上下文峰值 (自启动)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vllm-prom"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 5,
+        "x": 0,
+        "y": 30
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:n_tokens_max",
+          "legendFormat": "max"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "槽位忙碌度 (n_busy_slots)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vllm-prom"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 16,
+        "y": 30
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:n_busy_slots_per_decode",
+          "legendFormat": "busy slots"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 40
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "排队请求",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vllm-prom"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 9,
+        "x": 9,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:requests_deferred",
+          "legendFormat": "排队中"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "showPoints": "never",
+            "spanNulls": true,
+            "axisLabel": "请求数",
+            "axisPlacement": "auto",
+            "gradientMode": "opacity"
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 4
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "最大上下文水位历史 (n_tokens_max)",
+      "description": "单请求(prompt+生成)最大长度的历史曲线, 阶梯上升=出现更长会话, 归零=服务重启。红线=模型原生窗口262144, 超过即进入外推区(质量可能下降)。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vllm-prom"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 11,
+        "x": 5,
+        "y": 30
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:n_tokens_max",
+          "legendFormat": "单请求最大长度"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 262144
+              }
+            ]
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisLabel": "tokens",
+            "thresholdsStyle": {
+              "mode": "line"
+            },
+            "gradientMode": "opacity"
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "槽位任务上下文大小历史",
+      "description": "每槽位当前/最近任务的 prompt tokens。阶梯保持=槽位空闲后保留上一任务水位; 断线=llama-server未运行。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vllm-prom"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 36
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamaslot_n_prompt_tokens",
+          "legendFormat": "slot {{slot}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisLabel": "tokens",
+            "gradientMode": "opacity"
+          },
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "槽位前缀缓存命中 (cache tokens)",
+      "description": "每槽位最近任务 prompt 中命中前缀缓存的 token 数, 与左图对照看缓存效率。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vllm-prom"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 36
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamaslot_n_prompt_tokens_cache",
+          "legendFormat": "slot {{slot}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisLabel": "tokens",
+            "gradientMode": "opacity"
+          },
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    }
+  ]
+}
