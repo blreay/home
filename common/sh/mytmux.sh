@@ -232,16 +232,17 @@ function main {
             ${cmd} send-keys -t ${session}:${cmd_win_name}.0 'ipconfig' C-m
 #EOF
         else
-#            ${cmd} new -d -s ${session} "${loopbash}"
-#            for((i=1;i<9;i++)); do
-#                #${cmd} neww -d -n bash -t ${session} "${loopbash}"
-#                ${cmd} neww -d -t ${session} "${loopbash}"
-#            done
-#            ${cmd} neww -d -n "my" -t ${session} "${loopbash}"
-#
-            # session already exists: do NOT add windows on every attach
-            # (old code added 9 windows per run, bloating the session)
-            ${cmd} list-windows -t ${session} -F '#{window_name}' | grep -qx my || ${cmd} neww -d -n "my" -t ${session} "${loopbash}"
+            # NOTE: this branch runs ONLY when the session does NOT exist
+            # (non-Cygwin) -- it is the sole session-creation path on Linux.
+            # A previous "enh" mistook it for the session-exists path and
+            # commented out 'new -s', so no session was ever created
+            # (3x "no server running"). Do not remove the 'new' below.
+            ${cmd} new -d -s ${session} "${loopbash}"
+            for((i=1;i<9;i++)); do
+                #${cmd} neww -d -n bash -t ${session} "${loopbash}"
+                ${cmd} neww -d -t ${session} "${loopbash}"
+            done
+            ${cmd} neww -d -n "my" -t ${session} "${loopbash}"
         fi
     fi
 

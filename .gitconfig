@@ -45,3 +45,7 @@
 	pager = less -FRX
 [url "https://gh-proxy.com/https://github.com/"]
 	insteadOf = https://github.com/
+[url "https://gitlab.alibaba-inc.com/"]
+	insteadOf = git@gitlab.alibaba-inc.com:
+	insteadOf = https://code.alibaba-inc.com/
+	insteadOf = git@code.alibaba-inc.com:
