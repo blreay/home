@@ -25,11 +25,13 @@ MYSELFID=${MYSELFID:-zhaoyong.zzy}
 ## PATH 的文件读入", 而当前目录恰好有同名文件时它会安静地成功. 换成 % 没有这个坑,
 ## 纯字面量的值也就不必加引号了. 但值里一旦出现 $ / 反引号 / $( ) / 空格, 引号仍然
 ## 必须加 —— 否则参数会被 shell 拆开, 下面那道 $# 检查会报错退出(不会动 PATH).
+## 本文件 zsh 也会 source(.zshrc.my 里有一行), 所以函数体内只用 bash/zsh 都成立的写法.
 function mySetPathEx {
     local _mspe_var="$1" _mspe_pat="$2"
     local _mspe_cur="" _mspe_ph="" _mspe_new="" _mspe_head="" _mspe_rest=""
-    local _mspe_seen=":" _mspe_out="" _mspe_item _mspe_i _mspe_arr=()
+    local _mspe_seen=":" _mspe_out="" _mspe_item
     ## 漏写引号时第二个参数会被拆成好几段, 只取 $2 会让 PATH 静默塌成一条, 这里拦住
+    ## (zsh 默认不对未加引号的展开做词分割, 所以这道检查只在 bash 里会触发)
     if (( $# > 2 )); then
         printf 'mySetPathEx: got %d args, 第二个参数漏引号了?(值里有空格/被 shell 拆开)\n' "$#" >&2
         return 2
@@ -39,7 +41,9 @@ function mySetPathEx {
         printf 'mySetPathEx: bad variable name: %s\n' "$_mspe_var" >&2; return 2 ;;
     esac
     if [[ -z "$_mspe_pat" ]]; then _mspe_pat="%$_mspe_var%"; fi
-    _mspe_cur="${!_mspe_var}"
+    ## 用 eval 取间接值: bash 的 ${!var} 在 zsh 里是 bad substitution, zsh 的 ${(P)var}
+    ## bash 又不认; eval 两边都成立(变量名上面已经校验过字符集, 不会被注入)
+    eval "_mspe_cur=\${$_mspe_var}"
     ## 手工展开 %VAR% 占位符而不用 ${x//pat/repl}: bash 5.2+ 的替换文本里 & 表示
     ## "整段匹配", 当前值一旦含 & 就会被改坏
     _mspe_ph="%$_mspe_var%"
@@ -50,12 +54,13 @@ function mySetPathEx {
         _mspe_new="$_mspe_new$_mspe_head$_mspe_cur"
     done
     _mspe_new="$_mspe_new$_mspe_rest"
-    ## 按 : 切开(路径里允许有空格), 丢掉空项和已经出现过的项
-    ## IFS 声明成 local, 出函数自动还原, 不影响调用方的词分割
-    local IFS=':'
-    read -r -a _mspe_arr <<< "$_mspe_new"
-    for ((_mspe_i = 0; _mspe_i < ${#_mspe_arr[@]}; _mspe_i++)); do
-        _mspe_item="${_mspe_arr[$_mspe_i]}"
+    ## 按 : 切开(路径里允许有空格), 丢掉空项和已经出现过的项(保留第一次出现的位置)
+    ## 手工循环, 不用 read -a(bash) / read -A(zsh): 两边选项名不同, 数组下标基也不同
+    ## (zsh 从 1 开始), 手工切分顺便就不用碰 IFS 了
+    _mspe_rest="${_mspe_new}:"
+    while [[ -n "$_mspe_rest" ]]; do
+        _mspe_item="${_mspe_rest%%:*}"
+        _mspe_rest="${_mspe_rest#*:}"
         if [[ -z "$_mspe_item" ]]; then continue; fi
         case "$_mspe_seen" in (*":${_mspe_item}":*) continue ;; esac
         _mspe_seen="$_mspe_seen${_mspe_item}:"
