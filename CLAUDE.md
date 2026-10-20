@@ -67,12 +67,7 @@ Note: `mytemplate.sh` carries an older, simpler inline copy of these helpers (no
 
 **可用性判定**:以当前会话实际加载的工具列表为准,agent 自行检查。
 
-1. **优先**:会话中有可用的内置/配置公网搜索工具(WebSearch、WebFetch、`mcp__codefusesearchmcp__webSearch` 等)时,直接使用它们。
-2. **Fallback**:若当前会话没有公网搜索工具,或调用返回错误/失败/超时,改用本地免费 web-search skill,无需询问用户:
-   ```bash
-   python3 /home/zhaoyong.zzy/skills/web-search/scripts/search.py "<查询词>" <条数> [--resolve]
-   ```
-   - `--resolve` 会展开 360 跳转链接(`so.com/link?m=...`),拿到真实目标 URL 以便抓取。
-   - 中文查询(公司名、新闻、招投标)360 搜索效果最好;无结果时自动 fallback Bing。
+1. **优先**:会话中有可用的自建 SearXNG 搜索工具(`mcp__searxng__web_search`)时,直接使用它。SearXNG 是多引擎聚合的 meta-search,对中文查询和歧义词(用户名、产品名等)的召回质量与来源多样性均优于单一 baidu/US-only 索引。
+2. **次选**:若 SearXNG 不可用或调用返回错误/失败/超时,改用内置公网搜索工具(`mcp__builtin__web__WebSearch`、`WebSearch`、`WebFetch`)。`mcp__builtin__web__WebSearch` 走内网 aone-agent(baidu/google/bing),`WebSearch` 为原生 US-only 索引。
 3. **读原文页面**:优先 WebFetch;若 WebFetch 不可用,用 `curl` + 浏览器 User-Agent 抓取 URL,自行解析 HTML。
 4. **例外(不用 fallback)**:蚂蚁内部知识库搜索(`mcp__codefusesearchmcp__webSearch` 且 `source:"ant"`)与公网搜索用途不同,查内部资料时照常使用,不受本规则影响。

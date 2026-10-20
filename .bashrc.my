@@ -413,6 +413,7 @@ set_cn
 
 [[ /etc/os-release ]] && . /etc/os-release
 [[ -f $MYHOME/.bashrc.ant ]] && . $MYHOME/.bashrc.ant
+alias myailab="$HOME/git/ai-lab/qwen/web/test.sh -m python -U https://$MYVMAI:8899 "
 [[ $ID == "ubuntu" ]] && unalias tmux
 
 #################
