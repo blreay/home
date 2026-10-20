@@ -13,6 +13,50 @@ export EDITOR=vim
 MYSELFID=${MYSELFID:-zhaoyong.zzy}
 [[ -d /home/${MYSELFID} ]] && MYHOME=/home/${MYSELFID} || MYHOME=$HOME
 
+## 设置 PATH / LD_LIBRARY_PATH 这类冒号分隔的变量, 顺手去掉重复项.
+## 用法: mySetPathEx 变量名 "新的值", 值里用 <变量名> 代表该变量的当前值:
+##   mySetPathEx PATH "/opt/aaa/bin:/opt/bbb/bin:<PATH>"
+##   mySetPathEx PATH "<PATH>:/opt/aaa/bin:/opt/bbb/bin"
+##   mySetPathEx PATH "/opt/aaa/bin:<PATH>:/opt/bbb/bin"
+##   mySetPathEx LD_LIBRARY_PATH "/opt/aaa/lib:<LD_LIBRARY_PATH>:/opt/bbb/lib"
+##   mySetPathEx PATH                      ## 只给变量名 = 就地去重整理当前值
+## 规则: 重复项只保留第一次出现的那个; 空项(连续的 :: 以及首尾的 :)一律丢弃.
+## 注意: 第二个参数必须用引号括起来, 否则 < > 会被 bash 当成重定向.
+function mySetPathEx {
+    local _mspe_var="$1" _mspe_pat="$2"
+    local _mspe_cur="" _mspe_ph="" _mspe_new="" _mspe_head="" _mspe_rest=""
+    local _mspe_seen=":" _mspe_out="" _mspe_item _mspe_i _mspe_arr=()
+    case "$_mspe_var" in
+    (''|*[!A-Za-z_0-9]*|[0-9]*)
+        printf 'mySetPathEx: bad variable name: %s\n' "$_mspe_var" >&2; return 2 ;;
+    esac
+    if [[ -z "$_mspe_pat" ]]; then _mspe_pat="<$_mspe_var>"; fi
+    _mspe_cur="${!_mspe_var}"
+    ## 手工展开 <VAR> 占位符而不用 ${x//pat/repl}: bash 5.2+ 的替换文本里 & 表示
+    ## "整段匹配", 当前值一旦含 & 就会被改坏
+    _mspe_ph="<$_mspe_var>"
+    _mspe_rest="$_mspe_pat"
+    while [[ "$_mspe_rest" == *"$_mspe_ph"* ]]; do
+        _mspe_head="${_mspe_rest%%"$_mspe_ph"*}"
+        _mspe_rest="${_mspe_rest#*"$_mspe_ph"}"
+        _mspe_new="$_mspe_new$_mspe_head$_mspe_cur"
+    done
+    _mspe_new="$_mspe_new$_mspe_rest"
+    ## 按 : 切开(路径里允许有空格), 丢掉空项和已经出现过的项
+    ## IFS 声明成 local, 出函数自动还原, 不影响调用方的词分割
+    local IFS=':'
+    read -r -a _mspe_arr <<< "$_mspe_new"
+    for ((_mspe_i = 0; _mspe_i < ${#_mspe_arr[@]}; _mspe_i++)); do
+        _mspe_item="${_mspe_arr[$_mspe_i]}"
+        if [[ -z "$_mspe_item" ]]; then continue; fi
+        case "$_mspe_seen" in (*":${_mspe_item}":*) continue ;; esac
+        _mspe_seen="$_mspe_seen${_mspe_item}:"
+        if [[ -n "$_mspe_out" ]]; then _mspe_out="$_mspe_out:"; fi
+        _mspe_out="$_mspe_out$_mspe_item"
+    done
+    export "$_mspe_var=$_mspe_out"
+}
+
 function set_proxy {
 [[ "no" == "$1" ]] && unset http_proxy HTTP_PROXY https_proxy ftp_proxy no_proxy && echo "proxy has been disabled $(env|grep -i proxy)" && return
 export HTTP_PROXY=http://cn-proxy.jp.oracle.com:80
@@ -25,8 +69,8 @@ export GOPROXY=https://goproxy.cn,direct
 env|grep -i proxy
 }
 function set_java {
-export PATH=$JAVA_HOME/bin:$MAVEN_HOME/bin:$DERBY_HOME/bin:NFS/application/Linux/eclipse:$PATH
-export LD_LIBRARY_PATH=$JAVA_HOME/lib:$MAVEN_HOME/lib:$DERBY_HOME/lib:$LD_LIBRARY_PATH
+mySetPathEx PATH "$JAVA_HOME/bin:$MAVEN_HOME/bin:$DERBY_HOME/bin:NFS/application/Linux/eclipse:<PATH>"
+mySetPathEx LD_LIBRARY_PATH "$JAVA_HOME/lib:$MAVEN_HOME/lib:$DERBY_HOME/lib:<LD_LIBRARY_PATH>"
 }
 function set_cn {
 export LANG="zh_CN.UTF-8"
@@ -79,9 +123,9 @@ export NFSPATH=/nfs/users/${MYSELFID}
 [[ ! -d $NFSPATH ]] && export NFSPATH=/home/${MYSELFID}
 [[ ! -d $NFSPATH ]] && export NFSPATH=$HOME
 export NFS=$NFSPATH
-export PATH=$NFSPATH/common/sh:$NFSPATH/common/py:$PATH:$NFSPATH/common/$OS/bin:/usr/vac/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/openwin/bin:/usr/X11/bin
-#export PATH=/opt/taobao/java/bin:/opt/taobao/antx/bin:/opt/taobao/ant/bin:/opt/taobao/antx/dist/antx/bin:/opt/taobao/mysql/bin:/opt/taobao/install/R/bin:/opt/taobao/maven/bin:/opt/rational/clearcase/bin:/opt/taobao/install/gnupg/bin:/opt/taobao/node/bin:$PATH
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/lib:/usr/local/lib:$NFSPATH/common/`uname -s`/lib
+mySetPathEx PATH "$NFSPATH/common/sh:$NFSPATH/common/py:<PATH>:$NFSPATH/common/$OS/bin:/usr/vac/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/openwin/bin:/usr/X11/bin"
+#mySetPathEx PATH "/opt/taobao/java/bin:/opt/taobao/antx/bin:/opt/taobao/ant/bin:/opt/taobao/antx/dist/antx/bin:/opt/taobao/mysql/bin:/opt/taobao/install/R/bin:/opt/taobao/maven/bin:/opt/rational/clearcase/bin:/opt/taobao/install/gnupg/bin:/opt/taobao/node/bin:<PATH>"
+mySetPathEx LD_LIBRARY_PATH "<LD_LIBRARY_PATH>:/usr/lib:/lib:/usr/local/lib:$NFSPATH/common/`uname -s`/lib"
 
 ## COMMON ###
 #export CVSROOT=:pserver:${MYSELFID}@bjsrc.cn.oracle.com:/repos
@@ -160,7 +204,7 @@ case ${OS} in
     alias tmux="$exe -2u"
     #[[ -f $NFSPATH/.dir_colors ]] && dircolors $NFSPATH/.dir_colors > /dev/null
     #eval `dircolors $NFSPATH/.dir_colors`
-    #export PATH=$NFSPATH/common/$OS/bin:$PATH
+    #mySetPathEx PATH "$NFSPATH/common/$OS/bin:<PATH>"
     ;;
 (SunOS)
     #set TERM=sun-color
@@ -172,11 +216,12 @@ case ${OS} in
     alias tmux="TERM=putty-256color $exe"
     export VIMRUNTIME=$NFS/.vim
     export VIM=$NFS/.vim
-    export PATH=/usr/xpg4/bin:$PATH:/opt/csw/bin::$NFS/application/SunOS/csw/bin
+    ## 原来这里有个多余的 "::"(等于把当前目录加进 PATH), 去重函数本来就丢弃空项, 顺手删掉
+    mySetPathEx PATH "/usr/xpg4/bin:<PATH>:/opt/csw/bin:$NFS/application/SunOS/csw/bin"
     #ldd $(which gls)|grep "found" >/dev/null 2>&1 || alias ls='gls --color=auto'
     #which gls >/dev/null 2>&1 && { ldd $(which gls 2>/dev/null)|grep "found" >/dev/null 2>&1 || alias ls='gls --color=auto'; }
     which gls 2>&1 | grep -v "no gls" >/dev/null 2>&1 && { ldd $(which gls 2>/dev/null)|grep "found" >/dev/null 2>&1 || alias ls='gls --color=auto'; }
-    export LD_LIBRARY_PATH=/usr/sfw/lib/64:$LD_LIBRARY_PATH:/usr/sfw/lib
+    mySetPathEx LD_LIBRARY_PATH "/usr/sfw/lib/64:<LD_LIBRARY_PATH>:/usr/sfw/lib"
     ;;
 (AIX)
     #export TERM=screen-256color
@@ -184,8 +229,8 @@ case ${OS} in
     export TERMINFO=$NFS/.terminfo/$OS
     export VIMRUNTIME=$NFS/.vim
     export VIM=$NFS/.vim
-    export PATH=$PATH:/opt/csw/bin:$NFSPATH/common/$OS/freeware/bin
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NFSPATH/common/$OS/freeware/lib
+    mySetPathEx PATH "<PATH>:/opt/csw/bin:$NFSPATH/common/$OS/freeware/bin"
+    mySetPathEx LD_LIBRARY_PATH "<LD_LIBRARY_PATH>:$NFSPATH/common/$OS/freeware/lib"
     which gls 2>&1 | grep -v "no gls" >/dev/null 2>&1 && { ldd $(which gls 2>/dev/null)|grep "found" >/dev/null 2>&1 || alias ls='gls --color=auto'; }
     exe="$NFSPATH/common/$OS/bin/tmux" && [[ -f $exe ]] || exe="tmux"
     alias tmux="TERM=putty-256color $exe -2u"
@@ -198,13 +243,13 @@ esac
 
 case $(uname -n) in
 (bej301713.cn.oracle.com)
-    export LD_LIBRARY_PATH=/usr/local/gcc-4.1.2/lib64:$LD_LIBRARY_PATH:/lib64:/usr/lib64:/usr/local/lib
+    mySetPathEx LD_LIBRARY_PATH "/usr/local/gcc-4.1.2/lib64:<LD_LIBRARY_PATH>:/lib64:/usr/lib64:/usr/local/lib"
     export SANITYPATH=$HOME/sanity/cron/cvs_batch_sanity
     export DEVJES=~/dev/art/jes/art_MainBranch/jes.12cR3
     export JAVA_HOME=$NFS/application/Linux/jdk1.8.0_74
     export MAVEN_HOME=$NFS/application/Linux/apache-maven-3.5.0
     export DERBY_HOME=$NFS/application/Linux/db-derby-10.13.1.1-bin
-    export LD_LIBRARY_PATH=/usr/local/gcc-4.1.2/lib64:$LD_LIBRARY_PATH:/lib64:/usr/lib64:/usr/local/lib
+    mySetPathEx LD_LIBRARY_PATH "/usr/local/gcc-4.1.2/lib64:<LD_LIBRARY_PATH>:/lib64:/usr/lib64:/usr/local/lib"
      ;;
 (bej301712.cn.oracle.com)
     export SANITYPATH=$HOME/sanity/cron/cvs_batch_sanity
@@ -214,8 +259,8 @@ case $(uname -n) in
     export JAVA_HOME=$NFS/application/Linux/jdk1.8.0_74
     export MAVEN_HOME=$NFS/application/Linux/apache-maven-3.5.0
     export DERBY_HOME=$NFS/application/Linux/db-derby-10.13.1.1-bin
-    #export LD_LIBRARY_PATH=/usr/local/gcc-4.1.2/lib64:$LD_LIBRARY_PATH:/lib64:/usr/lib64:/usr/local/lib
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/lib64:/usr/lib64:/usr/local/lib
+    #mySetPathEx LD_LIBRARY_PATH "/usr/local/gcc-4.1.2/lib64:<LD_LIBRARY_PATH>:/lib64:/usr/lib64:/usr/local/lib"
+    mySetPathEx LD_LIBRARY_PATH "<LD_LIBRARY_PATH>:/lib64:/usr/lib64:/usr/local/lib"
     ## for wine process
     [[ $USER == "${MYSELFID}" ]] && { export MYDBG_SHOWALL=yes && export MYDBG_SHOWDBG=DEBUG0; }
     [[ $USER != "${MYSELFID}" ]] && { unset MYDBG_SHOWALL MYDBG_SHOWDBG; }
@@ -248,12 +293,13 @@ case $(uname -n) in
      ;;
 (burf07cn05)
     ## remove sfw/lib/64
-    export LD_LIBRARY_PATH=$(echo $LD_LIBRARY_PATH|sed 's/[^:]*\/usr\/sfw\/lib\/64[^:]*//g')
+    ## sed 抠掉条目后会留下 "::", 交给 mySetPathEx 顺便清掉空项
+    mySetPathEx LD_LIBRARY_PATH "$(echo $LD_LIBRARY_PATH|sed 's/[^:]*\/usr\/sfw\/lib\/64[^:]*//g')"
      ;;
 (burf07cn10|slc10avp)
     alias cvs=$NFS/common/SunOS/bin/cvs
     ## remove sfw/lib/64
-    #export LD_LIBRARY_PATH=$(echo $LD_LIBRARY_PATH|sed 's/[^:]*\/usr\/sfw\/lib\/64[^:]*//g')
+    #mySetPathEx LD_LIBRARY_PATH "$(echo $LD_LIBRARY_PATH|sed 's/[^:]*\/usr\/sfw\/lib\/64[^:]*//g')"
     eval `/usr/openwin/bin/resize`
     shopt -s checkwinsize
     export TERM=$TERM
@@ -267,7 +313,7 @@ case $(uname -n) in
     alias vim="TERM=xterm-256color $exe -X"
     ;;
 (R90MURWD)
-    export PATH=/bin:/usr/bin:/sbin:$PATH
+    mySetPathEx PATH "/bin:/usr/bin:/sbin:<PATH>"
     exe="/usr/bin/vim" && [[ -f $exe ]] || exe="vim"
     alias vim="TERM=xterm-256color $exe -X"
     alias tmux="tmux"
@@ -317,12 +363,12 @@ export XMODIFIERS="@im=fcitx"
 #export http_proxy=XXX:80
 #export https_proxy=XXX:80
 #export no_proxy=dl.google.com
-export PATH=${HOME}/go/bin:/usr/local/go/bin:$PATH
+mySetPathEx PATH "${HOME}/go/bin:/usr/local/go/bin:<PATH>"
 
 ##for neovim
-export PATH=$PATH:$MYHOME/.local/bin
+mySetPathEx PATH "<PATH>:$MYHOME/.local/bin"
 ##for mcp
-export PATH=$PATH:$MYHOME/.utoo-proxy
+mySetPathEx PATH "<PATH>:$MYHOME/.utoo-proxy"
 
 ##expand environment variable when press TAB
 [[ -n $BASH_VERSION ]] && shopt -s direxpand
@@ -336,7 +382,7 @@ export HISTFILESIZE=2000000
 
 ## add pyenv path: git clone https://github.com/pyenv/pyenv.git ~/.pyenv
 export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH" && eval "$(pyenv init -)"
+[[ -d $PYENV_ROOT/bin ]] && mySetPathEx PATH "$PYENV_ROOT/bin:<PATH>" && eval "$(pyenv init -)"
 
 ## add nvm path: nvm 装在 ~/.nvm, 每个用户用自己的(root 的 /root/.nvm 不可写)
 ## 屏蔽 root 的 nvm/node: 从 root shell 里起的 tmux server 会把 NVM_DIR=/root/.nvm、
@@ -345,9 +391,9 @@ export PYENV_ROOT="$HOME/.pyenv"
 if [ "$(id -u)" != "0" ]; then
   unset NODE_VERSION
   case ${NVM_DIR:-} in /root/*) unset NVM_DIR ;; esac
-  ## 剔除 PATH 中所有落在 /root 下的条目(顺带压掉空条目)
+  ## 剔除 PATH 中所有落在 /root 下的条目(sed 留下的空条目交给 mySetPathEx 压掉)
   case :$PATH: in
-  *:/root/*) PATH=$(printf '%s' ":$PATH:" | sed -e 's#:*/root/[^:]*#:#g' -e 's#::\{1,\}#:#g' -e 's/^://' -e 's/:$//'); export PATH ;;
+  *:/root/*) mySetPathEx PATH "$(printf '%s' ":$PATH:" | sed -e 's#:*/root/[^:]*#:#g')" ;;
   esac
 fi
 export NVM_DIR="$HOME/.nvm"
