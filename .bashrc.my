@@ -334,6 +334,23 @@ export HISTFILESIZE=2000000
 ## add pyenv path: git clone https://github.com/pyenv/pyenv.git ~/.pyenv
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH" && eval "$(pyenv init -)"
+
+## add nvm path: nvm 装在 ~/.nvm, 每个用户用自己的(root 的 /root/.nvm 不可写)
+## 屏蔽 root 的 nvm/node: 从 root shell 里起的 tmux server 会把 NVM_DIR=/root/.nvm、
+## NODE_VERSION 和 /root/.nvm/versions/node/*/bin 塞进 global env, 新 pane 全部继承,
+## 结果非 root 用户误用 root 的 node(npm i -g 直接 EACCES), 这里统一清掉
+if [ "$(id -u)" != "0" ]; then
+  unset NODE_VERSION
+  case ${NVM_DIR:-} in /root/*) unset NVM_DIR ;; esac
+  ## 剔除 PATH 中所有落在 /root 下的条目(顺带压掉空条目)
+  case :$PATH: in
+  *:/root/*) PATH=$(printf '%s' ":$PATH:" | sed -e 's#:*/root/[^:]*#:#g' -e 's#::\{1,\}#:#g' -e 's/^://' -e 's/:$//'); export PATH ;;
+  esac
+fi
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
 ## use Chinese by default for AI agent
 set_cn
 
