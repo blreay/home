@@ -146,6 +146,9 @@ alias cdvm="cd $NFS/bcs/psmenv.cvs/vm/"
 alias setbcs="cd $NFS/bcs/psmenv.cvs && . ./setenv.sh && cd -"
 alias ssh2='myssh.sh -o ProxyCommand=\"ssh 6.0.114.87 nc -w 1 %h %p 2\>/dev/null\"'
 alias aliyuntest='aliyun ecs DescribeInstances | myjq.sh find key GPUAmount'
+## cloudcli-ssh 装在 ~/.local 前缀(不用 root); 必须用 install 而不是 update:
+## tnpm 默认前缀是 nvm 那个, 里面没装这个包, update 会静默 no-op 并退出 0
+alias cloudcli-update='tnpm i -g --prefix "$HOME/.local" @ali/cloudcli-ssh@latest'
 case ${OS} in
 (Linux)
     #infocmp putty-256color >/dev/null 2>&1 && export TERM=putty-256color || export TERM=xterm
