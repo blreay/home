@@ -410,7 +410,10 @@ if [ "$(id -u)" != "0" ]; then
   esac
 fi
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+## --no-use: 避免 source 时自动 nvm use 与 ~/.npmrc 的 prefix=~/.npm-global 冲突报错;
+## 随后用 --delete-prefix 显式 use, 全局包仍按 .npmrc 装到 ~/.npm-global(持久盘)
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use
+[ -s "$NVM_DIR/nvm.sh" ] && nvm use --delete-prefix --silent default >/dev/null 2>&1
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 ## use Chinese by default for AI agent
