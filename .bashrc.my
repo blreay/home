@@ -421,6 +421,12 @@ set_cn
 alias myailab="$HOME/git/ai-lab/qwen/web/test.sh -m python -U https://$MYVMAI:8899 "
 [[ $ID == "ubuntu" ]] && unalias tmux
 
+# PATH 去重收尾: 上面 installer 追加的几条, 和 .bashrc.my / .bashrc.ant 里 prepend 的
+# 会重复. mySetPathEx 定义在 .bashrc.my(只给变量名 = 就地去重, 保留第一次出现的位置,
+# 命令查找结果不变). 用 command -v 守卫 + 兜底 || :, 便于 .bashrc.my 不存在的机器上
+# 既不报错、也不让本文件以失败状态结束(万一有人 set -e 下 source 它)
+command -v mySetPathEx >/dev/null 2>&1 && mySetPathEx PATH || :
+
 #################
 ## Welcome ##
 #echo "Welcome to `uname -s` (`uname -n`)"
