@@ -3,21 +3,26 @@
 # claude_test.sh -- 查询一个模型或所有 aone 模型的可用性(并行查询)
 #
 # 用法:
-#   claude_test.sh                 # 并行测试所有 aone 模型(来自 a1 devix task models)
+#   claude_test.sh                 # 并行测试所有 aone 模型(来自 ducky quota/models 接口)
 #   claude_test.sh -a              # 同上, 显式指定
 #   claude_test.sh -l              # 只列出模型名, 不测试
 #   claude_test.sh <model> ...     # 并行测试指定的一个或多个模型
-#   claude_test.sh -w <workspace>  # 指定 workspace (默认 69737, 也可用环境变量 CLAUDE_TEST_WORKSPACE)
+#
+# 依赖: 环境变量 ANTHROPIC_AUTH_TOKEN (查询模型列表用)
 #
 # 退出码: 全部可用为 0, 否则为不可用模型的个数
 #
 
-MYWORKSPACE=${CLAUDE_TEST_WORKSPACE:-69737}
+MODELS_URL=${MODELS_URL:-https://ducky.code.alibaba-inc.com/v1/quota/models}
 
-# 获取所有模型名: 取 VALUE 列, 跳过表头和 "custom"(非真实模型)
+# 获取所有模型名: ducky quota 接口返回 JSON 数组, 取 model_id 字段
 function get_models {
-	a1 devix task models --workspace "$MYWORKSPACE" 2>/dev/null |
-		awk 'NR>1 && $1!="" && $1!="custom" {print $1}'
+	[[ -z ${ANTHROPIC_AUTH_TOKEN:-} ]] && {
+		echo "ERR: ANTHROPIC_AUTH_TOKEN is not set" >&2
+		return 1
+	}
+	curl -s "$MODELS_URL" -H "Authorization: Bearer $ANTHROPIC_AUTH_TOKEN" |
+		jq -r '.[].model_id' 2>/dev/null
 }
 
 # 测试单个模型(详细输出), 兼容原有行为
@@ -86,7 +91,7 @@ function test_models {
 }
 
 function my_show_usage {
-	sed -n '3,13p' "$0" | sed 's/^# \{0,1\}//'
+	sed -n '3,14p' "$0" | sed 's/^# \{0,1\}//'
 }
 
 function main {
@@ -96,7 +101,7 @@ function main {
 		case $opt in
 			a) all=1 ;;
 			l) list_only=1 ;;
-			w) MYWORKSPACE=$OPTARG ;;
+			w) : ;; # 已废弃: 模型列表不再依赖 workspace
 			h) my_show_usage; return 0 ;;
 			*) my_show_usage; return 1 ;;
 		esac
@@ -113,7 +118,7 @@ function main {
 	else
 		mapfile -t models < <(get_models)
 		[[ ${#models[@]} -eq 0 ]] && {
-			echo "ERR: get models failed (workspace=$MYWORKSPACE)" >&2
+			echo "ERR: get models failed (url=$MODELS_URL)" >&2
 			return 1
 		}
 	fi
