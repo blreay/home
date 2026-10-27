@@ -78,5 +78,6 @@ typeset url="${prefix}${fullpath}"
 
 echo "${url}" | myyank.sh
 echo "${url}"
-echo "has been copied to clipboard"
 [[ ${view_mode} -eq 1 ]] && url="${prefix}${fullpath}" && echo "${url}"
+echo "${url}" | myyank.sh
+echo "has been copied to clipboard"
