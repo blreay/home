@@ -430,6 +430,8 @@ alias myailab="$HOME/git/ai-lab/qwen/web/test.sh -m python -U https://$MYVMAI:88
 # 既不报错、也不让本文件以失败状态结束(万一有人 set -e 下 source 它)
 command -v mySetPathEx >/dev/null 2>&1 && mySetPathEx PATH || :
 
+export CLAUDE_AUTO_MODE=true
+
 #################
 ## Welcome ##
 #echo "Welcome to `uname -s` (`uname -n`)"
