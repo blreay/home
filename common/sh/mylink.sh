@@ -27,11 +27,12 @@ typeset REPO_BRANCH="master"
 typeset REPO_DIR="md"
 typeset TOKEN="${ANTCODE_SECRET_TOKEN:-${ANTCODE_TOKEN:-}}"
 
-while getopts vsfm:i: ch; do
+while getopts vdsfm:i: ch; do
   case $ch in
     v) view_mode=1;;
     s) send_mode=1;;
     f) force_mode=1;;
+    d) set -vx;;
     i) doc_index=$OPTARG;;
     m) src_machine=$OPTARG;;
   esac
@@ -49,10 +50,10 @@ function url_encode() {
 function api_call() {
     typeset method="$1" url="$2" data="$3"
     typeset resp
-    resp=$(curl -s --request "${method}" \
+    resp=$(printf '%s' "$data" | curl -s --request "${method}" \
       --header "PRIVATE-TOKEN: ${TOKEN}" \
       --header "Content-Type: application/json" \
-      --data "${data}" \
+      --data-binary @- \
       "${url}")
 
     typeset err
@@ -76,8 +77,25 @@ function repo_file_exists() {
     [[ "$code" == "200" ]] && return 0 || return 1
 }
 
+function set_proxy () {
+    [[ "no" == "$1" ]] && unset http_proxy HTTP_PROXY https_proxy ftp_proxy no_proxy NO_PROXY AGENT_BROWSER_PROXY AGENT_BROWSER_PROXY_BYPASS && echo -e "proxy has been disabled\n$(env | grep -i 'proxy.*=')" && return;
+    export HTTP_PROXY=XXXXXXXX
+    [[ $(uname) =~ CYGWIN || $(uname -r) =~ WSL ]] && export HTTP_PROXY=127.0.0.1:13659;
+    export no_proxy='127.0.0.1,localhost*,dl.google.com,*.alicdn.*,*alipay*,.alicdn.com,.aliyun-inc.com,.alipay.net,.aliyuncs.com,.antfin-inc.com,antfin-inc.com,*.antfin*';
+    export http_proxy=$HTTP_PROXY;
+    export https_proxy=$HTTP_PROXY;
+    export ftp_proxy=$HTTP_PROXY;
+    export NO_PROXY=${no_proxy};
+    export GOPROXY=https://goproxy.cn,direct;
+    export AGENT_BROWSER_PROXY=$HTTP_PROXY;
+    export AGENT_BROWSER_PROXY_BYPASS=$no_proxy;
+    env | grep -i "proxy.*="
+}
+
+
 # --- main ---
 [[ ! -f "$file" ]] && echo "Error: file not found: $file" && exit 1
+set_proxy no
 
 typeset filename="${file##*/}"
 
